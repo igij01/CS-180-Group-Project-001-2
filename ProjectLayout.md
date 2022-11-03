@@ -1,15 +1,12 @@
 # Rough Layout of Project 4 Option 2
 
-1. [ ] User - ___vacant___
+1. [ ] User Functionality - ___vacant___
    1. [ ] Super class User
       1. include common data and methods that both buyer and the seller have
    2. [ ] Buyer utility class(NOT Buyer.java) that takes in a buyer instance
    3. [ ] Seller extends User(NOT Seller.java) that takes in a seller instance
-2. [ ] Account functionality - Yulin Lin
-   1. [X] Login Portion - included in user class
-      1. [X] usrname & pwd class/interface
-         1. each user should have their usrnam and pwd 
-   2. [ ] Message portion
+2. [ ] Message functionality - Yulin Lin
+   1. [ ] Message portion
       1. [ ] Message Object each serves as basis of message transfer
          1. each contains a buyer and a seller
          2. each user should a collection of messages assoc. with them
