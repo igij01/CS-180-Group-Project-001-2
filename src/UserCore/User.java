@@ -10,6 +10,8 @@ package UserCore;
 // it's ok to have a static public method to put less strain on user functionality group.
 // This rule applies for all the children classes as well. 
 
+import java.util.Objects;
+
 /**
  * User
  * <p>
@@ -98,5 +100,17 @@ public class User {
 
     public static boolean isLogIn(User user) {
         return user.loginStatus;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj instanceof User) {
+            User user = (User) obj;
+            return userName.equals(user.userName) && email.equals(user.email)
+                    && pwd.equals(user.pwd) && role == user.role;
+        }
+        return false;
     }
 }
