@@ -13,10 +13,10 @@
          3. Participants, Message sender, timestamp, and contents.
          4. probably a good idea to implement is as packages so no need to search for every new conversation
             1. However, would need someway to sum them up
-3. [ ] Files - ___vacant___
-   1. [ ] export message
+3. [ ] Files - Merge with functionality
+   1. [X] export message
       1. could be utility method reside in each message
-   2. [ ] import message 
+   2. [X] import message 
       1. again utility method 
    3. Pretty light work load but would need a template at least from functionality group
 4. [ ] Statistics - ___vacant___
