@@ -5,6 +5,10 @@ package UserCore;
 // must be included in the new class instead of User.java. User.java can contain additional attributes,
 // but it only can have protected or lower access level methods for the sake of hiding the critical information,
 // like password, from outside classes not in the UserCore package.
+// However, you can have static public method for public information, like role, username, etc.
+// As a general rule of thumb, for any information that you think is ok or even want all other user to see,
+// it's ok to have a static public method to put less strain on user functionality group.
+// This rule applies for all the children classes as well. 
 
 /**
  * User
@@ -82,5 +86,17 @@ public class User {
 
     protected void setLoginStatus(boolean loginStatus) {
         this.loginStatus = loginStatus;
+    }
+
+    public static String userName(User user) {
+        return user.userName;
+    }
+
+    public static Role checkRole(User user) {
+        return user.role;
+    }
+
+    public static boolean isLogIn(User user) {
+        return user.loginStatus;
     }
 }
