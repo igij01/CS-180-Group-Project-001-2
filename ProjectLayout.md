@@ -3,8 +3,8 @@
 1. [ ] User - ___vacant___
    1. [ ] Super class User
       1. include common data and methods that both buyer and the seller have
-   2. [ ] Buyer extends User
-   3. [ ] Seller extends User
+   2. [ ] Buyer utility class(NOT Buyer.java) that takes in a buyer instance
+   3. [ ] Seller extends User(NOT Seller.java) that takes in a seller instance
 2. [ ] Account functionality - Yulin Lin
    1. [X] Login Portion - included in user class
       1. [X] usrname & pwd class/interface
