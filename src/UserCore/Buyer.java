@@ -9,8 +9,8 @@ package UserCore;
  * @author Yulin Lin, 001
  * @version 11/3/2022
  */
-public class Buyer extends User{
-    public Buyer(String username, String email, String pwd) {
+class Buyer extends User{
+    protected Buyer(String username, String email, String pwd) {
         super(username, email, pwd, Role.BUYER);
     }
 }

@@ -1,16 +1,21 @@
 package UserCore;
 
-import java.util.Objects;
+// Any associated methods must be enclosed in a new class that has user in a field.
+// All the functions, messaging, accessing, login, searching, etc, that will be public methods
+// must be included in the new class instead of User.java. User.java can contain additional attributes,
+// but it only can have protected or lower access level methods for the sake of hiding the critical information,
+// like password, from outside classes not in the UserCore package.
 
 /**
  * User
  * <p>
- * A parent class for all types of user in the system
+ * A parent class for all types of user in the system.
+ * This class and any children classes only serves as placeholder for ease of use
  *
  * @author Yulin Lin, 001
  * @version 11/3/2022
  */
-public class User {
+class User {
     //TODO arraylist of messages
     private String userName;
     private String email;
@@ -28,7 +33,7 @@ public class User {
      * @param role the role of the user
      * @throws EmailFormatException when email address are not put in the right format
      */
-    public User(String userName, String email, String pwd, Role role) {
+    protected User(String userName, String email, String pwd, Role role) {
         //TODO add checking mechanism to check if the name is already taken
         this.userName = userName;
         if (!email.matches("\\b[\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b"))
