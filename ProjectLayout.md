@@ -5,9 +5,9 @@
       1. include common data and methods that both buyer and the seller have
    2. [ ] Buyer extends User
    3. [ ] Seller extends User
-2. [ ] Account functionality - ___vacant___
-   1. [ ] Login Portion
-      1. [ ] usrname & pwd class/interface
+2. [ ] Account functionality - Yulin Lin
+   1. [X] Login Portion - included in user class
+      1. [X] usrname & pwd class/interface
          1. each user should have their usrnam and pwd 
    2. [ ] Message portion
       1. [ ] Message Object each serves as basis of message transfer
