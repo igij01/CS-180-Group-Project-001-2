@@ -42,3 +42,7 @@
          1. messaging body
          2. options 
    2. could have some subclasses to sum different section together to make it more presentable
+
+note:
+- Data must persist regardless of whether or not a user is connected. If a user disconnects and reconnects, their data should still be present. If a user creates an account and then closes the application (it is no longer running), they should still be able to log in when running it again.
+- Descriptive errors should appear as appropriate. For example, if someone tries to log in with an invalid account. The application should not crash under any circumstances. 
