@@ -15,7 +15,7 @@ package UserCore;
  * @author Yulin Lin, 001
  * @version 11/3/2022
  */
-class User {
+public class User {
     //TODO arraylist of messages
     private String userName;
     private String email;

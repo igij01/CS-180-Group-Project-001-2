@@ -8,7 +8,7 @@ package UserCore;
  * @author Yulin Lin, 001
  * @version 11/3/2022
  */
-class Seller extends User{
+public class Seller extends User{
 
     protected Seller(String userName, String email, String pwd) {
         super(userName, email, pwd, Role.SELLER);
