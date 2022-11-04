@@ -3,14 +3,26 @@ package MessageCore;
 import UserCore.*;
 
 import java.io.*;
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-public class Message {
+/**
+ * Message
+ * <p>
+ * A basic unit of messaging system which comprise a sender, a receiver, the message, and a timestamp,
+ * with additional features
+ *
+ * @author Yulin Lin, 001
+ * @version 11/3/2022
+ */
+public class Message implements Serializable {
     //specifically for csv export
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    // update this field everytime you update the field of the class
+    // put in a random number or just increment the number
+    @Serial
+    private static final long serialVersionUID = 2L;
 
     private final User sender;
     private final User target;
@@ -63,7 +75,7 @@ public class Message {
     public void editMessage(File textFile) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         try (BufferedReader bfr = new BufferedReader(new FileReader(textFile))) {
-            String line = "";
+            String line;
             while ((line = bfr.readLine()) != null) {
                 stringBuilder.append(line).append('\n');
             }
@@ -72,7 +84,19 @@ public class Message {
         }
     }
 
-    public void deleteMessage(User actionUser) {
+    /**
+     * set the visible status of the message
+     * @param actionUser the user that's performing the deletion action
+     * @return true if the instance can be deleted(if it's invisible to both parties)
+     */
+    public boolean deleteMessage(User actionUser) {
+        if (actionUser.equals(sender))
+            visibilitySender = false;
+        else if (actionUser.equals(target))
+            visibilityReceiver = false;
+        else
+            throw new IllegalArgumentException("User is not a participant of the message!");
+        return !visibilityReceiver && !visibilitySender;
     }
 
     /**
@@ -80,6 +104,14 @@ public class Message {
      */
     protected String getMessage() {
         return this.message;
+    }
+
+    /**
+     *
+     * @return the sender of the message
+     */
+    protected User getSender() {
+        return this.sender;
     }
 
     /**
