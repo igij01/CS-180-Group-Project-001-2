@@ -1,6 +1,7 @@
 package MessageCore;
 
-import UserCore.*;
+import UserCore.Buyer;
+import UserCore.Seller;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,10 +24,38 @@ public class Conversation implements Serializable {
     private final Buyer buyer;
     private final Seller seller;
     //TODO add store
-    private ArrayList<Message> conversation;
+    private final ArrayList<Message> conversation;
 
     public Conversation(Buyer buyer, Seller seller) {
         this.buyer = buyer;
         this.seller = seller;
+        conversation = new ArrayList<>();
+    }
+
+    /**
+     * Add a message to the conversation if the buyer and seller are participant of the message
+     *
+     * @param message the message to be added
+     * @return true if the message is added
+     */
+    public boolean AddMessage(Message message) {
+        if (!message.isParticipant(buyer) || !message.isParticipant(seller))
+            return false;
+        conversation.add(message);
+        return true;
+    }
+
+
+    /**
+     * @return the conversation in the format of "sender: content \n time"
+     */
+    @Override
+    public String toString() {
+        StringBuilder rawString = new StringBuilder();
+        for (Message m : conversation) {
+            rawString.append(m.toString()).append('\n');
+        }
+        rawString.deleteCharAt(rawString.length() - 1);
+        return rawString.toString();
     }
 }
