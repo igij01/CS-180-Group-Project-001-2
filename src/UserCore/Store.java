@@ -16,6 +16,15 @@ public class Store {
         return storeName;
     }
 
+
+
+    /**
+     * Changes name of Store
+     *
+     * @param storeName new name of the store
+     * @param reqSeller who is requesting to change the name
+     * @throws IllegalUserAccessException if the Seller is not the owner of the store as owners are only allowed
+     */
     protected void setStoreName(String storeName, Seller reqSeller) throws IllegalUserAccessException {
         if (reqSeller.equals(owner)) {
             this.storeName = storeName;
