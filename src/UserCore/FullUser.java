@@ -66,9 +66,9 @@ public class FullUser {
      * @param messageIndex Which message they want to delte
      */
     public void deleteMessage(User user,int convoIndex, int messageIndex) /*throw IllegalUserAccessException*/ {
-        if (this.conversations.get(convoIndex).removeMessage(user, messageIndex)) {
+       /* if (this.conversations.get(convoIndex).removeMessage(user, messageIndex)) {
             this.conversations.remove(convoIndex);
-        }
+        } */
     }
 
 

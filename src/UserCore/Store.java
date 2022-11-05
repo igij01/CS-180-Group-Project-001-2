@@ -12,6 +12,7 @@ public class Store {
     public Store (String storeName,Seller owner) {
         this.storeName = storeName;
         this.owner = owner;
+        PublicInformation.addListOfStores(this);
     }
 
     public String getStoreName() {

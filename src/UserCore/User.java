@@ -41,8 +41,6 @@ public class User {
      */
     protected User(String userName, String email, String pwd, Role role) {
         this.userName = userName;
-        if (!email.matches("\\b[\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b"))
-            throw new EmailFormatException(email);
         this.email = email;
         this.pwd = pwd;
         this.role = role;
