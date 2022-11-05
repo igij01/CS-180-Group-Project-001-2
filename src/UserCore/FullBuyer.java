@@ -13,7 +13,6 @@ public class FullBuyer extends FullUser {
      */
     public FullBuyer(String userName, String email, String pwd) {
         super(userName, email, pwd, Role.BUYER);
-
     }
 
 
