@@ -32,7 +32,7 @@
       3. Data will include a list of customers with the number of messages they have sent
       4. Most common words in overall messages
       5. Sorting algorithm - should be in PublicInformation as well
-2. [ ] Message functionality - Yulin Lin
+2. [X] Message functionality - Yulin Lin
    1. [ ] Message portion
       1. [ ] Message Object each serves as basis of message transfer
          1. each contains a buyer and a seller
@@ -40,11 +40,11 @@
          3. Participants, Message sender, timestamp, and contents.
          4. probably a good idea to implement is as packages so no need to search for every new conversation
             1. However, would need someway to sum them up
-3. [ ] Files - Merge with functionality
+3. [X] Files - Merge with functionality
    1. [X] export message
       1. could be utility method reside in each message
-   2. [X] import message 
-      1. again utility method 
+   2. [X] import message
+      1. again utility method
    3. Pretty light work load but would need a template at least from functionality group
 4. [ ] Statistics - Samson - _look at user functionality for requirement_
    1. Prob. utility classes since they are pretty big
