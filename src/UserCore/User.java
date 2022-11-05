@@ -40,7 +40,6 @@ public class User {
      * @throws EmailFormatException when email address are not put in the right format
      */
     protected User(String userName, String email, String pwd, Role role) {
-        //TODO add checking mechanism to check if the name is already taken
         this.userName = userName;
         if (!email.matches("\\b[\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b"))
             throw new EmailFormatException(email);
