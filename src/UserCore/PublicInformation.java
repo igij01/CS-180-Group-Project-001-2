@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class PublicInformation {
 
     public static ArrayList<Store> listOfStores = new ArrayList<>();
-    public static ArrayList<User> listOfUsers = new ArrayList<>();
+    public static ArrayList<String> listOfUsers = new ArrayList<>();
 
     private PublicInformation() {}
 
