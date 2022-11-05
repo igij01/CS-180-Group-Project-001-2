@@ -6,7 +6,6 @@ public class Store {
 
     private String storeName;
     private Seller owner;
-
     private int convoCounter = 0;
 
     public Store (String storeName,Seller owner) {
@@ -35,6 +34,7 @@ public class Store {
             throw new IllegalUserAccessException("You are not the owner of this store!");
         }
     }
+    
     public int getConvoCounter() {
         return convoCounter;
     }

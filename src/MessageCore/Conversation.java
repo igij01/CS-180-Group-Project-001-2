@@ -1,6 +1,7 @@
 package MessageCore;
 
 import UserCore.Buyer;
+
 import UserCore.IllegalTargetException;
 import UserCore.Seller;
 import UserCore.User;
