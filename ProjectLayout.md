@@ -5,14 +5,21 @@
       1. include common data and methods that both buyer and the seller have
       2. User should have number of messages in one of the field and a static public method to increment message as a user construct a new Message
       3. Seller should have store array field
-   2. [ ] FullUser is a utility class that contains User. __This is the class that will interact with the user. So all functionality methods should be all public(besides helper methods)__
-      1. Fields: User, list of Conversations that this user is associated with. _TODO: someway to notify the target about the conversation_
+   2. [ ] FullUser is a utility class that contains User. __This is the class that will interact with the user. So all
+      functionality methods should be all public(besides helper methods)__
+      1. Fields: User, list of Conversations that this user is associated with. _TODO: someway to notify the target
+         about the conversation_
       2. login checks
       3. registration check - check email, check duplicate username - need list of username - PublicInformation
       4. message manipulation(create, edit, delete, print(as strings)
-      5. logouts(has to notify all fields that a user has loggout, serialize all data(_Can be implemented in Main. Awaits further discussion_)
-      6. Blocking: can be 2 arrays - one block, another invisible assoc. with a __protected__ method that checks whether a user is invisible to them
-   4. [ ] FullBuyer utility class(NOT Buyer.java) that takes in a buyer instance
+         1. When creating a message, make sure to call the receiver receive method!
+         2. Need to create a reception method. Public Information will have a list of _FullSeller,_ so you can call the
+            FullSeller's receive method.
+      5. logouts(has to notify all fields that a user has loggout, serialize all data(_Can be implemented in Main.
+         Awaits further discussion_)
+      6. Blocking: can be 2 arrays - one block, another invisible assoc. with a __protected__ method that checks whether
+         a user is invisible to them
+   4. [ ] FullBuyer utility class(NOT Buyer.java) that takes in a buyer instance -
       1. Method that return a list of stores for user to select - PublicInformation
       2. Also can search for a specific seller (?WHAT?)
       3. list of stores by number of messages received - PublicInformation
@@ -20,8 +27,9 @@
       5. Sorting algorithm - should be in PublicInformation as well
    5. [ ] FullSeller extends FullUser(NOT Seller.java) that takes in a seller instance
       1. view a list of customers to select an individual to message - PublicInformation
-      2. Sellers should be able to search for a specific customer to message. (This is fine) - can be implemented in either pub / FullSeller
-      3. Data will include a list of customers with the number of messages they have sent 
+      2. Sellers should be able to search for a specific customer to message. (This is fine) - can be implemented in
+         either pub / FullSeller
+      3. Data will include a list of customers with the number of messages they have sent
       4. Most common words in overall messages
       5. Sorting algorithm - should be in PublicInformation as well
 2. [ ] Message functionality - Yulin Lin

@@ -2,19 +2,20 @@ package UserCore;
 
 import java.util.ArrayList;
 
-public class PublicInformation {
+public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller instead of Buyer/Seller. It will be used to send messages between 2 users - Lincoln
 
     public static ArrayList<Store> listOfStores = new ArrayList<>();
-    public static ArrayList<String> listOfUsers = new ArrayList<>();
+    public static ArrayList<String> listOfUsersNames = new ArrayList<>();
 
-    private PublicInformation() {}
+    private PublicInformation() {
+    }
 
     public static void addListOfStores(Store store) {
         listOfStores.add(store);
     }
 
     public static void addListOfUsers(String user) {
-        listOfUsers.add(user);
+        listOfUsersNames.add(user);
     }
 
 

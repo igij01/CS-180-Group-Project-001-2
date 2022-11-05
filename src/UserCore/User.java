@@ -10,8 +10,6 @@ package UserCore;
 // it's ok to have a static public method to put less strain on user functionality group.
 // This rule applies for all the children classes as well. 
 
-import java.util.Objects;
-
 /**
  * User
  * <p>
@@ -34,13 +32,18 @@ public class User {
      * but one email can have multiple users' assoc. with it
      *
      * @param userName the name of the user
-     * @param email the email address assoc. with the user
-     * @param pwd the password of the user
-     * @param role the role of the user
-     * @throws EmailFormatException when email address are not put in the right format
+     * @param email    the email address assoc. with the user
+     * @param pwd      the password of the user
+     * @param role     the role of the user
+     * @throws EmailFormatException     when email address are not put in the right format
+     * @throws IllegalUserNameException when the passed in username is already taken
      */
     protected User(String userName, String email, String pwd, Role role) {
+        if (PublicInformation.listOfUsersNames.contains(userName))
+            throw new IllegalUserNameException(userName);
         this.userName = userName;
+        if (!email.matches("\\b[\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b"))
+            throw new EmailFormatException(email);
         this.email = email;
         this.pwd = pwd;
         this.role = role;

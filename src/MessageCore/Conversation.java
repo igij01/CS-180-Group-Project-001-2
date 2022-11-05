@@ -1,7 +1,9 @@
 package MessageCore;
 
 import UserCore.Buyer;
+import UserCore.IllegalTargetException;
 import UserCore.Seller;
+import UserCore.User;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -26,9 +28,30 @@ public class Conversation implements Serializable {
     //TODO add store
     private final ArrayList<Message> conversation;
 
-    public Conversation(Buyer buyer, Seller seller) {
-        this.buyer = buyer;
-        this.seller = seller;
+    /**
+     * Create an instance of conversation
+     * <b>Note: This constructor relies on the fact that sender and target will be Seller and Buyer. Therefore, make sure
+     * the any instantiation statement knows ahead of time that sender and target will be Seller/Buyer</b>
+     *
+     * @param sender the user requesting the creation
+     * @param target the target of the conversation
+     * @throws IllegalTargetException when the target and the sender are the same role
+     * @throws ClassCastException     when the note is violated; i.e. the sender/target is a User instead of Buyer/Seller
+     */
+    public Conversation(User sender, User target) throws IllegalTargetException {
+        if (sender instanceof Buyer) {
+            this.buyer = (Buyer) sender;
+            if (target instanceof Seller)
+                this.seller = (Seller) target;
+            else
+                throw new IllegalTargetException(target);
+        } else {
+            this.buyer = (Buyer) target;
+            if (sender instanceof Seller)
+                this.seller = (Seller) sender;
+            else
+                throw new IllegalTargetException(target);
+        }
         conversation = new ArrayList<>();
     }
 
