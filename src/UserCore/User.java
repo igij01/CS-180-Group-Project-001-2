@@ -45,6 +45,7 @@ public class User {
         this.pwd = pwd;
         this.role = role;
         loginStatus = false;
+        PublicInformation.addListOfUsers(userName);
     }
 
     protected String getUserName() {

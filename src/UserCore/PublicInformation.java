@@ -13,9 +13,10 @@ public class PublicInformation {
         listOfStores.add(store);
     }
 
-    public static void addListOfUsers(User user) {
+    public static void addListOfUsers(String user) {
         listOfUsers.add(user);
     }
+
 
     public static void main(String[] args) {
         Store store = new Store("A", new Seller("fads", "samsonates@gmail.com", "asdf"));
