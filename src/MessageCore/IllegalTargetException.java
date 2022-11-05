@@ -1,4 +1,6 @@
-package UserCore;
+package MessageCore;
+
+import UserCore.User;
 
 /**
  * IllegalTargetException
@@ -8,7 +10,7 @@ package UserCore;
  * @author Yulin Lin, 001
  * @version 11/5/2022
  */
-public class IllegalTargetException extends Exception {
+public class IllegalTargetException extends IllegalArgumentException {
     public IllegalTargetException(String message) {
         super(message);
     }

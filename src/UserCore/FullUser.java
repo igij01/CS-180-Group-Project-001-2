@@ -1,6 +1,7 @@
 package UserCore;
 
 import MessageCore.Conversation;
+import MessageCore.IllegalTargetException;
 
 import java.util.ArrayList;
 
