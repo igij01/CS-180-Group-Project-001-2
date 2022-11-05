@@ -35,15 +35,15 @@ public class Message implements Serializable {
     /**
      * Create an instance of message. The message time would be set as the time when the instance is created
      *
-     * @param sender sender of the message
-     * @param target target of the message
+     * @param sender  sender of the message
+     * @param target  target of the message
      * @param message the message body
-     * @throws IllegalArgumentException when both sender and target are the same role
+     * @throws IllegalTargetException when both sender and target are the same role
      */
-    public Message(User sender, User target, String message) {
+    public Message(User sender, User target, String message) throws IllegalTargetException {
         //check the sender target status
         if (User.checkRole(sender) == Role.BUYER ^ User.checkRole(target) == Role.SELLER)
-            throw new IllegalArgumentException("Cannot have both Buyers/Sellers in a message");
+            throw new IllegalTargetException("Cannot have both Buyers/Sellers in a message");
         this.sender = sender;
         this.target = target;
         this.message = message;
@@ -58,8 +58,8 @@ public class Message implements Serializable {
      * @param sender   sender of the message
      * @param target   target of the message
      * @param textFile the message body
-     * @throws IOException              when IOException occurs(including file not found)
-     * @throws IllegalArgumentException when both sender and target are the same role
+     * @throws IOException            when IOException occurs(including file not found)
+     * @throws IllegalTargetException when both sender and target are the same role
      */
     public Message(User sender, User target, File textFile) throws IOException {
         this(sender, target, "");
@@ -131,7 +131,7 @@ public class Message implements Serializable {
             while ((line = bfr.readLine()) != null) {
                 stringBuilder.append(line).append('\n');
             }
-            this.message = stringBuilder.toString();
+            this.message = stringBuilder.deleteCharAt(stringBuilder.length() - 1).toString();
             setTimeToNow();
         }
     }
@@ -155,8 +155,11 @@ public class Message implements Serializable {
 
     /**
      * @return the content of the message
+     * @throws IllegalUserAccessException when a requesting user is not a participant of the message
      */
-    protected String getMessage() {
+    protected String getMessage(User requestingUser) {
+        if (!isParticipant(requestingUser))
+            throw new IllegalUserAccessException("User is not a participant of the message!");
         return this.message;
     }
 

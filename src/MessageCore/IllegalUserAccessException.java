@@ -1,6 +1,13 @@
 package MessageCore;
-
-public class IllegalUserAccessException extends Exception {
+/**
+ * IllegalUserAccessException
+ * <p>
+ * an exception that throws when the user cannot perform a certain action
+ *
+ * @author Yulin Lin, 001
+ * @version 11/5/2022
+ */
+public class IllegalUserAccessException extends IllegalArgumentException {
     public IllegalUserAccessException(String message) {
         super(message);
     }
