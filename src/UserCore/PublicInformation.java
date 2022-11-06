@@ -7,15 +7,47 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     public static ArrayList<Store> listOfStores = new ArrayList<>();
     public static ArrayList<String> listOfUsersNames = new ArrayList<>();
 
+    public static ArrayList<FullSeller> listOfSellers = new ArrayList<>();
+
     private PublicInformation() {
     }
 
-    public static void addListOfStores(Store store) {
+    /**
+     * Add store into the public list of stores
+     * Always call this when you create a store(Already added in the last line of {@code Store} constructor)
+     *
+     * @param store the store instance to be added
+     */
+    protected static void addListOfStores(Store store) {
         listOfStores.add(store);
     }
 
-    public static void addListOfUsers(String user) {
-        listOfUsersNames.add(user);
+    /**
+     * Add a seller into the public list of sellers
+     * Always call this when you create a seller(Already added in the last line of {@code FullSeller} constructor)
+     *
+     * @param seller the seller to be added
+     */
+    protected static void addListOfSellers(FullSeller seller) {
+        listOfSellers.add(seller);
+    }
+
+    /**
+     * Add username into the public list of user ame
+     * Always call this when you create a user(Already added in the last line of {@code User} constructor)
+     *
+     * @param name the name chosen by the user
+     */
+    protected static void addListOfUsersNames(String name) {
+        listOfUsersNames.add(name);
+    }
+
+    public static FullSeller findFullSellerFromStore(Store store) {
+        for (FullSeller seller : listOfSellers) {
+            if (seller.getUser().equals(store.getOwner()))
+                return seller;
+        }
+        return null;
     }
 
 

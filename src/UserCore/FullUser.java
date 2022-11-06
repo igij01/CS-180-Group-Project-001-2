@@ -32,6 +32,10 @@ public class FullUser {
         conversations = new ArrayList<>();
     }
 
+    protected User getUser() {
+        return this.user;
+    }
+
     /**
      * creates a new message to the conversation between user and receiver
      * If there's no existing conversation between user and the receiver, it will be created
@@ -55,7 +59,6 @@ public class FullUser {
 //        Message message = new Message(seller, buyer, messageBody);
         conversations.add(conversation);
         receiver.receiveConversation(conversation);
-
     }
 
     /**

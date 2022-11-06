@@ -5,10 +5,10 @@ import MessageCore.IllegalUserAccessException;
 public class Store {
 
     private String storeName;
-    private Seller owner;
+    private final Seller owner;
     private int convoCounter = 0;
 
-    public Store (String storeName,Seller owner) {
+    protected Store(String storeName, Seller owner) {
         this.storeName = storeName;
         this.owner = owner;
         PublicInformation.addListOfStores(this);
@@ -18,7 +18,9 @@ public class Store {
         return storeName;
     }
 
-
+    public Seller getOwner() {
+        return this.owner;
+    }
 
     /**
      * Changes name of Store

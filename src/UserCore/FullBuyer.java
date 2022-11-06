@@ -1,5 +1,7 @@
 package UserCore;
 
+import java.util.Objects;
+
 public class FullBuyer extends FullUser {
 
 
@@ -16,6 +18,14 @@ public class FullBuyer extends FullUser {
         super(new Buyer(userName, email, pwd));
     }
 
+    public void messageStore(Store store, String content) {
+        super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)), content);
+        store.incrementCounter();
+    }
+
+    public void messageSeller(FullSeller seller, String content) {
+        super.createMessage(seller, content);
+    }
 
     public void viewDashboard() {
 
