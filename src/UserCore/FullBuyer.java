@@ -16,6 +16,7 @@ public class FullBuyer extends FullUser {
      */
     public FullBuyer(String userName, String email, String pwd) {
         super(new Buyer(userName, email, pwd));
+        PublicInformation.addListOfBuyers(this);
     }
 
     public void messageStore(Store store, String content) {

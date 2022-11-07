@@ -9,6 +9,8 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     public static ArrayList<FullSeller> listOfSellers = new ArrayList<>();
 
+    public static ArrayList<FullBuyer> listOfBuyers = new ArrayList<>();
+
     private PublicInformation() {
     }
 
@@ -40,6 +42,14 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     protected static void addListOfUsersNames(String name) {
         listOfUsersNames.add(name);
+    }
+
+    /**
+     * Adds a buyer to the public list of buyers
+     * @param buyer the buyer to be added
+     */
+    protected static void addListOfBuyers(FullBuyer buyer) {
+        listOfBuyers.add(buyer);
     }
 
     public static FullSeller findFullSellerFromStore(Store store) {
