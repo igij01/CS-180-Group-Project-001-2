@@ -55,7 +55,7 @@ public class FullBuyer extends FullUser {
            mostPopStores[count] = s;
            count++;
        }
-        //Sorts Stores in terms of most Messaged recieved
+        //Sorts Stores in terms of most Messaged received
        for (int i = 0; i < mostPopStores.length; i++) {
            for (int j = i + 1; j < mostPopStores.length; j++) {
                 Store temp;
@@ -84,11 +84,7 @@ public class FullBuyer extends FullUser {
                }
            }
        }
-
-
-
-
-
-
     }
+
+
 }
