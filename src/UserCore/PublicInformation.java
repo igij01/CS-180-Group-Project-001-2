@@ -11,8 +11,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     public static ArrayList<FullBuyer> listOfBuyers = new ArrayList<>();
 
-    private PublicInformation() {
-    }
+    private PublicInformation() {}
 
     /**
      * Add store into the public list of stores

@@ -1,10 +1,12 @@
 package UserCore;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class FullBuyer extends FullUser {
 
-
+    private static ArrayList<Store> storesMessaged = new ArrayList<>();
+    private static ArrayList<Integer> timesStoresMessaged = new ArrayList<>();
     /**
      * Creates a new Full Buyer instance
      *
@@ -22,6 +24,22 @@ public class FullBuyer extends FullUser {
     public void messageStore(Store store, String content) {
         super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)), content);
         store.incrementCounter();
+
+        if (!storesMessaged.contains(store)) {
+            storesMessaged.add(store);
+            for (int i = 0; i < storesMessaged.size(); i++) {
+                if (storesMessaged.get(i).equals(store)) {
+                    timesStoresMessaged.set(i, 1);
+                }
+            }
+        }
+
+        for (int i = 0; i < storesMessaged.size(); i++) {
+            if (storesMessaged.get(i).equals(store)) {
+                timesStoresMessaged.set(i, timesStoresMessaged.get(i) + 1);
+            }
+        }
+
     }
 
     public void messageSeller(FullSeller seller, String content) {
@@ -29,6 +47,26 @@ public class FullBuyer extends FullUser {
     }
 
     public void viewDashboard() {
+
+       Store[] mostPopStores = new Store[PublicInformation.listOfStores.size()];
+       int count = 0;
+       for (Store s : PublicInformation.listOfStores) {
+           mostPopStores[count] = s;
+           count++;
+       }
+       for (int i = 0; i < mostPopStores.length; i++) {
+           for (int j = i + 1; j < mostPopStores.length; j++) {
+                Store temp;
+                if (mostPopStores[i].getCounter() > mostPopStores[j].getCounter()) {
+                    temp = mostPopStores[i];
+                    mostPopStores[i] = mostPopStores[j];
+                    mostPopStores[j] = temp;
+                }
+           }
+       }
+
+
+
 
     }
 }

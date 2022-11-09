@@ -8,6 +8,7 @@ public class Store {
     private final Seller owner;
     private int convoCounter = 0;
 
+
     protected Store(String storeName, Seller owner) {
         this.storeName = storeName;
         this.owner = owner;
@@ -37,9 +38,10 @@ public class Store {
         }
     }
     
-    public int getConvoCounter() {
+    public int getCounter() {
         return convoCounter;
     }
+
     protected synchronized void incrementCounter() {
         convoCounter++;
     }
