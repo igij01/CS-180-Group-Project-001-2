@@ -46,6 +46,7 @@ public class FullBuyer extends FullUser {
         super.createMessage(seller, content);
     }
 
+
     public void viewDashboard() {
 
        Store[] mostPopStores = new Store[PublicInformation.listOfStores.size()];
@@ -54,16 +55,37 @@ public class FullBuyer extends FullUser {
            mostPopStores[count] = s;
            count++;
        }
+        //Sorts Stores in terms of most Messaged recieved
        for (int i = 0; i < mostPopStores.length; i++) {
            for (int j = i + 1; j < mostPopStores.length; j++) {
                 Store temp;
-                if (mostPopStores[i].getCounter() > mostPopStores[j].getCounter()) {
+                if (mostPopStores[i].getCounter() < mostPopStores[j].getCounter()) {
                     temp = mostPopStores[i];
                     mostPopStores[i] = mostPopStores[j];
                     mostPopStores[j] = temp;
                 }
            }
        }
+
+       Store[] mostMessagedStores = new Store[storesMessaged.size()];
+       count = 0;
+       for (Store s : storesMessaged) {
+           mostMessagedStores[count] = s;
+           count++;
+       }
+       //Sorts Stores in terms of most messaged by this buyer
+       for (int i = 0; i < mostMessagedStores.length; i++) {
+           for (int j = i + 1; j < mostMessagedStores.length; j++) {
+               Store temp;
+               if (timesStoresMessaged.get(i) < timesStoresMessaged.get(j)) {
+                   temp = mostMessagedStores[i];
+                   mostMessagedStores[i] = mostMessagedStores[j];
+                   mostMessagedStores[j] = temp;
+               }
+           }
+       }
+
+
 
 
 
