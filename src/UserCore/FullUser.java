@@ -2,6 +2,7 @@ package UserCore;
 
 import MessageCore.Conversation;
 import MessageCore.IllegalTargetException;
+import MessageCore.IllegalUserAccessException;
 import MessageCore.Message;
 
 import java.util.ArrayList;
@@ -12,21 +13,7 @@ public class FullUser {
     private final User user;
     private ArrayList<Conversation> conversations;
 
-//    /**
-//     * Creates a new Full User instance that creates a user so that this can deal with messages
-//     * this allows for limited access to messages.
-//     *
-//     * @param userName the name of the user
-//     * @param email the email address assoc. with the user
-//     * @param pwd the password of the user
-//     * @param role the role of the user
-//     * @throws EmailFormatException when email address are not put in the right format
-//     * @throws IllegalUserNameException when the passed in username is already taken
-//     */
-//    protected FullUser(String userName, String email, String pwd, Role role) { //end user cannot instantiate FullUser
-//        user = new User(userName, email, pwd, role);
-//        conversations = new ArrayList<>();
-//    }
+
 
     protected FullUser(User user) { //replace with this since full user cannot instantiate this class. Therefore, instantiation should occur in FullSeller/FullBuyer
         this.user = user;
@@ -87,14 +74,14 @@ public class FullUser {
      * Deletes the specific message in a specific conversation of a user
      * if all messages are deleted the conversation is also removed.
      *
-     * @param user         The user that the conversation is being deleted from
-     * @param convoIndex   Which conversation they want to edit
+     * @param user The user that the conversation is being deleted from
+     * @param conversation   Which conversation they want to edit
      * @param messageIndex Which message they want to delte
      */
-    public void deleteMessage(User user,int convoIndex, int messageIndex) /*throw IllegalUserAccessException*/ {
-       /* if (this.conversations.get(convoIndex).removeMessage(user, messageIndex)) {
-            this.conversations.remove(convoIndex);
-        } */
+    public void deleteMessage(User user,Conversation conversation, int messageIndex) throws IllegalUserAccessException, IndexOutOfBoundsException {
+        if (this.conversations.get(conversations.indexOf(conversation)).deleteMessage(user, messageIndex)) {
+            this.conversations.remove(conversations.indexOf(conversation));
+        }
     }
 
 

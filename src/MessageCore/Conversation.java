@@ -101,9 +101,13 @@ public class Conversation implements Serializable {
      * @throws IllegalUserAccessException when the requesting user is not allowed to delete the message
      * @throws IndexOutOfBoundsException  when the index that the user selected is out of bound
      */
-    public boolean deleteMessage(User actionUser, int index) {
-        if (conversation.get(index).deleteMessage(actionUser))
-            conversation.remove(index);
+    public boolean deleteMessage(User actionUser, int index) throws IllegalUserAccessException, IndexOutOfBoundsException {
+        try {
+            if (conversation.get(index).deleteMessage(actionUser))
+                conversation.remove(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IndexOutOfBoundsException();
+        }
         return conversation.isEmpty();
     }
 
