@@ -2,6 +2,7 @@ package UserCore;
 
 import MessageCore.Conversation;
 import MessageCore.IllegalTargetException;
+import MessageCore.Message;
 
 import java.util.ArrayList;
 
@@ -44,22 +45,30 @@ public class FullUser {
      * @param messageBody the Message the seller wants to send
      */
     public void createMessage(FullUser receiver, String messageBody) throws IllegalTargetException {
+        Conversation tempConversation = new Conversation(this.user, receiver.user);
+        Message newMessage = new Message(this.user, receiver.user, messageBody);
+        if (!this.conversations.contains(tempConversation)) {
+            receiver.receiveConversation(tempConversation);
+            this.conversations.add(tempConversation);
+            tempConversation.addMessage(newMessage);
+        } else {
+            this.conversations.get(conversations.indexOf(tempConversation)).addMessage(newMessage);
+        }
+    }
         //since the sender will be one the user in the field. FullUser since it will have the corresponding reception method
-
         //need to check whether users are different role: check Message constructor
         // need to go through the ArrayList of conversation to find whether such conversation already exists
         // if not you can create conversation
         // you would also need to call the reception method of the receiver
-        Conversation conversation = new Conversation(this.user, receiver.user); // check the conversation constructor for update
+        //Conversation conversation = new Conversation(this.user, receiver.user); // check the conversation constructor for update
         //this is possible due to polymorphism. Since receiver/this will ultimately be created using FullBuyer/Seller
         //which will pass in a Buyer/Seller to user field.
         // MAKE SURE THAT'S ALWAYS TRUE. (for example, make constructor protected and accepting only an already created
         // User limit instantiation to only classes in the package)
-
-//        Message message = new Message(seller, buyer, messageBody);
-        conversations.add(conversation);
-        receiver.receiveConversation(conversation);
-    }
+        //Message message = new Message(seller, buyer, messageBody);
+        //conversations.add(conversation);
+        //receiver.receiveConversation(conversation);
+        // }
 
     /**
      * Receive conversation. Can only be called from this class to prevent unauthorized conversation being sent
