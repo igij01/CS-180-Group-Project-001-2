@@ -74,6 +74,17 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         return storeList;
     }
 
+    public static int findMatchingObjectIndex(ArrayList<FullBuyer> objArray, Object obj) {
+        int index = -1;
+        for (int i = 0; i < objArray.size(); i++) {
+            if (obj.equals(objArray.get(i))) {
+                index = i;
+            }
+        }
+        return index;
+    }
+
+
     public static void main(String[] args) {
         Store store = new Store("A", new Seller("fads", "samsonates@gmail.com", "asdf"));
         System.out.println(listOfStores.get(0).getStoreName());
