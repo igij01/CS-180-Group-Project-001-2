@@ -1,5 +1,6 @@
 package UserCore;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller instead of Buyer/Seller. It will be used to send messages between 2 users - Lincoln
@@ -59,6 +60,19 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         return null;
     }
 
+    public static Store[] sortStoresByPopularity(Store[] storeList) {
+        for (int i = 0; i < storeList.length; i++) {
+            for (int j = i + 1; j < storeList.length; j++) {
+                Store temp;
+                if (storeList[i].getCounter() < storeList[j].getCounter()) {
+                    temp = storeList[i];
+                    storeList[i] = storeList[j];
+                    storeList[j] = temp;
+                }
+            }
+        }
+        return storeList;
+    }
 
     public static void main(String[] args) {
         Store store = new Store("A", new Seller("fads", "samsonates@gmail.com", "asdf"));
