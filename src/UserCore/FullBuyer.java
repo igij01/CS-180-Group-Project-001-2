@@ -25,6 +25,11 @@ public class FullBuyer extends FullUser {
     public void messageStore(Store store, String content) {
         super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)), content);
         store.incrementCounter();
+        if (!store.getAllMessagingBuyers().contains(this)) {
+            store.addMessagingBuyer(this);
+        } else {
+            store.incrementBuyerMessageCount(this);
+        }
 
         if (!storesMessaged.contains(store)) {
             storesMessaged.add(store);
@@ -40,7 +45,6 @@ public class FullBuyer extends FullUser {
                 timesStoresMessaged.set(i, timesStoresMessaged.get(i) + 1);
             }
         }
-
     }
 
     public void messageSeller(FullSeller seller, String content) {
@@ -92,16 +96,16 @@ public class FullBuyer extends FullUser {
         Seller s2 = new Seller("user3", "sample@gmail.com", "pwd123");
         Seller s3 = new Seller("user4", "sample@gmail.com", "pwd123");
 
-        FullSeller fs1 = new FullSeller("user2" , "sample@gmail.com", "abc123");
-        FullSeller fs2 = new FullSeller("user3", "sample@gmail.com", "pwd123");
-        FullSeller fs3 = new FullSeller("user4", "sample@gmail.com", "pwd123");
+        //FullSeller fs1 = new FullSeller("user2" , "sample@gmail.com", "abc123");
+        //FullSeller fs2 = new FullSeller("user3", "sample@gmail.com", "pwd123");
+        //FullSeller fs3 = new FullSeller("user4", "sample@gmail.com", "pwd123");
 
         Store store1 = new Store("Store1", s1);
         Store store2 = new Store("Store2", s2);
         Store store3 = new Store("Store3", s3);
 
         //f1.messageStore(store1, "Hi");
-        f1.messageStore(store2, "Hey");
+        //f1.messageStore(store2, "Hey");
         //f1.messageStore(store2, "MOst");
         f1.viewDashboard(true);
     }
