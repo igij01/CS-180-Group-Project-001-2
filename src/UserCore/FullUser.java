@@ -124,6 +124,16 @@ public class FullUser {
     }
 
     /**
+     * checks if the specified password matched password of user
+     *
+     * @param pwd specified password
+     * @return true if specified password matches user's password
+     */
+    public boolean passwordCheck(String pwd) {
+        return this.user.getPwd().equals(pwd);
+    }
+
+    /**
      * Checks if the receiving user has blocked sender
      *
      * @param user user that will be receiving message
