@@ -182,6 +182,12 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         return null;
     }
 
+    /**
+     *
+     * @param storeList list of stores to iterate through and organize based on each store's message received counter
+     *
+     * @return organized list of stores in order from most popular to least popular
+     */
     public static Store[] sortStoresByPopularity(Store[] storeList) {
         for (int i = 0; i < storeList.length; i++) {
             for (int j = i + 1; j < storeList.length; j++) {
@@ -225,10 +231,10 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     }
 
     /**
-     * takes two arrays one of a user list and count and combines them to an organized string
+     * takes two arrays one of a user list and count and combines them to an organized string (Used by FullSeller)
      * @param users array of users
      * @param usersCount array of the corresponding number of messages recieved or sent
-     *
+     * @param increasing decides whether or not the arrays are sorted in increasing order based off the counts
      * @return organized String of the user and its corresponding count all in order from highest to lowest
      */
     public static String correspondingArraysToString(FullUser[] users, Integer[] usersCount, boolean increasing) {
@@ -255,6 +261,37 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             } else {
                 s += users[i].getUser().getUserName() + ": " + usersCount[i] + "\n";
             }
+        }
+        return s;
+    }
+
+    /**
+     *  Takes two arrays one of a user list and count and combines them to an organized string (Used by FullBuyer)
+     * @param stores list of stores
+     * @param counts corresponding count to stores
+     * @param increasing boolean to see whether to organize it by highest count stores to least
+     * @return String of stores and their count value
+     */
+    public static String correspondingArrayToString(Store[] stores, Integer[] counts, boolean increasing) {
+        if (increasing) {
+            for (int i = 0; i < stores.length; i++) {
+                for (int j = i + 1; j < stores.length; j++) {
+                    Store tempStore;
+                    Integer tempInt;
+                    if (counts[i] < counts[j]) {
+                        tempStore = stores[i];
+                        tempInt = counts[i];
+                        stores[i] = stores[j];
+                        counts[i] = counts[j];
+                        stores[j] = tempStore;
+                        counts[j] = tempInt;
+                    }
+                }
+            }
+        }
+        String s = "";
+        for (int i = 0; i < stores.length; i++) {
+            s += "(" + stores[i].getStoreName() + ") : " + counts[i] + " messages sent\n";
         }
         return s;
     }

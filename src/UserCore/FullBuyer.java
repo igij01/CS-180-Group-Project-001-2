@@ -63,28 +63,11 @@ public class FullBuyer extends FullUser {
         }
         Store[] mostMessagedStores = storesMessaged.toArray(new Store[0]);
         Integer[] timesMessaged = timesStoresMessaged.toArray(new Integer[0]);
-        for (int i = 0; i < mostMessagedStores.length; i++) {
-            for (int j = i + 1; j < mostMessagedStores.length; j++) {
-                Store tempStore;
-                Integer tempInt;
-                if (timesMessaged[i] < timesMessaged[j]) {
-                    tempStore = mostMessagedStores[i];
-                    tempInt = timesMessaged[i];
-                    mostMessagedStores[i] = mostMessagedStores[j];
-                    timesMessaged[i] = timesMessaged[j];
-                    mostMessagedStores[j] = tempStore;
-                    timesMessaged[j] = tempInt;
-                }
-            }
-        }
         for (Store store : stores) {
             mostPopStores += "(" + store.getStoreName() + ") : " + store.getCounter() + "\n";
         }
-        for (int i = 0; i < mostMessagedStores.length; i++) {
-            personalStores += "(" + mostMessagedStores[i].getStoreName() + ") : " + timesMessaged[i] + " messages sent\n";
-        }
+        personalStores += PublicInformation.correspondingArrayToString(mostMessagedStores, timesMessaged, increasing);
         return mostPopStores + personalStores;
-
     }
 
     public static void main(String[] args) {
