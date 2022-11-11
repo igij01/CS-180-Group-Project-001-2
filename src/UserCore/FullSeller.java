@@ -30,7 +30,6 @@ public class FullSeller extends FullUser {
      * @return String of dashboard
      */
     public String viewDashboard(boolean increasingOrder) {
-        String dashboard = "";
         String customers = "Highest Messaging Customers\n";
         String mostPopularWords = "Most Popular Words\n";
         for (Store store : stores) {
@@ -38,6 +37,8 @@ public class FullSeller extends FullUser {
             Integer[] buyersMessageCount = store.getMessagingBuyersMessageCount().toArray(new Integer[0]);
             customers += PublicInformation.correspondingArraysToString(buyers, buyersMessageCount, increasingOrder);
         }
+
+
 
 
         return customers + "\n" + mostPopularWords;

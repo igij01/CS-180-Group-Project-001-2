@@ -50,40 +50,41 @@ public class FullBuyer extends FullUser {
     /**
      * Customer can view a dashboard with personal statistics
      *
-     * @param personal determines whether the dashboard shows most popular stores or personal favorite stores first
+     * @param increasing determines whether the dashboard shows the stores in terms of most messaged or not
      */
-    public void viewDashboard(boolean personal) {
-        Store[] mostPopStores = PublicInformation.sortStoresByPopularity(PublicInformation.listOfStores.toArray(new Store[0])); //sort1
-        Store[] mostMessagedStores = storesMessaged.toArray(new Store[0]); //sort2
+    public String viewDashboard(boolean increasing) {
+        String mostPopStores = "Most Popular Stores\n";
+        String personalStores = "Your Most Messaged Stores\n";
+        Store[] stores;
+        if (increasing) {
+            stores = PublicInformation.sortStoresByPopularity(PublicInformation.listOfStores.toArray(new Store[0]));
+        } else {
+            stores = PublicInformation.listOfStores.toArray(new Store[0]);
+        }
+        Store[] mostMessagedStores = storesMessaged.toArray(new Store[0]);
+        Integer[] timesMessaged = timesStoresMessaged.toArray(new Integer[0]);
         for (int i = 0; i < mostMessagedStores.length; i++) {
             for (int j = i + 1; j < mostMessagedStores.length; j++) {
-                Store temp;
-                if (timesStoresMessaged.get(i) < timesStoresMessaged.get(j)) {
-                    temp = mostMessagedStores[i];
+                Store tempStore;
+                Integer tempInt;
+                if (timesMessaged[i] < timesMessaged[j]) {
+                    tempStore = mostMessagedStores[i];
+                    tempInt = timesMessaged[i];
                     mostMessagedStores[i] = mostMessagedStores[j];
-                    mostMessagedStores[j] = temp;
+                    timesMessaged[i] = timesMessaged[j];
+                    mostMessagedStores[j] = tempStore;
+                    timesMessaged[j] = tempInt;
                 }
             }
         }
-        if (personal) {
-            System.out.println("In order based on your favorite stores");
-            for (Store mostMessagedStore : mostMessagedStores) {
-                System.out.println(mostMessagedStore.getStoreName());
-            }
-            System.out.println("In order of most popular stores");
-            for (Store mostPopStore : mostPopStores) {
-                System.out.println(mostPopStore.getStoreName());
-            }
-        } else {
-            System.out.println("In order of most popular stores");
-            for (Store mostPopStore : mostPopStores) {
-                System.out.println(mostPopStore.getStoreName());
-            }
-            System.out.println("In order based on your favorite stores");
-            for (Store mostMessagedStore : mostMessagedStores) {
-                System.out.println(mostMessagedStore.getStoreName());
-            }
+        for (Store store : stores) {
+            mostPopStores += "(" + store.getStoreName() + ") : " + store.getCounter() + "\n";
         }
+        for (int i = 0; i < mostMessagedStores.length; i++) {
+            personalStores += "(" + mostMessagedStores[i].getStoreName() + ") : " + timesMessaged[i] + " messages sent\n";
+        }
+        return mostPopStores + personalStores;
+
     }
 
     public static void main(String[] args) {
