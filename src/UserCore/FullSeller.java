@@ -38,6 +38,7 @@ public class FullSeller extends FullUser {
             customers += PublicInformation.correspondingArraysToString(buyers, buyersMessageCount, increasingOrder);
         }
 
+        //MOST POPULAR WORDS GO HERE
 
 
 
