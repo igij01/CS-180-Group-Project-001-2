@@ -137,6 +137,36 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     private PublicInformation() {}
 
     /**
+     * LOGIN METHOD
+     * @param user String of the username they want to log into
+     * @param password password
+     *
+     * @return The FullBuyer if they logged in to a FullBuyer, or a FullSeller if they logged into a FullSeller
+     * @throws InvalidPasswordException when the username matches but the password is incorrect
+     * @throws IllegalUserNameException when there is no username that matches
+     */
+    public static FullUser login(String user, String password) throws InvalidPasswordException, IllegalUserNameException {
+        for (FullBuyer fb : listOfBuyers) {
+            if (fb.getUser().getUserName().equals(user)) {
+                if (fb.passwordCheck(password)) {
+                    return fb;
+                } else {
+                    throw new InvalidPasswordException();
+                }
+            }
+        }
+        for (FullSeller fs : listOfSellers) {
+            if (fs.getUser().getUserName().equals(user)) {
+                if (fs.passwordCheck(password)) {
+                    return fs;
+                } else {
+                    throw new InvalidPasswordException();
+                }
+            }
+        }
+        throw new IllegalUserNameException();
+    }
+    /**
      * Add store into the public list of stores
      * Always call this when you create a store(Already added in the last line of {@code Store} constructor)
      *
