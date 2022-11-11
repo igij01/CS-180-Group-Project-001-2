@@ -24,6 +24,8 @@ public class Conversation implements Serializable {
     @Serial
     private static final long serialVersionUID = 2L;
 
+    private boolean newMessageBuyer;
+    private boolean newMessageSeller;
     private final Buyer buyer;
     private final Seller seller;
     private final ArrayList<Message> conversation;
@@ -131,12 +133,30 @@ public class Conversation implements Serializable {
         conversation.get(index).editMessage(actionUser, newMessageFile);
     }
 
+    /**
+     * allow the participant of the conversation to get the other User instance
+     * @param requestingUser the user requesting the action
+     * @return the User instance of the other user
+     */
+    public User getOtherUser(User requestingUser) {
+        if (requestingUser instanceof Buyer) {
+            Buyer requestingBuyer = (Buyer) requestingUser;
+            if (requestingBuyer.equals(this.buyer))
+                return this.seller;
+        } else if (requestingUser instanceof Seller) {
+            Seller requestingSeller = (Seller) requestingUser;
+            if (requestingSeller.equals(this.seller))
+                return this.buyer;
+        }
+        throw new IllegalUserAccessException();
+    }
+
 
     /**
      * @return the conversation in the format of "sender: content \n time"
+     * @param requestingUser the user requesting this action
      */
-    @Override
-    public String toString() {
+    public String toStringUser(User requestingUser) {
         StringBuilder rawString = new StringBuilder();
         int index = 0;
         for (Message m : conversation) {
