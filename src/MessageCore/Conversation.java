@@ -182,8 +182,6 @@ public class Conversation implements Serializable {
             return newMessageSeller;
         throw new IllegalUserAccessException();
     }
-
-
     /**
      * Print out the conversation with each message labeled with its index
      * and update the read status
