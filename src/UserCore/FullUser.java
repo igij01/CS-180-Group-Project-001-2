@@ -10,21 +10,19 @@ import java.util.Arrays;
 import static UserCore.PublicInformation.listOfUsersNames;
 
 public class FullUser {
-    //1. When creating a message, make sure to call the receiver receive method!
-    private final User user;
-    private ArrayList<Conversation> conversations;
-    private ArrayList<User> blocked;
+    private final User user; //an instance of user
+    private ArrayList<Conversation> conversations; //a list of the conversation a user has
+    private ArrayList<User> blocked; //a list of blocked users
 
+    /**
+     * the user is set to the user field
+     * and the conversations list is initialized
+     *
+     * @param user a previously created user
+     */
     protected FullUser(User user) { //replace with this since full user cannot instantiate this class. Therefore, instantiation should occur in FullSeller/FullBuyer
         this.user = user;
         conversations = new ArrayList<>();
-    }
-
-    protected User getUser() {
-        return this.user;
-    }
-    protected boolean checkBlocked(User user) {
-        return blocked.contains(user);
     }
 
     /**
@@ -65,32 +63,42 @@ public class FullUser {
 
     /**
      * Deletes the specific message in a specific conversation of a user
-     * if all messages are deleted the conversation is also removed.
+     * if all messages are deleted the conversation is removed.
      *
      * @param user The user that the conversation is being deleted from
      * @param conversationIndex   Which conversation they want to edit
      * @param messageIndex Which message they want to delete
+     * @throws IllegalUserAccessException is thrown if the user is not authorized to delete message
+     * @throws IndexOutOfBoundsException is throw if an invalid index is given
      */
     public void deleteMessage(User user,int conversationIndex, int messageIndex) throws IllegalUserAccessException, IndexOutOfBoundsException {
         if (this.conversations.get(conversationIndex).deleteMessage(user, messageIndex)) {
             this.conversations.remove(conversationIndex);
         }
     }
-    public void editMessage(int conversationIndex, int messageIndex, String newMessage) throws IOException, IllegalUserAccessException {
+
+    /**
+     * deletes the previous message the user selects
+     * adds new user specified message to index of deleted message
+     *
+     * @param conversationIndex where the conversation is located in conversations list
+     * @param messageIndex where the message is located in the specified conversation
+     * @param newMessage the message that will replace the previous message
+     * @throws IndexOutOfBoundsException is thrown from editMessage when an invalid index is specified
+     * @throws IllegalUserAccessException is thrown from editMessage when user is not allowed to access method
+     */
+    public void editMessage(int conversationIndex, int messageIndex, String newMessage) throws IndexOutOfBoundsException, IllegalUserAccessException {
         conversations.get(conversationIndex).editMessage(this.user, messageIndex , newMessage);
     }
-    public boolean loginStatus() {
-        return this.user.isLoginStatus();
-    }
-    public void logout() {
-        this.user.setLoginStatus(false);
-    }
-    public void block(User User) {
-        blocked.add(user);
-    }
-    public void unblock(User User) {
-        blocked.remove(user);
-    }
+
+    /**
+     * creates NewConversation list that hold new conversations
+     * removes new conversations from Conversations list
+     * adds new conversations list to start of conversations list
+     * builds a string that puts asterisks for new conversations
+     *
+     * @return StringBuilder of conversations to be printed
+     */
     public StringBuilder printConversation() {
         ArrayList<Conversation> newConversations = new ArrayList<Conversation>();
         for (Conversation c : conversations) {
@@ -110,7 +118,57 @@ public class FullUser {
                 sdr.append("    ");
                 sdr.append(conversations.get(i).getOtherUser(this.user).getUserName());
             }
+            sdr.append(System.lineSeparator());
         }
         return sdr;
+    }
+
+    /**
+     * Checks if the receiving user has blocked sender
+     *
+     * @param user user that will be receiving message
+     * @return true if blocked
+     */
+    protected boolean checkBlocked(User user) {
+        return blocked.contains(user);
+    }
+
+    /**
+     * adds specified user to list of blocked users
+     *
+     * @param User specified user
+     */
+    public void block(User User) {
+        blocked.add(user);
+    }
+
+    /**
+     * removes specified user from list of blocked user
+     *
+     * @param User specified user
+     */
+    public void unblock(User User) {
+        blocked.remove(user);
+    }
+
+    /**
+     * @return True if user is logged in
+     */
+    public boolean loginStatus() {
+        return this.user.isLoginStatus();
+    }
+
+    /**
+     * @return user object
+     */
+    protected User getUser() {
+        return this.user;
+    }
+
+    /**
+     * updates the login status of user to false
+     */
+    public void logout() {
+        this.user.setLoginStatus(false);
     }
 }
