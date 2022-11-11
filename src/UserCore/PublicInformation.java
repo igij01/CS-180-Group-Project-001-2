@@ -7,6 +7,8 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     public static ArrayList<Store> listOfStores = new ArrayList<>();
     public static ArrayList<String> listOfUsersNames = new ArrayList<>();
+    //would it be better to make this a list User objects in order to check emails as well?
+    //username works tho if we are allowing one email to have multiple accounts
 
     public static ArrayList<FullSeller> listOfSellers = new ArrayList<>();
 

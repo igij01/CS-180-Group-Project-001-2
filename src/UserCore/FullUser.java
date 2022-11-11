@@ -7,6 +7,8 @@ import MessageCore.Message;
 
 import java.util.ArrayList;
 
+import static UserCore.PublicInformation.listOfUsersNames;
+
 public class FullUser {
     //1. When creating a message, make sure to call the receiver receive method!
     //2. Need to create a reception method. Public Information will have a list of FullSeller, so you can call the FullSeller's receive method.
@@ -16,8 +18,10 @@ public class FullUser {
 
 
     protected FullUser(User user) { //replace with this since full user cannot instantiate this class. Therefore, instantiation should occur in FullSeller/FullBuyer
-        this.user = user;
-        conversations = new ArrayList<>();
+        if (!listOfUsersNames.contains(user.getUserName())) {
+            this.user = user;
+            conversations = new ArrayList<>();
+        }
     }
 
     protected User getUser() {
@@ -76,12 +80,18 @@ public class FullUser {
      *
      * @param user The user that the conversation is being deleted from
      * @param conversation   Which conversation they want to edit
-     * @param messageIndex Which message they want to delte
+     * @param messageIndex Which message they want to delete
      */
     public void deleteMessage(User user,Conversation conversation, int messageIndex) throws IllegalUserAccessException, IndexOutOfBoundsException {
         if (this.conversations.get(conversations.indexOf(conversation)).deleteMessage(user, messageIndex)) {
             this.conversations.remove(conversations.indexOf(conversation));
         }
+    }
+    public void editMessage(Conversation conversation, int messageIndex) {
+
+    }
+    public boolean reception() {
+        return this.user.isLoginStatus();
     }
 
 
