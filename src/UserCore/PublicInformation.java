@@ -102,29 +102,36 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         return false;
     }
 
-    public static String sortCorrespondingArrays(ArrayList<FullUser> users, ArrayList<Integer> usersCount) {
-        FullUser[] users1 = users.toArray(new FullUser[0]);
-        Integer[] usersCount1 = usersCount.toArray(new Integer[0]);
-        for (int i = 0; i < users1.length; i++) {
-            for (int j = i + 1; j <users1.length; j++) {
-                FullUser tempUsr;
-                Integer tempInt;
-                if (usersCount1[i] < usersCount1[j]) {
-                    tempUsr = users1[i];
-                    tempInt = usersCount1[i];
-                    users1[i] = users1[j];
-                    usersCount1[i] = usersCount1[j];
-                    users1[j] = tempUsr;
-                    usersCount1[j] = tempInt;
+    /**
+     * takes two arrays one of a user list and count and combines them to an organized string
+     * @param users array of users
+     * @param usersCount array of the corresponding number of messages recieved or sent
+     *
+     * @return organized String of the user and its corresponding count all in order from highest to lowest
+     */
+    public static String correspondingArraysToString(FullUser[] users, Integer[] usersCount, boolean increasing) {
+        if (increasing) {
+            for (int i = 0; i < users.length; i++) {
+                for (int j = i + 1; j < users.length; j++) {
+                    FullUser tempUsr;
+                    Integer tempInt;
+                    if (usersCount[i] < usersCount[j]) {
+                        tempUsr = users[i];
+                        tempInt = usersCount[i];
+                        users[i] = users[j];
+                        usersCount[i] = usersCount[j];
+                        users[j] = tempUsr;
+                        usersCount[j] = tempInt;
+                    }
                 }
             }
         }
         String s = "| ";
-        for (int i = 0; i < users1.length; i++) {
-            if (i == users1.length - 1) {
-                s += users1[i].getUser().getUserName() + ": " + usersCount1[i] + "|";
+        for (int i = 0; i < users.length; i++) {
+            if (i == users.length - 1) {
+                s += users[i].getUser().getUserName() + ": " + usersCount[i] + "|";
             } else {
-                s += users1[i].getUser().getUserName() + ": " + usersCount1[i] + " ";
+                s += users[i].getUser().getUserName() + ": " + usersCount[i] + "\n";
             }
         }
         return s;

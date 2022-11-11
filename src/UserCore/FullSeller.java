@@ -26,23 +26,21 @@ public class FullSeller extends FullUser {
 
 
     /**
-     * @param customerView if true then the sort will show the customers and their message count before the common words list, vise versa
+     * @param increasingOrder if true then the sort will go in order from highest message count to lowest, else just in order of history
      * @return
      */
-    public String viewDashboard(Boolean customerView) {
+    public String viewDashboard(boolean increasingOrder) {
         String dashboard = "";
-        String customers = "Highest Messaging Customers - ";
-        String mostPopularWords = "Most Popular Words";
+        String customers = "Highest Messaging Customers\n";
+        String mostPopularWords = "Most Popular Words\n";
         for (Store store : stores) {
             FullBuyer[] buyers = store.getAllMessagingBuyers().toArray(new FullBuyer[0]);
             Integer[] buyersMessageCount = store.getMessagingBuyersMessageCount().toArray(new Integer[0]);
-            customers += PublicInformation.sortCorrespondingArrays(buyers, buyersMessageCount);
+            customers += PublicInformation.correspondingArraysToString(buyers, buyersMessageCount, increasingOrder);
         }
-        if (customerView) {
-            dashboard = customers + "\n" + mostPopularWords;
-        } else {
-            dashboard = mostPopularWords + "\n" + customers;
-        }
+
+
+
         return dashboard;
     }
 
