@@ -79,7 +79,7 @@ public class FullUser {
     public void editMessage(int conversationIndex, int messageIndex, String newMessage) throws IOException, IllegalUserAccessException {
         conversations.get(conversationIndex).editMessage(this.user, messageIndex , newMessage);
     }
-    public boolean reception() {
+    public boolean loginStatus() {
         return this.user.isLoginStatus();
     }
     public void logout() {
