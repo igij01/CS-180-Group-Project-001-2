@@ -84,6 +84,21 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         return index;
     }
 
+    /**
+     * Checks to see if a store being created has a matching name with another store already made
+     * @param name name of the store being create
+     *
+     * @return true if there is a duplicate, false if no duplicate
+     */
+    public static boolean findDuplicateStoreName(String name) {
+        for (Store s : listOfStores) {
+            if (s.getStoreName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public static void main(String[] args) {
         Store store = new Store("A", new Seller("fads", "samsonates@gmail.com", "asdf"));

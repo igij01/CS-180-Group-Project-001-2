@@ -15,6 +15,7 @@ public class Store implements Serializable {
     private final Seller owner;
     private int convoCounter = 0;
 
+
     private final ArrayList<FullBuyer> allMessagingBuyers = new ArrayList<>();
     private final ArrayList<Integer> messagingBuyersMessageCount = new ArrayList<>();
 
@@ -58,8 +59,13 @@ public class Store implements Serializable {
     /**
      * increment the counter when a costumer send a message to this store
      */
-    protected synchronized void incrementCounter() {
+    protected synchronized void incrementCounter(FullBuyer fullBuyer) {
         convoCounter++;
+        if (!allMessagingBuyers.contains(fullBuyer)) {
+            addMessagingBuyer(fullBuyer);
+        } else {
+            incrementBuyerMessageCount(fullBuyer);
+        }
     }
 
     /**

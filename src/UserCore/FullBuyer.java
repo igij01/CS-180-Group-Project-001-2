@@ -24,12 +24,8 @@ public class FullBuyer extends FullUser {
 
     public void messageStore(Store store, String content) {
         super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)), content);
-        store.incrementCounter();
-        if (!store.getAllMessagingBuyers().contains(this)) {
-            store.addMessagingBuyer(this);
-        } else {
-            store.incrementBuyerMessageCount(this);
-        }
+        store.incrementCounter(this);
+
 
         if (!storesMessaged.contains(store)) {
             storesMessaged.add(store);
