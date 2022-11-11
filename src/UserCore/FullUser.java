@@ -1,13 +1,7 @@
 package UserCore;
 
 import MessageCore.*;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import static UserCore.PublicInformation.listOfUsersNames;
 
 public class FullUser {
     private final User user; //an instance of user
