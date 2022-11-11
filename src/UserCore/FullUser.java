@@ -16,8 +16,6 @@ public class FullUser {
     private ArrayList<User> blocked;
 
     protected FullUser(User user) { //replace with this since full user cannot instantiate this class. Therefore, instantiation should occur in FullSeller/FullBuyer
-        if (PublicInformation.listOfUsersNames.contains(user.getUserName()))
-            throw new IllegalUserNameException(user.getUserName());
         this.user = user;
         conversations = new ArrayList<>();
     }
