@@ -73,11 +73,14 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
         return storeList;
     }
-
-    public static int findMatchingObjectIndex(ArrayList<FullBuyer> objArray, Object obj) {
+    /**
+     * Goes through array and finds the matching full buyer and then
+     * @return matching index
+     */
+    public static int findMatchingObjectIndex(ArrayList<FullBuyer> fbArray, FullBuyer fb) {
         int index = -1;
-        for (int i = 0; i < objArray.size(); i++) {
-            if (obj.equals(objArray.get(i))) {
+        for (int i = 0; i < fbArray.size(); i++) {
+            if (fb.equals(fbArray.get(i))) {
                 index = i;
             }
         }
@@ -97,6 +100,34 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             }
         }
         return false;
+    }
+
+    public static String sortCorrespondingArrays(ArrayList<FullUser> users, ArrayList<Integer> usersCount) {
+        FullUser[] users1 = users.toArray(new FullUser[0]);
+        Integer[] usersCount1 = usersCount.toArray(new Integer[0]);
+        for (int i = 0; i < users1.length; i++) {
+            for (int j = i + 1; j <users1.length; j++) {
+                FullUser tempUsr;
+                Integer tempInt;
+                if (usersCount1[i] < usersCount1[j]) {
+                    tempUsr = users1[i];
+                    tempInt = usersCount1[i];
+                    users1[i] = users1[j];
+                    usersCount1[i] = usersCount1[j];
+                    users1[j] = tempUsr;
+                    usersCount1[j] = tempInt;
+                }
+            }
+        }
+        String s = "| ";
+        for (int i = 0; i < users1.length; i++) {
+            if (i == users1.length - 1) {
+                s += users1[i].getUser().getUserName() + ": " + usersCount1[i] + "|";
+            } else {
+                s += users1[i].getUser().getUserName() + ": " + usersCount1[i] + " ";
+            }
+        }
+        return s;
     }
 
 
