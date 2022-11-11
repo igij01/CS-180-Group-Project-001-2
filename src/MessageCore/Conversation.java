@@ -26,7 +26,6 @@ public class Conversation implements Serializable {
 
     private final Buyer buyer;
     private final Seller seller;
-    //TODO add store
     private final ArrayList<Message> conversation;
 
     /**
