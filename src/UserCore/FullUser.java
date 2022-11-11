@@ -11,10 +11,13 @@ public class FullUser {
     /**
      * the user is set to the user field
      * and the conversations list is initialized
+     * <p>
+     * Note: pass in a Buyer/Seller instead of User.
+     * User is just a placeholder
      *
-     * @param user a previously created user
+     * @param user a previously created buyer/seller
      */
-    protected FullUser(User user) { //replace with this since full user cannot instantiate this class. Therefore, instantiation should occur in FullSeller/FullBuyer
+    protected FullUser(User user) {
         this.user = user;
         conversations = new ArrayList<>();
     }
@@ -22,9 +25,12 @@ public class FullUser {
     /**
      * creates a new message to the conversation between user and receiver
      * If there's no existing conversation between user and the receiver, it will be created
+     * <p>
+     * If the user is blocked by the target, it will not create the message and return false
      *
      * @param receiver    The receiver of the message
      * @param messageBody the Message the seller wants to send
+     * @return true if the message is not blocked
      */
     public boolean createMessage(FullUser receiver, String messageBody) throws IllegalTargetException, IllegalMessageException {
         if (!receiver.checkBlocked(this.user)) {
@@ -36,6 +42,7 @@ public class FullUser {
             }
             Conversation tempConversation = new Conversation(this.user, receiver.user);
             tempConversation.addMessage(this.user, receiver.user, messageBody);
+            receiver.receiveConversation(tempConversation);
             conversations.add(tempConversation);
             return true;
         }
@@ -72,8 +79,7 @@ public class FullUser {
     }
 
     /**
-     * deletes the previous message the user selects
-     * adds new user specified message to index of deleted message
+     * edit the messages in the specific conversation
      *
      * @param conversationIndex where the conversation is located in conversations list
      * @param messageIndex where the message is located in the specified conversation
@@ -104,12 +110,12 @@ public class FullUser {
         conversations.addAll(0, newConversations);
         StringBuilder sdr = new StringBuilder();
         for (int i = 0; i < conversations.size(); i++) {
-            sdr.append(i);
+            sdr.append(String.format("%3d", i));
             if (conversations.get(i).newMessageStatus(this.user)) {
                 sdr.append("    ").append("*").append("    ");
                 sdr.append(conversations.get(i).getOtherUser(this.user).getUserName());
             } else {
-                sdr.append("    ");
+                sdr.append("    ").append("     ");
                 sdr.append(conversations.get(i).getOtherUser(this.user).getUserName());
             }
             sdr.append(System.lineSeparator());
