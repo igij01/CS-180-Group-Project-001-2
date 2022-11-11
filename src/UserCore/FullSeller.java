@@ -27,7 +27,7 @@ public class FullSeller extends FullUser {
 
     /**
      * @param increasingOrder if true then the sort will go in order from highest message count to lowest, else just in order of history
-     * @return
+     * @return String of dashboard
      */
     public String viewDashboard(boolean increasingOrder) {
         String dashboard = "";
@@ -40,8 +40,7 @@ public class FullSeller extends FullUser {
         }
 
 
-
-        return dashboard;
+        return customers + "\n" + mostPopularWords;
     }
 
 }
