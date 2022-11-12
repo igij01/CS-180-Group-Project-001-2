@@ -10,6 +10,9 @@ package UserCore;
 // it's ok to have a static public method to put less strain on user functionality group.
 // This rule applies for all the children classes as well. 
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * User
  * <p>
@@ -19,8 +22,11 @@ package UserCore;
  * @author Yulin Lin, 001
  * @version 11/3/2022
  */
-public class User {
-    //TODO arraylist of messages
+public class User implements Serializable {
+    // update this field everytime you update the field of the class
+    // put in a random number or just increment the number
+    @Serial
+    private static final long serialVersionUID = 2L;
     private String userName;
     private String email;
     private String pwd;

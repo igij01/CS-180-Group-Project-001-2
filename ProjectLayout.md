@@ -1,11 +1,11 @@
 # Rough Layout of Project 4 Option 2
 
 1. [ ] User Functionality - ___vacant___
-   1. [ ] Super class placeholder User(buyer and seller inherit from user)
+   1. [x] Super class placeholder User(buyer and seller inherit from user) Lincoln
       1. include common data and methods that both buyer and the seller have
       2. User should have number of messages in one of the field and a static public method to increment message as a user construct a new Message
       3. Seller should have store array field
-   2. [ ] FullUser is a utility class that contains User. __This is the class that will interact with the user. So all
+   2. [x] FullUser is a utility class that contains User. Arthur __This is the class that will interact with the user. So all
       functionality methods should be all public(besides helper methods)__
       1. Fields: User, list of Conversations that this user is associated with. _TODO: someway to notify the target
          about the conversation_
@@ -52,7 +52,7 @@
       1. list of buyer/seller with number of message received/sent and message sent/common word
       2. sort
    3. probably the most challenging part
-5. [ ] Blocking - ___vacant___
+5. [x] Blocking - Arthur
    1. EASY!
    2. can be 2 simple arrays of block and invisible or a class
 6. [ ] Connecting the dots

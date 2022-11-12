@@ -1,9 +1,16 @@
 package UserCore;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class FullBuyer extends FullUser {
+public class FullBuyer extends FullUser implements Serializable {
+
+    // update this field everytime you update the field of the class
+    // put in a random number or just increment the number
+    @Serial
+    private static final long serialVersionUID = 2L;
 
     private final ArrayList<Store> storesMessaged = new ArrayList<>();
     private final ArrayList<Integer> timesStoresMessaged = new ArrayList<>();
@@ -24,12 +31,8 @@ public class FullBuyer extends FullUser {
 
     public void messageStore(Store store, String content) {
         super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)), content);
-        store.incrementCounter();
-        if (!store.getAllMessagingBuyers().contains(this)) {
-            store.addMessagingBuyer(this);
-        } else {
-            store.incrementBuyerMessageCount(this);
-        }
+        store.incrementCounter(this);
+
 
         if (!storesMessaged.contains(store)) {
             storesMessaged.add(store);
@@ -54,41 +57,26 @@ public class FullBuyer extends FullUser {
     /**
      * Customer can view a dashboard with personal statistics
      *
-     * @param personal determines whether the dashboard shows most popular stores or personal favorite stores first
+     * @param increasing determines whether the dashboard shows the stores in terms of most messaged or not
      */
-    public void viewDashboard(boolean personal) {
-        Store[] mostPopStores = PublicInformation.sortStoresByPopularity(PublicInformation.listOfStores.toArray(new Store[0])); //sort1
-        Store[] mostMessagedStores = storesMessaged.toArray(new Store[0]); //sort2
-        for (int i = 0; i < mostMessagedStores.length; i++) {
-            for (int j = i + 1; j < mostMessagedStores.length; j++) {
-                Store temp;
-                if (timesStoresMessaged.get(i) < timesStoresMessaged.get(j)) {
-                    temp = mostMessagedStores[i];
-                    mostMessagedStores[i] = mostMessagedStores[j];
-                    mostMessagedStores[j] = temp;
-                }
-            }
-        }
-        if (personal) {
-            System.out.println("In order based on your favorite stores");
-            for (Store mostMessagedStore : mostMessagedStores) {
-                System.out.println(mostMessagedStore.getStoreName());
-            }
-            System.out.println("In order of most popular stores");
-            for (Store mostPopStore : mostPopStores) {
-                System.out.println(mostPopStore.getStoreName());
-            }
+    public String viewDashboard(boolean increasing) {
+        String mostPopStores = "Most Popular Stores\n";
+        String personalStores = "Your Most Messaged Stores\n";
+        Store[] stores;
+        if (increasing) {
+            stores = PublicInformation.sortStoresByPopularity(PublicInformation.listOfStores.toArray(new Store[0]));
         } else {
-            System.out.println("In order of most popular stores");
-            for (Store mostPopStore : mostPopStores) {
-                System.out.println(mostPopStore.getStoreName());
-            }
-            System.out.println("In order based on your favorite stores");
-            for (Store mostMessagedStore : mostMessagedStores) {
-                System.out.println(mostMessagedStore.getStoreName());
-            }
+            stores = PublicInformation.listOfStores.toArray(new Store[0]);
         }
+        Store[] mostMessagedStores = storesMessaged.toArray(new Store[0]);
+        Integer[] timesMessaged = timesStoresMessaged.toArray(new Integer[0]);
+        for (Store store : stores) {
+            mostPopStores += "(" + store.getStoreName() + ") : " + store.getCounter() + "\n";
+        }
+        personalStores += PublicInformation.correspondingArrayToString(mostMessagedStores, timesMessaged, increasing);
+        return mostPopStores + personalStores;
     }
+
 
     public static void main(String[] args) {
         FullBuyer f1 = new FullBuyer("username1", "sample@gmail.com", "abc123");
@@ -107,7 +95,7 @@ public class FullBuyer extends FullUser {
         //f1.messageStore(store1, "Hi");
         //f1.messageStore(store2, "Hey");
         //f1.messageStore(store2, "MOst");
-        f1.viewDashboard(true);
+        System.out.println(f1.viewDashboard(true));
     }
 
 }

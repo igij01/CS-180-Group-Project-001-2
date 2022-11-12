@@ -28,6 +28,8 @@ public class Message implements Serializable {
     private final User sender;
     private final User target;
     private String message;
+
+    private boolean readByTarget;
     private boolean visibilitySender;
     private boolean visibilityReceiver;
     private LocalDateTime time;
@@ -49,6 +51,7 @@ public class Message implements Serializable {
         this.message = message;
         this.visibilityReceiver = true;
         this.visibilitySender = true;
+        this.readByTarget = false;
         setTimeToNow();
     }
 
@@ -161,6 +164,19 @@ public class Message implements Serializable {
         if (!isParticipant(requestingUser))
             throw new IllegalUserAccessException("User is not a participant of the message!");
         return this.message;
+    }
+
+    /**
+     * call this method when the user have read the message.
+     * If the user passed in is the sender, it will be ignored.
+     * @param requestingUser the user that read the message
+     * @throws IllegalUserAccessException when the user is not a participant
+     */
+    protected void readByTarget(User requestingUser) {
+        if (!isParticipant(requestingUser))
+            throw new IllegalUserAccessException("User is not a participant of the message!");
+        else if (!isSender(requestingUser))
+            this.readByTarget = true;
     }
 
     /**

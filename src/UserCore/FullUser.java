@@ -1,65 +1,62 @@
 package UserCore;
 
-import MessageCore.Conversation;
-import MessageCore.IllegalTargetException;
-import MessageCore.IllegalUserAccessException;
-import MessageCore.Message;
+import MessageCore.*;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-import static UserCore.PublicInformation.listOfUsersNames;
+public class FullUser implements Serializable {
 
-public class FullUser {
-    //1. When creating a message, make sure to call the receiver receive method!
-    //2. Need to create a reception method. Public Information will have a list of FullSeller, so you can call the FullSeller's receive method.
-    private final User user;
-    private ArrayList<Conversation> conversations;
+    // update this field everytime you update the field of the class
+    // put in a random number or just increment the number
+    @Serial
+    private static final long serialVersionUID = 2L;
 
+    private final User user; //an instance of user
+    private ArrayList<Conversation> conversations; //a list of the conversation a user has
+    private ArrayList<User> blocked; //a list of blocked users
 
-
-    protected FullUser(User user) { //replace with this since full user cannot instantiate this class. Therefore, instantiation should occur in FullSeller/FullBuyer
-        if (!listOfUsersNames.contains(user.getUserName())) {
-            this.user = user;
-            conversations = new ArrayList<>();
-        }
-    }
-
-    protected User getUser() {
-        return this.user;
+    /**
+     * the user is set to the user field
+     * and the conversations list is initialized
+     * <p>
+     * Note: pass in a Buyer/Seller instead of User.
+     * User is just a placeholder
+     *
+     * @param user a previously created buyer/seller
+     */
+    protected FullUser(User user) {
+        this.user = user;
+        conversations = new ArrayList<>();
     }
 
     /**
      * creates a new message to the conversation between user and receiver
      * If there's no existing conversation between user and the receiver, it will be created
+     * <p>
+     * If the user is blocked by the target, it will not create the message and return false
      *
      * @param receiver    The receiver of the message
      * @param messageBody the Message the seller wants to send
+     * @return true if the message is not blocked
      */
-    public void createMessage(FullUser receiver, String messageBody) throws IllegalTargetException {
-        Conversation tempConversation = new Conversation(this.user, receiver.user);
-        Message newMessage = new Message(this.user, receiver.user, messageBody);
-        if (!this.conversations.contains(tempConversation)) {
+    public boolean createMessage(FullUser receiver, String messageBody) throws IllegalTargetException, IllegalMessageException {
+        if (!receiver.checkBlocked(this.user)) {
+            for (Conversation c : conversations) {
+                if ( c.getOtherUser(this.user).equals(receiver.user)) {
+                    c.addMessage(this.user, receiver.user, messageBody);
+                    return true;
+                }
+            }
+            Conversation tempConversation = new Conversation(this.user, receiver.user);
+            tempConversation.addMessage(this.user, receiver.user, messageBody);
             receiver.receiveConversation(tempConversation);
-            this.conversations.add(tempConversation);
-            tempConversation.addMessage(newMessage);
-        } else {
-            this.conversations.get(conversations.indexOf(tempConversation)).addMessage(newMessage);
+            conversations.add(tempConversation);
+            return true;
         }
+        return false;
     }
-        //since the sender will be one the user in the field. FullUser since it will have the corresponding reception method
-        //need to check whether users are different role: check Message constructor
-        // need to go through the ArrayList of conversation to find whether such conversation already exists
-        // if not you can create conversation
-        // you would also need to call the reception method of the receiver
-        //Conversation conversation = new Conversation(this.user, receiver.user); // check the conversation constructor for update
-        //this is possible due to polymorphism. Since receiver/this will ultimately be created using FullBuyer/Seller
-        //which will pass in a Buyer/Seller to user field.
-        // MAKE SURE THAT'S ALWAYS TRUE. (for example, make constructor protected and accepting only an already created
-        // User limit instantiation to only classes in the package)
-        //Message message = new Message(seller, buyer, messageBody);
-        //conversations.add(conversation);
-        //receiver.receiveConversation(conversation);
-        // }
 
     /**
      * Receive conversation. Can only be called from this class to prevent unauthorized conversation being sent
@@ -76,25 +73,138 @@ public class FullUser {
 
     /**
      * Deletes the specific message in a specific conversation of a user
-     * if all messages are deleted the conversation is also removed.
+     * if all messages are deleted the conversation is removed.
      *
      * @param user The user that the conversation is being deleted from
-     * @param conversation   Which conversation they want to edit
+     * @param conversationIndex   Which conversation they want to edit
      * @param messageIndex Which message they want to delete
+     * @throws IllegalUserAccessException is thrown if the user is not authorized to delete message
+     * @throws IndexOutOfBoundsException is throw if an invalid index is given
      */
-    public void deleteMessage(User user,Conversation conversation, int messageIndex) throws IllegalUserAccessException, IndexOutOfBoundsException {
-        if (this.conversations.get(conversations.indexOf(conversation)).deleteMessage(user, messageIndex)) {
-            this.conversations.remove(conversations.indexOf(conversation));
+    public void deleteMessage(User user,int conversationIndex, int messageIndex) throws IllegalUserAccessException, IndexOutOfBoundsException {
+        if (this.conversations.get(conversationIndex).deleteMessage(user, messageIndex)) {
+            this.conversations.remove(conversationIndex);
         }
     }
-    public void editMessage(Conversation conversation, int messageIndex) {
 
+    /**
+     * edit the messages in the specific conversation
+     *
+     * @param conversationIndex where the conversation is located in conversations list
+     * @param messageIndex where the message is located in the specified conversation
+     * @param newMessage the message that will replace the previous message
+     * @throws IndexOutOfBoundsException is thrown from editMessage when an invalid index is specified
+     * @throws IllegalUserAccessException is thrown from editMessage when user is not allowed to access method
+     */
+    public void editMessage(int conversationIndex, int messageIndex, String newMessage) throws IndexOutOfBoundsException, IllegalUserAccessException {
+        conversations.get(conversationIndex).editMessage(this.user, messageIndex , newMessage);
     }
-    public boolean reception() {
+
+    /**
+     * Print the list of conversations by titles and place the conversations
+     * that have
+     * <p>
+     * creates NewConversation list that hold new conversations
+     * removes new conversations from Conversations list
+     * adds new conversations list to start of conversations list
+     * builds a string that puts asterisks for new conversations
+     *
+     * @return String of conversations to be printed
+     */
+    public String printConversationTitles() {
+        ArrayList<Conversation> newConversations = new ArrayList<Conversation>();
+        for (Conversation c : conversations) {
+            if (c.newMessageStatus(this.user)) {
+                newConversations.add(c);
+                conversations.remove(c);
+            }
+        }
+        conversations.addAll(0, newConversations);
+        StringBuilder sdr = new StringBuilder();
+        for (int i = 0; i < conversations.size(); i++) {
+            sdr.append(String.format("%3d", i));
+            if (conversations.get(i).newMessageStatus(this.user)) {
+                sdr.append("    ").append("*").append("    ");
+                sdr.append(conversations.get(i).getOtherUser(this.user).getUserName());
+            } else {
+                sdr.append("    ").append("     ");
+                sdr.append(conversations.get(i).getOtherUser(this.user).getUserName());
+            }
+            sdr.append(System.lineSeparator());
+        }
+        return sdr.toString();
+    }
+
+    /**
+     * print the content of the conversation by index the user select
+     * @param index index
+     * @return
+     */
+    public String printConversation(int index) {
+        return conversations.get(index).toStringConversation(this.user);
+    }
+
+    /**
+     * checks if the specified password matched password of user.
+     * If it does, set user login status to true
+     *
+     * @param pwd specified password
+     * @return true if specified password matches user's password
+     */
+    public boolean passwordCheck(String pwd) {
+        if (this.user.getPwd().equals(pwd)) {
+            this.user.setLoginStatus(true);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the receiving user has blocked sender
+     *
+     * @param user user that will be receiving message
+     * @return true if blocked
+     */
+    protected boolean checkBlocked(User user) {
+        return blocked.contains(user);
+    }
+
+    /**
+     * adds specified user to list of blocked users
+     *
+     * @param User specified user
+     */
+    public void block(User User) {
+        blocked.add(user);
+    }
+
+    /**
+     * removes specified user from list of blocked user
+     *
+     * @param User specified user
+     */
+    public void unblock(User User) {
+        blocked.remove(user);
+    }
+
+    /**
+     * @return True if user is logged in
+     */
+    public boolean loginStatus() {
         return this.user.isLoginStatus();
     }
 
+    /**
+     * @return user object
+     */
+    protected User getUser() {
+        return this.user;
+    }
 
-
-
+    /**
+     * updates the login status of user to false
+     */
+    public void logout() {
+        this.user.setLoginStatus(false);
+    }
 }
