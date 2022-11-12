@@ -335,9 +335,63 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         return s;
     }
 
+    /**
+     * Customer can get a list of stores to choose from
+     * @return list of stores in a string
+     */
+    public static String storeList() {
+        StringBuilder sbd1 = new StringBuilder();
+        for (int i = 0; i < listOfStores.size(); i++) {
+            sbd1.append(i).append(". ");
+            sbd1.append(listOfStores.get(i).getStoreName()).append("\n");
+        }
+        return sbd1.toString();
+    }
 
+    /**
+     * Customer can get a list of sellers to choose from
+     * @return list of sellers organized in a string
+     */
+    public static String sellerList() {
+        StringBuilder sbd2 = new StringBuilder();
+        for (int i = 0; i < listOfSellers.size(); i++) {
+            sbd2.append(i).append(". ");
+            sbd2.append(listOfSellers.get(i).getUser().getUserName()).append("\n");
+        }
+        return sbd2.toString();
+    }
+
+    /**
+     * Customer can pick specific store from list
+     * @param storeName name of store that customer wants to choose
+     * @return the store that the customer picked
+     */
+    public static Store getStore(String storeName) {
+        for (int i = 0; i < listOfStores.size(); i++) {
+            if (storeName.equalsIgnoreCase(listOfStores.get(i).getStoreName())) {
+                return listOfStores.get(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Customer can pick a specific seller from list
+     * @param sellerName name of seller that customer wants to choose
+     * @return the seller that the customer picked
+     */
+    public static FullSeller getSeller(String sellerName) {
+        for (int i = 0; i < listOfSellers.size(); i++) {
+            if (sellerName.equalsIgnoreCase(listOfSellers.get(i).getUser().getUserName())) {
+                return listOfSellers.get(i);
+            }
+        }
+        return null;
+    }
     public static void main(String[] args) {
         Store store = new Store("A", new Seller("fads", "samsonates@gmail.com", "asdf"));
+        FullSeller seller = new FullSeller("sample_username", "alexroth111@gmail.com", "samplePassword123");
         System.out.println(listOfStores.get(0).getStoreName());
+        System.out.println(getSeller("sample_username"));
     }
 }

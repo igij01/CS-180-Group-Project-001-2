@@ -77,6 +77,7 @@ public class FullBuyer extends FullUser implements Serializable {
         return mostPopStores + personalStores;
     }
 
+
     public static void main(String[] args) {
         FullBuyer f1 = new FullBuyer("username1", "sample@gmail.com", "abc123");
         Seller s1 = new Seller("user2", "sample@gmail.com", "abc123");
@@ -94,7 +95,7 @@ public class FullBuyer extends FullUser implements Serializable {
         //f1.messageStore(store1, "Hi");
         //f1.messageStore(store2, "Hey");
         //f1.messageStore(store2, "MOst");
-        f1.viewDashboard(true);
+        System.out.println(f1.viewDashboard(true));
     }
 
 }
