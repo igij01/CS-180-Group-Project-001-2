@@ -1,6 +1,5 @@
 package UserCore;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 
