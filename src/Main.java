@@ -92,7 +92,7 @@ public class Main {
                     int mesIndex = scan.nextInt();
                     scan.nextLine();
                     try {
-                        user.deleteMessage(receiver.getUser(), conIndex, mesIndex);
+                        user.deleteMessage(conIndex, mesIndex);
                     } catch (IllegalUserAccessException e) {
                         System.out.println("You are not authorized to delete this message");
                         return mainDecision(scan, 3, user);
@@ -123,7 +123,8 @@ public class Main {
                 } else {
                     return true;
                 }
-            case 4:
+            case 4: //only buyers can see sellers and store; and only sellers and see list of buyers
+                // maybe write 2 methods, one take in a FullBuyer, one take in a full seller, for this part
                 int list;
                 do {
                     System.out.println("1.Print list of Buyers");

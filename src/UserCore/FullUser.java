@@ -119,15 +119,14 @@ public class FullUser implements Serializable {
      * Deletes the specific message in a specific conversation of a user
      * if all messages are deleted the conversation is removed.
      *
-     * @param user              The user that the conversation is being deleted from
      * @param conversationIndex Which conversation they want to edit
      * @param messageIndex      Which message they want to delete
      * @throws IllegalUserAccessException is thrown if the user is not authorized to delete message
      * @throws IndexOutOfBoundsException  is throw if either an invalid index for conversation or message is given
      */
-    public void deleteMessage(User user, int conversationIndex, int messageIndex)
+    public void deleteMessage(int conversationIndex, int messageIndex)
             throws IllegalUserAccessException, IndexOutOfBoundsException {
-        if (this.conversations.get(conversationIndex).deleteMessage(user, messageIndex)) {
+        if (this.conversations.get(conversationIndex).deleteMessage(this.user, messageIndex)) {
             this.conversations.remove(conversationIndex);
         }
     }
@@ -290,7 +289,7 @@ public class FullUser implements Serializable {
     /**
      * @return user object
      */
-    public User getUser() {
+    protected User getUser() {
         return this.user;
     }
 
