@@ -2,10 +2,17 @@ package UserCore;
 
 import jdk.jshell.spi.ExecutionControl;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class FullSeller extends FullUser {
+public class FullSeller extends FullUser implements Serializable {
+
+    // update this field everytime you update the field of the class
+    // put in a random number or just increment the number
+    @Serial
+    private static final long serialVersionUID = 2L;
 
     private final ArrayList<Store> stores;
 

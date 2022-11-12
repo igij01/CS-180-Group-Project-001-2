@@ -166,6 +166,15 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
         throw new IllegalUserNameException();
     }
+
+    /**
+     * Log the user out by setting the login status to false
+     * do this at the program termination phase
+     * @param user the user who wants to log out
+     */
+    public static void logout(FullUser user) {
+        user.logout();
+    }
     /**
      * Add store into the public list of stores
      * Always call this when you create a store(Already added in the last line of {@code Store} constructor)

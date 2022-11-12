@@ -1,9 +1,18 @@
 package UserCore;
 
 import MessageCore.*;
+
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class FullUser {
+public class FullUser implements Serializable {
+
+    // update this field everytime you update the field of the class
+    // put in a random number or just increment the number
+    @Serial
+    private static final long serialVersionUID = 2L;
+
     private final User user; //an instance of user
     private ArrayList<Conversation> conversations; //a list of the conversation a user has
     private ArrayList<User> blocked; //a list of blocked users
@@ -92,14 +101,17 @@ public class FullUser {
     }
 
     /**
+     * Print the list of conversations by titles and place the conversations
+     * that have
+     * <p>
      * creates NewConversation list that hold new conversations
      * removes new conversations from Conversations list
      * adds new conversations list to start of conversations list
      * builds a string that puts asterisks for new conversations
      *
-     * @return StringBuilder of conversations to be printed
+     * @return String of conversations to be printed
      */
-    public StringBuilder printConversation() {
+    public String printConversationTitles() {
         ArrayList<Conversation> newConversations = new ArrayList<Conversation>();
         for (Conversation c : conversations) {
             if (c.newMessageStatus(this.user)) {
@@ -120,17 +132,31 @@ public class FullUser {
             }
             sdr.append(System.lineSeparator());
         }
-        return sdr;
+        return sdr.toString();
     }
 
     /**
-     * checks if the specified password matched password of user
+     * print the content of the conversation by index the user select
+     * @param index index
+     * @return
+     */
+    public String printConversation(int index) {
+        return conversations.get(index).toStringConversation(this.user);
+    }
+
+    /**
+     * checks if the specified password matched password of user.
+     * If it does, set user login status to true
      *
      * @param pwd specified password
      * @return true if specified password matches user's password
      */
     public boolean passwordCheck(String pwd) {
-        return this.user.getPwd().equals(pwd);
+        if (this.user.getPwd().equals(pwd)) {
+            this.user.setLoginStatus(true);
+            return true;
+        }
+        return false;
     }
 
     /**

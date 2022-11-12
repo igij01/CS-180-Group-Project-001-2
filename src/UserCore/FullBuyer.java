@@ -1,9 +1,16 @@
 package UserCore;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class FullBuyer extends FullUser {
+public class FullBuyer extends FullUser implements Serializable {
+
+    // update this field everytime you update the field of the class
+    // put in a random number or just increment the number
+    @Serial
+    private static final long serialVersionUID = 2L;
 
     private final ArrayList<Store> storesMessaged = new ArrayList<>();
     private final ArrayList<Integer> timesStoresMessaged = new ArrayList<>();
