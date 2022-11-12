@@ -44,7 +44,8 @@ public class User implements Serializable {
      * @throws EmailFormatException     when email address are not put in the right format
      * @throws IllegalUserNameException when the passed in username is already taken
      */
-    protected User(String userName, String email, String pwd, Role role) {
+    protected User(String userName, String email, String pwd, Role role) throws IllegalUserNameException,
+            EmailFormatException {
         if (PublicInformation.listOfUsersNames.contains(userName))
             throw new IllegalUserNameException(userName);
         this.userName = userName;

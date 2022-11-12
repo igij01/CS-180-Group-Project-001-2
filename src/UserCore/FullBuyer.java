@@ -24,7 +24,7 @@ public class FullBuyer extends FullUser implements Serializable {
      * @throws EmailFormatException     when email address are not put in the right format
      * @throws IllegalUserNameException when the passed in username is already taken
      */
-    public FullBuyer(String userName, String email, String pwd) {
+    public FullBuyer(String userName, String email, String pwd) throws IllegalUserNameException, EmailFormatException {
         super(new Buyer(userName, email, pwd));
         PublicInformation.addListOfBuyers(this);
     }

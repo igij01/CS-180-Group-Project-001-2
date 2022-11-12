@@ -3,7 +3,8 @@ package MessageCore;
 import UserCore.Role;
 import UserCore.User;
 
-import java.io.*;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -55,24 +56,6 @@ public class Message implements Serializable {
         setTimeToNow();
     }
 
-    /**
-     * Create an instance of message. The message time would be set as the time when the instance is created
-     *
-     * @param sender   sender of the message
-     * @param target   target of the message
-     * @param textFile the message body
-     * @throws IOException            when IOException occurs(including file not found)
-     * @throws IllegalTargetException when both sender and target are the same role
-     */
-    public Message(User sender, User target, File textFile) throws IOException {
-        this(sender, target, "");
-        try {
-            editMessage(sender, textFile);
-        } catch (IllegalUserAccessException e) {
-            System.err.printf("IllegalUserAccessException: %s @ Message constructor. That shouldn't happen...\n",
-                    e.getMessage());
-        }
-    }
 
     /**
      * Update time field to now
@@ -117,27 +100,6 @@ public class Message implements Serializable {
         return requestUser.equals(sender) || requestUser.equals(target);
     }
 
-    /**
-     * edit the body of the message and update the timestamp
-     *
-     * @param textFile    the .txt file that contains the message
-     * @param requestUser the user requesting the change
-     * @throws IOException                when IOException occurs(including file not found)
-     * @throws IllegalUserAccessException when the user requesting the action is not the sender
-     */
-    public void editMessage(User requestUser, File textFile) throws IOException, IllegalUserAccessException {
-        if (!isSender(requestUser))
-            throw new IllegalUserAccessException("User is not a sender therefore cannot edit the message");
-        StringBuilder stringBuilder = new StringBuilder();
-        try (BufferedReader bfr = new BufferedReader(new FileReader(textFile))) {
-            String line;
-            while ((line = bfr.readLine()) != null) {
-                stringBuilder.append(line).append('\n');
-            }
-            this.message = stringBuilder.deleteCharAt(stringBuilder.length() - 1).toString();
-            setTimeToNow();
-        }
-    }
 
     /**
      * set the visible status of the message
@@ -191,17 +153,28 @@ public class Message implements Serializable {
     /**
      * method that format each field for csv export
      *
-     * @return string of Participants,Message sender,timestamp,content
+     * @param requestingUser the user requesting this action
+     * @return string of receiver,sender,timestamp,content
+     * @throws IllegalUserAccessException if the user is not a participant of the message
      */
-    protected String fileToString() {
+    protected String fileToString(User requestingUser) {
+        if (!isParticipant(requestingUser))
+            throw new IllegalUserAccessException();
         return String.format("%s,%s,%s,%s", User.userName(target), User.userName(sender), dtf.format(time), message);
     }
 
     /**
-     * @return the conversation in the format of "sender: content \n time"
+     * @param requestingUser the user requesting this action
+     * @return the conversation in the format of "*sender: content \n time" if there is a new message
+     * @throws IllegalUserAccessException if the user is not a participant of the message
      */
-    @Override
-    public String toString() {
-        return String.format("%s: %s\n%s", User.userName(sender), message, dtf.format(time));
+    public String toStringUser(User requestingUser) {
+        String toString = String.format("%c%s: %s\n %s", ((readByTarget && !isSender(requestingUser)) ? ' ' : '*'),
+                User.userName(sender), message, dtf.format(time));
+        if (!isParticipant(requestingUser))
+            throw new IllegalUserAccessException();
+        if (!isSender(requestingUser))
+            readByTarget = true;
+        return toString;
     }
 }

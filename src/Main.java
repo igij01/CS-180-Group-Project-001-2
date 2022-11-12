@@ -1,10 +1,7 @@
-import MessageCore.IllegalMessageException;
 import MessageCore.IllegalTargetException;
 import MessageCore.IllegalUserAccessException;
 import UserCore.*;
-import org.w3c.dom.ls.LSOutput;
 
-import java.sql.SQLOutput;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -91,6 +88,7 @@ public class Main {
             case 4:
             case 5:
         }
+        return true;
     }
 
 
