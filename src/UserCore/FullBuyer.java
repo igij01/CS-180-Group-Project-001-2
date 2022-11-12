@@ -1,5 +1,10 @@
 package UserCore;
 
+import MessageCore.IllegalMessageException;
+import MessageCore.IllegalTargetException;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,11 +29,19 @@ public class FullBuyer extends FullUser implements Serializable {
      * @throws EmailFormatException     when email address are not put in the right format
      * @throws IllegalUserNameException when the passed in username is already taken
      */
-    public FullBuyer(String userName, String email, String pwd) {
+    public FullBuyer(String userName, String email, String pwd) throws IllegalUserNameException, EmailFormatException {
         super(new Buyer(userName, email, pwd));
         PublicInformation.addListOfBuyers(this);
     }
 
+    /**
+     * message the store
+     * <p>
+     * and update the message counter accordingly
+     *
+     * @param store   the store you want to message
+     * @param content the content of the message
+     */
     public void messageStore(Store store, String content) {
         super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)), content);
         store.incrementCounter(this);
@@ -36,22 +49,39 @@ public class FullBuyer extends FullUser implements Serializable {
 
         if (!storesMessaged.contains(store)) {
             storesMessaged.add(store);
-            for (int i = 0; i < storesMessaged.size(); i++) {
-                if (storesMessaged.get(i).equals(store)) {
-                    timesStoresMessaged.set(i, 1);
-                }
-            }
-        }
-
-        for (int i = 0; i < storesMessaged.size(); i++) {
-            if (storesMessaged.get(i).equals(store)) {
-                timesStoresMessaged.set(i, timesStoresMessaged.get(i) + 1);
-            }
+            timesStoresMessaged.add(1);
+            //it will always append to last element
+        } else {
+            int index = storesMessaged.indexOf(store);
+            timesStoresMessaged.set(index, timesStoresMessaged.get(index) + 1);
         }
     }
 
-    public void messageSeller(FullSeller seller, String content) {
+    /**
+     * message a specific seller
+     *
+     * @param seller  the seller you want to message
+     * @param content the content of the message
+     * @throws IllegalTargetException  when the target and the sender are the same role
+     * @throws IllegalMessageException when either the sender or the receiver is not a participant of the conversation
+     */
+    public void messageSeller(FullSeller seller, String content) throws
+            IllegalTargetException, IllegalMessageException {
         super.createMessage(seller, content);
+    }
+
+    /**
+     * message a specific seller
+     *
+     * @param seller the seller you want to message
+     * @param file   the file that contains the content of the message
+     * @throws IllegalTargetException  when the target and the sender are the same role
+     * @throws IllegalMessageException when either the sender or the receiver is not a participant of the conversation
+     * @throws IOException             when IO exception occurs
+     */
+    public void messageSeller(FullSeller seller, File file) throws
+            IllegalTargetException, IllegalMessageException, IOException {
+        super.createMessage(seller, file);
     }
 
     /**
@@ -59,6 +89,7 @@ public class FullBuyer extends FullUser implements Serializable {
      *
      * @param increasing determines whether the dashboard shows the stores in terms of most messaged or not
      */
+    @Override
     public String viewDashboard(boolean increasing) {
         String mostPopStores = "Most Popular Stores\n";
         String personalStores = "Your Most Messaged Stores\n";

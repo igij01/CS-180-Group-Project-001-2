@@ -1,14 +1,15 @@
 package UserCore;
 
+import MessageCore.Conversation;
 import MessageCore.IllegalTargetException;
 import MessageCore.IllegalUserAccessException;
-import MessageCore.Message;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -32,10 +33,10 @@ public class TestCases {
     private String output;
 
     private final User NULL = null;
-    private static final FullBuyer buyer1 = new FullBuyer("Buyer", "sample@email.com", "12345");
-    private static final FullSeller seller1 = new FullSeller("Seller", "sample@email.com", "12345");
-    private static final FullBuyer buyer2 = new FullBuyer("Buyer2", "sample@email.com", "12345");
-    private static final FullSeller seller2 = new FullSeller("Seller2", "sample@email.com", "12345");
+    private static FullBuyer buyer1;
+    private static FullSeller seller1;
+    private static FullBuyer buyer2;
+    private static FullSeller seller2;
 
     private static final File serBuy = new File("src/UserCore/UnitTestTxtFile/test_ser_buy");
     private static final File serSell = new File("src/UserCore/UnitTestTxtFile/test_ser_sell");
@@ -73,7 +74,10 @@ public class TestCases {
     public void setUp() throws Exception {
         testOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(testOut));
-        
+        buyer1 = new FullBuyer("Buyer", "sample@email.com", "12345");
+        seller1 = new FullSeller("Seller", "sample@email.com", "12345");
+        buyer2 = new FullBuyer("Buyer2", "sample@email.com", "12345");
+        seller2 = new FullSeller("Seller2", "sample@email.com", "12345");
     }
 
     /**
@@ -87,6 +91,11 @@ public class TestCases {
     public void tearDown() throws Exception {
         System.setIn(originalInput);
         System.setOut(originalOutput);
+
+        //dump the whole lists
+        Method m = PublicInformation.class.getDeclaredMethod("deconstruct");
+        m.setAccessible(true);
+        m.invoke(PublicInformation.class);
     }
 
     /**
@@ -140,12 +149,18 @@ public class TestCases {
     }
 
     @Test(timeout = 1000)
-    public void testLogout() {
-        PublicInformation.logout(buyer1);
-        PublicInformation.logout(seller1);
+    public void testLogout() throws InvalidPasswordException {
         TestCase.assertFalse("test initial user login status",
                 buyer1.loginStatus());
         TestCase.assertFalse("test initial user login status",
+                seller1.loginStatus());
+        PublicInformation.login("Buyer", "12345");
+        PublicInformation.login("Seller", "12345");
+        buyer1.logout();
+        seller1.logout();
+        TestCase.assertFalse("test logout Buyer",
+                buyer1.loginStatus());
+        TestCase.assertFalse("test logout Seller",
                 seller1.loginStatus());
     }
 
@@ -161,10 +176,10 @@ public class TestCases {
 
     @Test(timeout = 1000)
     public void testCreateStore() throws IllegalStoreNameException {
-        TestCase.assertEquals("check wether the store list is empty",
+        TestCase.assertEquals("check whether the store list is empty",
                 0, PublicInformation.listOfStores.size());
         seller1.createStore("new Store Opened!");
-        TestCase.assertEquals("test whether listofstores has the store",
+        TestCase.assertEquals("test whether list of stores has the store",
                 1, PublicInformation.listOfStores.size());
     }
 
@@ -174,21 +189,42 @@ public class TestCases {
         seller2.createStore("new Store Opened!");
     }
 
-
-    /**
-     * Test buyer can message seller with toString check
-     */
     @Test(timeout = 1000)
-    public void testMessageToString() {
+    public void testMessageBuyerToSeller() {
         buyer1.messageSeller(seller1, "message");
-        String out = buyer1.printConversationTitles();
+    }
 
-        String normalOut = out.substring(0, out.indexOf('\n'));
-        String timeStamp = out.substring(out.indexOf('\n') + 1);
+    @Test(timeout = 1000, expected = IllegalTargetException.class)
+    public void testMessageBuyerToBuyer() {
+        buyer1.createMessage(buyer1, "message");
+    }
 
-        TestCase.assertEquals("Buyer: Message", normalOut);
-        TestCase.assertTrue("time stamp format test",
-                timeStamp.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"));
+    @Test(timeout = 1000, expected = IllegalUserAccessException.class)
+    public void testMessagesAccess() throws NoSuchFieldException, IllegalAccessException {
+        buyer1.messageSeller(seller1, "message");
+        Field f = FullUser.class.getDeclaredField("conversations");
+        f.setAccessible(true);
+        ArrayList<Conversation> list = (ArrayList<Conversation>) f.get(buyer1);
+        list.get(0).toStringConversation(buyer2.getUser());
+    }
+
+    @Test(timeout = 1000)
+    public void testEditMessage() {
+        buyer1.messageSeller(seller1, "message");
+        buyer1.editMessage(0, 0, "new message");
+        String out = seller1.printConversation(0);
+        String contentExcludingTimeStamp = out.substring(0, out.lastIndexOf('\n'));
+        TestCase.assertEquals("0\t*Buyer: new message", contentExcludingTimeStamp);
+    }
+
+    @Test(timeout = 1000)
+    public void testDeleteMessage() {
+        buyer1.messageSeller(seller1, "message");
+        buyer1.deleteMessage(0, 0);
+        TestCase.assertEquals("", buyer1.printConversation(0));
+        String out = seller1.printConversation(0);
+        String contentExcludingTimeStamp = out.substring(0, out.lastIndexOf('\n'));
+        TestCase.assertEquals("0\t*Buyer: message", contentExcludingTimeStamp);
     }
 //
 //    /**

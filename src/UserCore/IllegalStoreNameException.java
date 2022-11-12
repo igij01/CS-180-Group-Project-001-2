@@ -1,12 +1,13 @@
 package UserCore;
 
-/** IllegalStoreNameException
- *
+/**
+ * IllegalStoreNameException
+ * <p>
  * throw this when a store is trying to be created but that name already exists
  * author: Samson Tesfagiorgis
  */
 
-public class IllegalStoreNameException extends Exception {
+public class IllegalStoreNameException extends IllegalArgumentException {
 
     public IllegalStoreNameException(String s) {
         super(s);

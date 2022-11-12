@@ -4,8 +4,6 @@ import UserCore.Buyer;
 import UserCore.Seller;
 import UserCore.User;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -71,7 +69,7 @@ public class Conversation implements Serializable {
      */
     private void addMessage(Message message) {
         if (!message.isParticipant(buyer) || !message.isParticipant(seller))
-            throw new IllegalMessageException(message);
+            throw new IllegalMessageException();
         conversation.add(message);
     }
 
@@ -84,21 +82,6 @@ public class Conversation implements Serializable {
      *                                 receiver is not a participant of the conversation
      */
     public void addMessage(User sender, User receiver, String messageBody) {
-        this.addMessage(new Message(sender, receiver, messageBody));
-        updateReadStatus(sender);
-    }
-
-    /**
-     * Add a message to the conversation
-     * @param sender      the user sending the message
-     * @param receiver    the intended receiver
-     * @param messageBody the message body in a text file
-     * @throws IllegalMessageException when either the sender or the
-     *                                 receiver is not a participant of the conversation
-     * @throws IOException             when an ioexception occurs while reading the txt file
-     */
-    public void addMessage(User sender, User receiver, File messageBody)
-            throws IOException {
         this.addMessage(new Message(sender, receiver, messageBody));
         updateReadStatus(sender);
     }
@@ -146,20 +129,6 @@ public class Conversation implements Serializable {
     }
 
     /**
-     * @param actionUser     the requesting user
-     * @param index          the index of the message that the user wants to edit
-     * @param newMessageFile the file that contains new message
-     * @throws IllegalUserAccessException when the requesting user is not allowed to edit the message
-     *                                    (only the person sending the message can edit it
-     * @throws IndexOutOfBoundsException  when the index that the user selected is out of bound
-     * @throws IOException                when an IO exception occurs while reading the txt file
-     */
-    public void editMessage(User actionUser, int index, File newMessageFile) throws IOException {
-        conversation.get(index).editMessage(actionUser, newMessageFile);
-        updateReadStatus(actionUser);
-    }
-
-    /**
      * allow the participant of the conversation to get the other User instance
      * @param requestingUser the user requesting the action
      * @return the User instance of the other user
@@ -186,9 +155,33 @@ public class Conversation implements Serializable {
             return newMessageSeller;
         throw new IllegalUserAccessException();
     }
+
+    /**
+     * Print out the conversation in csv format
+     *
+     * @param requestingUser the user requesting this action
+     * @return the conversation in the format of "receiver,sender,timestamp,content"
+     * @throws IllegalUserAccessException if the user is not a participant
+     */
+    public String toStringCSV(User requestingUser) {
+        if (requestingUser.equals(this.buyer) || requestingUser.equals(this.seller)) {
+            updateReadStatus(requestingUser);
+            StringBuilder rawString = new StringBuilder();
+            int index = 0;
+            for (Message m : conversation) {
+                rawString.append(m.fileToString(requestingUser)).append('\n');
+            }
+            rawString.deleteCharAt(rawString.length() - 1);
+            return rawString.toString();
+        } else {
+            throw new IllegalUserAccessException();
+        }
+    }
+
     /**
      * Print out the conversation with each message labeled with its index
      * and update the read status
+     *
      * @param requestingUser the user requesting this action
      * @return the conversation in the format of "sender: content \n time"
      * @throws IllegalUserAccessException if the user is not a participant
@@ -199,9 +192,12 @@ public class Conversation implements Serializable {
             StringBuilder rawString = new StringBuilder();
             int index = 0;
             for (Message m : conversation) {
-                rawString.append(index++).append('\t').append(m.toString()).append('\n');
+                if (m.toStringUser(requestingUser) == null)
+                    continue;
+                rawString.append(index++).append('\t').append(m.toStringUser(requestingUser)).append('\n');
             }
-            rawString.deleteCharAt(rawString.length() - 1);
+            if (!rawString.isEmpty())
+                rawString.deleteCharAt(rawString.length() - 1);
             return rawString.toString();
         }
         else {
