@@ -176,9 +176,11 @@ public class FullUser implements Serializable {
         for (Conversation c : conversations) {
             if (c.newMessageStatus(this.user)) {
                 newConversations.add(c);
-                conversations.remove(c);
             }
         }
+        for (Conversation c : newConversations) // remove the new conversation from conversation,
+            // has to be done this way since you can't remove elements of a list that's currently looping
+            conversations.remove(c);
         conversations.addAll(0, newConversations);
         StringBuilder sdr = new StringBuilder();
         for (int i = 0; i < conversations.size(); i++) {
