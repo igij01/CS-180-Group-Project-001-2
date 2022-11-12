@@ -1,8 +1,5 @@
 package UserCore;
 
-import MessageCore.IllegalTargetException;
-import MessageCore.IllegalUserAccessException;
-import MessageCore.Message;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -141,8 +138,8 @@ public class TestCases {
 
     @Test(timeout = 1000)
     public void testLogout() {
-        PublicInformation.logout(buyer1);
-        PublicInformation.logout(seller1);
+        buyer1.logout();
+        seller1.logout();
         TestCase.assertFalse("test initial user login status",
                 buyer1.loginStatus());
         TestCase.assertFalse("test initial user login status",

@@ -19,7 +19,16 @@ public class Store implements Serializable {
     private final ArrayList<FullBuyer> allMessagingBuyers = new ArrayList<>();
     private final ArrayList<Integer> messagingBuyersMessageCount = new ArrayList<>();
 
-    protected Store(String storeName, Seller owner) {
+    /**
+     * create a new instance of store
+     *
+     * @param storeName the name of the store
+     * @param owner     the owner of the store
+     * @throws IllegalStoreNameException when the store name is already taken
+     */
+    protected Store(String storeName, Seller owner) throws IllegalStoreNameException {
+        if (PublicInformation.findDuplicateStoreName(storeName))
+            throw new IllegalStoreNameException(storeName);
         this.storeName = storeName;
         this.owner = owner;
         PublicInformation.addListOfStores(this);
@@ -39,8 +48,12 @@ public class Store implements Serializable {
      * @param storeName new name of the store
      * @param reqSeller who is requesting to change the name
      * @throws IllegalUserAccessException if the Seller is not the owner of the store as owners are only allowed
+     * @throws IllegalStoreNameException  when the new store name is already taken
      */
-    protected void setStoreName(String storeName, Seller reqSeller) throws IllegalUserAccessException {
+    protected void setStoreName(String storeName, Seller reqSeller)
+            throws IllegalUserAccessException, IllegalStoreNameException {
+        if (PublicInformation.findDuplicateStoreName(storeName))
+            throw new IllegalStoreNameException(storeName);
         if (reqSeller.equals(owner)) {
             this.storeName = storeName;
         } else {
@@ -102,6 +115,4 @@ public class Store implements Serializable {
         int index = PublicInformation.findMatchingObjectIndex(allMessagingBuyers, fullBuyer);
         messagingBuyersMessageCount.set(index, messagingBuyersMessageCount.get(index) + 1);
     }
-
-
 }

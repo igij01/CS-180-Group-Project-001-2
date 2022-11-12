@@ -2,6 +2,7 @@ package UserCore;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller instead of Buyer/Seller. It will be used to send messages between 2 users - Lincoln
 
@@ -12,7 +13,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     public static ArrayList<FullBuyer> listOfBuyers = new ArrayList<>();
 
-    private static boolean unserialized = false;
+    private static boolean deserialized = false;
 
     /**
      * initialize the lists from serialized files. Can only be called once per runtime
@@ -20,7 +21,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     @SuppressWarnings("unchecked")
     public static void init() {
-        if (!unserialized) {
+        if (!deserialized) {
             try (ObjectInputStream oinBuyers = new ObjectInputStream
                     (new FileInputStream("src/UserCore/serialized_buyers"));
                  ObjectInputStream oinSellers = new ObjectInputStream
@@ -33,7 +34,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
                 listOfSellers = (ArrayList<FullSeller>) oinSellers.readObject();
                 listOfStores = (ArrayList<Store>) oinStores.readObject();
                 listOfUsersNames = (ArrayList<String>) oinNames.readObject();
-                unserialized = true;
+                deserialized = true;
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -72,7 +73,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             listOfSellers = (ArrayList<FullSeller>) oinSellers.readObject();
             listOfStores = (ArrayList<Store>) oinStores.readObject();
             listOfUsersNames = (ArrayList<String>) oinNames.readObject();
-            unserialized = true;
+            deserialized = true;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -137,14 +138,15 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     /**
      * LOGIN METHOD
-     * @param user String of the username they want to log into
-     * @param password password
      *
+     * @param user     String of the username they want to log into
+     * @param password password
      * @return The FullBuyer if they logged in to a FullBuyer, or a FullSeller if they logged into a FullSeller
      * @throws InvalidPasswordException when the username matches but the password is incorrect
      * @throws IllegalUserNameException when there is no username that matches
      */
-    public static FullUser login(String user, String password) throws InvalidPasswordException, IllegalUserNameException {
+    public static FullUser login(String user, String password) throws InvalidPasswordException,
+            IllegalUserNameException {
         for (FullBuyer fb : listOfBuyers) {
             if (fb.getUser().getUserName().equals(user)) {
                 if (fb.passwordCheck(password)) {
@@ -206,13 +208,21 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     /**
      * Adds a buyer to the public list of buyers
+     *
      * @param buyer the buyer to be added
      */
     protected static void addListOfBuyers(FullBuyer buyer) {
         listOfBuyers.add(buyer);
     }
 
-    public static FullSeller findFullSellerFromStore(Store store) {
+    /**
+     * Find and return the owner of the store in {@code FullSeller}
+     *
+     * @param store the store that you need the owner of
+     * @return the {@code FullSeller} instance of the owner, null if the owner can't be found
+     * @see Store#getOwner()
+     */
+    protected static FullSeller findFullSellerFromStore(Store store) {
         for (FullSeller seller : listOfSellers) {
             if (seller.getUser().equals(store.getOwner()))
                 return seller;
@@ -224,7 +234,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      *
      * @param storeList list of stores to iterate through and organize based on each store's message received counter
      *
-     * @return organized list of stores in order from most popular to least popular
+     * @return organized list of stores in order from most popular to the least popular
      */
     public static Store[] sortStoresByPopularity(Store[] storeList) {
         for (int i = 0; i < storeList.length; i++) {
@@ -239,8 +249,9 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
         return storeList;
     }
+
     /**
-     * Goes through array and finds the matching full buyer and then
+     * Goes through array and finds the matching full buyer
      * @return matching index
      */
     public static int findMatchingObjectIndex(ArrayList<FullBuyer> fbArray, FullBuyer fb) {
@@ -255,11 +266,11 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     /**
      * Checks to see if a store being created has a matching name with another store already made
-     * @param name name of the store being created
      *
+     * @param name name of the store being created
      * @return true if there is a duplicate, false if no duplicate
      */
-    public static boolean findDuplicateStoreName(String name) {
+    protected static boolean findDuplicateStoreName(String name) {
         for (Store s : listOfStores) {
             if (s.getStoreName().equals(name)) {
                 return true;
@@ -270,12 +281,13 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     /**
      * takes two arrays one of a user list and count and combines them to an organized string (Used by FullSeller)
-     * @param users array of users
-     * @param usersCount array of the corresponding number of messages recieved or sent
-     * @param increasing decides whether or not the arrays are sorted in increasing order based off the counts
+     *
+     * @param users      array of users
+     * @param usersCount array of the corresponding number of messages received or sent
+     * @param increasing decides whether the arrays are sorted in increasing order based off the counts
      * @return organized String of the user and its corresponding count all in order from highest to lowest
      */
-    public static String correspondingArraysToString(FullUser[] users, Integer[] usersCount, boolean increasing) {
+    protected static String correspondingArraysToString(FullUser[] users, Integer[] usersCount, boolean increasing) {
         if (increasing) {
             for (int i = 0; i < users.length; i++) {
                 for (int j = i + 1; j < users.length; j++) {
@@ -304,13 +316,14 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     }
 
     /**
-     *  Takes two arrays one of a user list and count and combines them to an organized string (Used by FullBuyer)
-     * @param stores list of stores
-     * @param counts corresponding count to stores
+     * Takes two arrays one of a user list and count and combines them to an organized string (Used by FullBuyer)
+     *
+     * @param stores     list of stores
+     * @param counts     corresponding count to stores
      * @param increasing boolean to see whether to organize it by highest count stores to least
      * @return String of stores and their count value
      */
-    public static String correspondingArrayToString(Store[] stores, Integer[] counts, boolean increasing) {
+    protected static String correspondingArrayToString(Store[] stores, Integer[] counts, boolean increasing) {
         if (increasing) {
             for (int i = 0; i < stores.length; i++) {
                 for (int j = i + 1; j < stores.length; j++) {
@@ -336,34 +349,44 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     /**
      * Customer can get a list of stores to choose from
+     * if the owner of a store made himself invisible to the buyer, it will not show up here
+     *
      * @return list of stores in a string
      */
-    public static String storeList() {
+    protected static String storeList(FullBuyer buyer) {
         StringBuilder sbd1 = new StringBuilder();
         for (int i = 0; i < listOfStores.size(); i++) {
+            if (Objects.requireNonNull(findFullSellerFromStore(listOfStores.get(i))).checkInvisible(buyer.getUser()))
+                //this is to check if the owner of the store made himself invisible to this buyer
+                continue;
             sbd1.append(i).append(". ");
             sbd1.append(listOfStores.get(i).getStoreName()).append("\n");
         }
-        return sbd1.toString();
+        return sbd1.deleteCharAt(sbd1.length() - 1).toString(); //delete the last new line
     }
 
     /**
      * Customer can get a list of sellers to choose from
+     * if a seller made himself invisible to the buyer, it will not show up here
+     *
+     * @param buyer the buyer requesting to see the list
      * @return list of sellers organized in a string
      */
-    public static String sellerList() {
+    public static String sellerList(FullBuyer buyer) {
         StringBuilder sbd2 = new StringBuilder();
         for (int i = 0; i < listOfSellers.size(); i++) {
+            if (listOfSellers.get(i).checkInvisible(buyer.getUser()))
+                continue;
             sbd2.append(i).append(". ");
             sbd2.append(listOfSellers.get(i).getUser().getUserName()).append("\n");
         }
-        return sbd2.toString();
+        return sbd2.deleteCharAt(sbd2.length() - 1).toString(); //delete the last new line
     }
 
     /**
      * Customer can pick specific store from list
      * @param storeName name of store that customer wants to choose
-     * @return the store that the customer picked
+     * @return the store that the customer picked, null if it doesn't exist
      */
     public static Store getStore(String storeName) {
         for (int i = 0; i < listOfStores.size(); i++) {
@@ -376,30 +399,37 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     /**
      * Customer can pick a specific seller from list
+     *
      * @param sellerName name of seller that customer wants to choose
-     * @return the seller that the customer picked
+     * @return the seller that the customer picked, null if it doesn't exist
      */
     public static FullSeller getSeller(String sellerName) {
-        for (int i = 0; i < listOfSellers.size(); i++) {
-            if (sellerName.equalsIgnoreCase(listOfSellers.get(i).getUser().getUserName())) {
-                return listOfSellers.get(i);
+        for (FullSeller listOfSeller : listOfSellers) {
+            if (sellerName.equalsIgnoreCase(listOfSeller.getUser().getUserName())) {
+                return listOfSeller;
             }
         }
         return null;
     }
+
+    /**
+     * find the {@code FullUser} instance based on the name put in
+     *
+     * @param username the username of the user
+     * @return the {@code FullUser} instance of the user, null if such name cannot be found
+     */
     public static FullUser findUser(String username) throws IllegalUserNameException {
         for (FullBuyer fb : listOfBuyers) {
-            if (fb.getUser().getUserName().equals(username)) {
+            if (fb.getUser().getUserName().equalsIgnoreCase(username)) {
                 return fb;
             }
         }
         for (FullSeller fs : listOfSellers) {
-            if (fs.getUser().getUserName().equals(username)) {
+            if (fs.getUser().getUserName().equalsIgnoreCase(username)) {
                 return fs;
             }
         }
-        throw new IllegalUserNameException();
-
+        return null;
     }
 
 

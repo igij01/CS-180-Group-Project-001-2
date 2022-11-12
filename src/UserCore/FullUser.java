@@ -296,6 +296,7 @@ public class FullUser implements Serializable {
 
     /**
      * updates the login status of user to false
+     * if a user is already logged out, it will be ignored
      */
     public void logout() {
         this.user.setLoginStatus(false);
