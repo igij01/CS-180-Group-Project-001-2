@@ -383,13 +383,22 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         return sbd2.deleteCharAt(sbd2.length() - 1).toString(); //delete the last new line
     }
 
-    public static String buyerList() {
-        StringBuilder sbd2 = new StringBuilder();
+    /**
+     * seller can get a list of buyers to choose from
+     * if a buyer made himself invisible to the seller, it will not show up here
+     *
+     * @param seller the buyer requesting to see the list
+     * @return list of sellers organized in a string
+     */
+    public static String buyerList(FullSeller seller) {
+        StringBuilder sbd3 = new StringBuilder();
         for (int i = 0; i < listOfBuyers.size(); i++) {
-            sbd2.append(i).append(". ");
-            sbd2.append(listOfBuyers.get(i).getUser().getUserName()).append("\n");
+            if (listOfBuyers.get(i).checkInvisible(seller.getUser()))
+                continue;
+            sbd3.append(i).append(". ");
+            sbd3.append(listOfBuyers.get(i).getUser().getUserName()).append("\n");
         }
-        return sbd2.toString();
+        return sbd3.deleteCharAt(sbd3.length() - 1).toString(); //delete the last new line
     }
 
     /**
