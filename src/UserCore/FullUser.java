@@ -44,7 +44,7 @@ public class FullUser implements Serializable {
     public boolean createMessage(FullUser receiver, String messageBody) throws IllegalTargetException, IllegalMessageException {
         if (!receiver.checkBlocked(this.user)) {
             for (Conversation c : conversations) {
-                if ( c.getOtherUser(this.user).equals(receiver.user)) {
+                if (c.getOtherUser(this.user).equals(receiver.user)) {
                     c.addMessage(this.user, receiver.user, messageBody);
                     return true;
                 }
@@ -140,9 +140,10 @@ public class FullUser implements Serializable {
      * @param index index
      * @return
      */
-    public String printConversation(int index) {
+    public String printConversation(int index) throws IndexOutOfBoundsException {
         return conversations.get(index).toStringConversation(this.user);
     }
+
 
     /**
      * checks if the specified password matched password of user.

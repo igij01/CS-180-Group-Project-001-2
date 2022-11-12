@@ -1,31 +1,132 @@
+import MessageCore.IllegalMessageException;
+import MessageCore.IllegalTargetException;
 import MessageCore.IllegalUserAccessException;
 import UserCore.*;
+import org.w3c.dom.ls.LSOutput;
 
 import java.sql.SQLOutput;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import static UserCore.PublicInformation.listOfUsersNames;
-import static UserCore.PublicInformation.login;
+import static UserCore.PublicInformation.*;
 
 public class Main {
     public static void main(String[] args) {
     Scanner scan = new Scanner(System.in);
-    mainLogin(scan);
-
-
+    FullUser user = mainLogin(scan);
+    int decision = 0;
+    do {
+        decision = mainDash(scan);
+    } while(mainDecision(scan, decision, user));
 
     }
-    // boolean return value will come in handy with GUIs
-    public static boolean mainLogin(Scanner scan) {
+    public static boolean mainDecision(Scanner scan, int decision, FullUser user) {
+        switch (decision) {
+            case 1:
+            case 2:
+                user.printConversationTitles();
+                System.out.println("Enter conversation index");
+                System.out.println("Enter -1 to go back");
+                int conversation;
+                try {
+                    conversation = scan.nextInt();
+                    scan.nextLine();
+                } catch (InputMismatchException e) {
+                    System.out.println("Please enter a number");
+                    return mainDecision(scan, 2, user);
+                }
+                if (conversation != -1) {
+                    try {
+                        user.printConversation(conversation);
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("Invalid index please try again");
+                        return mainDecision(scan,2,user);
+                    }
+                }
+                return true;
+            case 3:
+                int message;
+                FullUser receiver = null;
+                do {
+                    System.out.println("1.Create new message");
+                    System.out.println("2.Remove message");
+                    System.out.println("3.Edit message");
+                    System.out.println("4.Back");
+                    try {
+                        message = scan.nextInt();
+                        scan.nextLine();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Enter a number");
+                        return mainDecision(scan, 3, user);
+                    }
+                } while (message > 4 || message < 1);
+                if (message == 1) {
+                    System.out.println("Who would you like to message?");
+                    String username = scan.nextLine();
+                    try {
+                        receiver = findUser(username);
+                    } catch (IllegalUserNameException e) {
+                        System.out.println("No such user exists");
+                        return mainDecision(scan, 3, user);
+                    }
+                    System.out.println("What would you like to send them?");
+                    String newMessage = scan.nextLine();
+                    try {
+                         user.createMessage(receiver, newMessage);
+                    } catch (IllegalTargetException e) {
+                        System.out.println("You must message a user of a different role");
+                        return mainDecision(scan, 3, user);
+                    }
+                    return true;
+                } else if (message == 2) {
+
+                }
+
+
+
+
+
+
+
+            case 4:
+            case 5:
+        }
+    }
+
+
+
+
+
+
+    public static int mainDash(Scanner scan) {
+        int dashAction = 0;
+        do {
+            System.out.println("1.Profile");
+            System.out.println("2.Mail");
+            System.out.println("3.Message");
+            System.out.println("4.List");
+            System.out.println("5.Logout");
+            try {
+                dashAction = scan.nextInt();
+                scan.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("please enter either 1, 2, 3, 4, or 5");
+                dashAction = 0;
+            }
+        } while (dashAction < 1 || dashAction > 5);
+        return dashAction;
+    }
+    public static FullUser mainLogin(Scanner scan) {
         boolean loginLoop = true;
         int register = 0;
         System.out.println("Please enter username.");
         String username = scan.nextLine();
         System.out.println("Please enter password.");
         String password = scan.nextLine();
+        FullUser fullUser = null;
         do {
             try {
-                FullUser fullUser = login(username, password);
+                fullUser = login(username, password);
                 System.out.println("Login successful!");
                 loginLoop = false;
             } catch (IllegalUserAccessException e) {
@@ -36,8 +137,8 @@ public class Main {
             if (loginLoop) {
                 do {
                     System.out.println("Would you like to register? Or try again?");
-                    System.out.println("(1)Register");
-                    System.out.println("(2)Again");
+                    System.out.println("1.Register");
+                    System.out.println("2.Again");
                     register = scan.nextInt();
                     scan.nextLine();
                 } while (register != 1 && register != 2);
@@ -46,10 +147,9 @@ public class Main {
                 }
             }
         } while (loginLoop);
-        return true;
+        return fullUser;
     }
-    // boolean return value will come in handy with GUIs
-    public static boolean mainRegister(Scanner scan) {
+    public static FullUser mainRegister(Scanner scan) {
         String username = "start";
         do {
             if (!username.equals("start")) {
@@ -65,11 +165,11 @@ public class Main {
         System.out.println("enter \"buyer\" or \"seller\"");
         String role = scan.nextLine();
         if (role.equalsIgnoreCase("buyer")) {
-            FullBuyer buyer = new FullBuyer(username, email, password);
+            return new FullBuyer(username, email, password);
         } else if (role.equalsIgnoreCase("seller")) {
-            FullSeller seller = new FullSeller(username, email, password);
+            return new FullSeller(username, email, password);
         }
-        return true;
+        return null;
     }
 
 

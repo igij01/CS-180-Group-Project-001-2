@@ -387,6 +387,22 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
         return null;
     }
+    public static FullUser findUser(String username) throws IllegalUserNameException {
+        for (FullBuyer fb : listOfBuyers) {
+            if (fb.getUser().getUserName().equals(username)) {
+                return fb;
+            }
+        }
+        for (FullSeller fs : listOfSellers) {
+            if (fs.getUser().getUserName().equals(username)) {
+                return fs;
+            }
+        }
+        throw new IllegalUserNameException();
+
+    }
+
+
     public static void main(String[] args) {
         Store store = new Store("A", new Seller("fads", "samsonates@gmail.com", "asdf"));
         FullSeller seller = new FullSeller("sample_username", "alexroth111@gmail.com", "samplePassword123");
