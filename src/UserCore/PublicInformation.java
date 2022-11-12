@@ -383,6 +383,15 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         return sbd2.deleteCharAt(sbd2.length() - 1).toString(); //delete the last new line
     }
 
+    public static String buyerList() {
+        StringBuilder sbd2 = new StringBuilder();
+        for (int i = 0; i < listOfBuyers.size(); i++) {
+            sbd2.append(i).append(". ");
+            sbd2.append(listOfBuyers.get(i).getUser().getUserName()).append("\n");
+        }
+        return sbd2.toString();
+    }
+
     /**
      * Customer can pick specific store from list
      * @param storeName name of store that customer wants to choose

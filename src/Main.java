@@ -20,6 +20,7 @@ public class Main {
     public static boolean mainDecision(Scanner scan, int decision, FullUser user) {
         switch (decision) {
             case 1:
+
             case 2:
                 user.printConversationTitles();
                 System.out.println("Enter conversation index");
@@ -76,17 +77,78 @@ public class Main {
                     }
                     return true;
                 } else if (message == 2) {
-
+                    System.out.println("What is the other user's Name?");
+                    String username = scan.nextLine();
+                    try {
+                        receiver = findUser(username);
+                    } catch (IllegalUserNameException e) {
+                        System.out.println("No such user exists");
+                        return mainDecision(scan, 3, user);
+                    }
+                    System.out.println("What is the conversation number?");
+                    int conIndex = scan.nextInt();
+                    scan.nextLine();
+                    System.out.println("What is the message number?");
+                    int mesIndex = scan.nextInt();
+                    scan.nextLine();
+                    try {
+                        user.deleteMessage(receiver.getUser(), conIndex, mesIndex);
+                    } catch (IllegalUserAccessException e) {
+                        System.out.println("You are not authorized to delete this message");
+                        return mainDecision(scan, 3, user);
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("The entered index does not exist");
+                        return mainDecision(scan, 3, user);
+                    }
+                    return true;
+                } else if (message == 3) {
+                    System.out.println("What is the conversation index?");
+                    int conIndex = scan.nextInt();
+                    scan.nextLine();
+                    System.out.println("What is the message index?");
+                    int mesIndex = scan.nextInt();
+                    scan.nextLine();
+                    System.out.println("What would you like to replace the message with?");
+                    String replace = scan.nextLine();
+                    try {
+                        user.editMessage(conIndex, mesIndex, replace);
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println("The conversation or message index does not exist");
+                        return mainDecision(scan, 3, user);
+                    } catch (IllegalUserAccessException e) {
+                        System.out.println("You don't have permission to edit this message");
+                        return mainDecision(scan, 3, user);
+                    }
+                    return true;
+                } else {
+                    return true;
                 }
-
-
-
-
-
-
-
             case 4:
+                int list;
+                do {
+                    System.out.println("1.Print list of Buyers");
+                    System.out.println("2.Print list of Sellers");
+                    System.out.println("3.Print list of Stores");
+                    System.out.println("4.Back");
+                    try {
+                        list = scan.nextInt();
+                        scan.nextLine();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Enter a number");
+                        return mainDecision(scan, 3, user);
+                    }
+                } while (list > 4 || list < 1);
+                if (list == 1) {
+                    System.out.println(buyerList());
+                } else if (list == 2) {
+                    System.out.println(sellerList());
+                } else if (list == 3) {
+                    System.out.println(storeList());
+                } else {
+                    return true;
+                }
             case 5:
+                return false;
         }
         return true;
     }

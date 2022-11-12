@@ -290,7 +290,7 @@ public class FullUser implements Serializable {
     /**
      * @return user object
      */
-    protected User getUser() {
+    public User getUser() {
         return this.user;
     }
 
