@@ -135,41 +135,52 @@ public class Main {
                 } else {
                     return true;
                 }
-            case 4: //only buyers can see sellers and store; and only sellers and see list of buyers
-                // maybe write 2 methods, one take in a FullBuyer, one take in a full seller, for this part
-                int list;
-                do {
-                    System.out.println("1.Print list of Buyers");
-                    System.out.println("2.Print list of Sellers");
-                    System.out.println("3.Print list of Stores");
-                    System.out.println("4.Back");
-                    try {
-                        list = scan.nextInt();
-                        scan.nextLine();
-                    } catch (InputMismatchException e) {
-                        System.out.println("Enter a number");
-                        return mainDecision(scan, 3, user);
+            case 4:
+                if (user instanceof FullBuyer) {
+                    int list;
+                    do {
+                        System.out.println("1.Print list of Sellers");
+                        System.out.println("2.Print list of Stores");
+                        System.out.println("3.Back");
+                        try {
+                            list = scan.nextInt();
+                            scan.nextLine();
+                        } catch (InputMismatchException e) {
+                            System.out.println("Enter a number");
+                            return mainDecision(scan, 4, user);
+                        }
+                    } while (list > 3 || list < 1);
+                    if (list == 1) {
+                        System.out.println(sellerList());
+                    } else if (list == 2) {
+                        System.out.println(storeList());
+                    } else {
+                        return true;
                     }
-                } while (list > 4 || list < 1);
-                if (list == 1) {
-                    System.out.println(buyerList());
-                } else if (list == 2) {
-                    System.out.println(sellerList());
-                } else if (list == 3) {
-                    System.out.println(storeList());
                 } else {
-                    return true;
+                    int list;
+                    do {
+                        System.out.println("1.Print list of Sellers");
+                        System.out.println("2.Back");
+                        try {
+                            list = scan.nextInt();
+                            scan.nextLine();
+                        } catch (InputMismatchException e) {
+                            System.out.println("Enter a number");
+                            return mainDecision(scan, 4, user);
+                        }
+                    } while (list > 2 || list < 1);
+                    if (list == 1) {
+                        System.out.println(sellerList());
+                    } else {
+                        return true;
+                    }
                 }
             case 5:
                 return false;
         }
         return true;
     }
-
-
-
-
-
 
     public static int mainDash(Scanner scan) {
         int dashAction = 0;
