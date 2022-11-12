@@ -10,6 +10,17 @@ import static UserCore.PublicInformation.*;
 public class Main {
     public static void main(String[] args) {
     Scanner scan = new Scanner(System.in);
+    int rl = 0;
+    do {
+        System.out.println("1.Login");
+        System.out.println("2.Register");
+        try {
+            rl = scan.nextInt();
+            scan.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("Please enter the number 1 or 2");
+        }
+    } while (rl != 1 && rl != 2);
     FullUser user = mainLogin(scan);
     int decision = 0;
     do {
@@ -20,9 +31,10 @@ public class Main {
     public static boolean mainDecision(Scanner scan, int decision, FullUser user) {
         switch (decision) {
             case 1:
-
+                System.out.println(user.viewDashboard());
+                return true;
             case 2:
-                user.printConversationTitles();
+                System.out.println(user.printConversationTitles());
                 System.out.println("Enter conversation index");
                 System.out.println("Enter -1 to go back");
                 int conversation;

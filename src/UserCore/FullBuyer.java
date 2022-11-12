@@ -89,6 +89,7 @@ public class FullBuyer extends FullUser implements Serializable {
      *
      * @param increasing determines whether the dashboard shows the stores in terms of most messaged or not
      */
+    @Override
     public String viewDashboard(boolean increasing) {
         String mostPopStores = "Most Popular Stores\n";
         String personalStores = "Your Most Messaged Stores\n";

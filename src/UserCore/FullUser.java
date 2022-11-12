@@ -8,7 +8,7 @@ import MessageCore.IllegalUserAccessException;
 import java.io.*;
 import java.util.ArrayList;
 
-public class FullUser implements Serializable {
+public abstract class FullUser implements Serializable {
 
     // update this field everytime you update the field of the class
     // put in a random number or just increment the number
@@ -160,6 +160,11 @@ public class FullUser implements Serializable {
         this.editMessage(conversationIndex, messageIndex, convertFileToString(newMessage));
     }
 
+    public String viewDashboard() {
+        return "Username: " + this.user.getUserName() +
+                "\nEmail: " + this.user.getEmail();
+    }
+
     /**
      * Print the list of conversations by titles and place the conversations
      * that have
@@ -302,4 +307,6 @@ public class FullUser implements Serializable {
     public void logout() {
         this.user.setLoginStatus(false);
     }
+
+    public abstract String viewDashboard(boolean increasingOrder);
 }

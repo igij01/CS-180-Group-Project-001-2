@@ -353,7 +353,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      *
      * @return list of stores in a string
      */
-    protected static String storeList(FullBuyer buyer) {
+    public static String storeList() {
         StringBuilder sbd1 = new StringBuilder();
         for (int i = 0; i < listOfStores.size(); i++) {
             if (Objects.requireNonNull(findFullSellerFromStore(listOfStores.get(i))).checkInvisible(buyer.getUser()))
@@ -369,10 +369,9 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * Customer can get a list of sellers to choose from
      * if a seller made himself invisible to the buyer, it will not show up here
      *
-     * @param buyer the buyer requesting to see the list
      * @return list of sellers organized in a string
      */
-    public static String sellerList(FullBuyer buyer) {
+    public static String sellerList() {
         StringBuilder sbd2 = new StringBuilder();
         for (int i = 0; i < listOfSellers.size(); i++) {
             if (listOfSellers.get(i).checkInvisible(buyer.getUser()))
