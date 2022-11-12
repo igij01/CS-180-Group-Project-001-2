@@ -31,154 +31,166 @@ public class Main {
     public static boolean mainDecision(Scanner scan, int decision, FullUser user) {
         switch (decision) {
             case 1:
-                System.out.println(user.viewDashboard());
+                System.out.print(user.toString());
                 return true;
             case 2:
-                System.out.println(user.printConversationTitles());
-                System.out.println("Enter conversation index");
-                System.out.println("Enter -1 to go back");
-                int conversation;
-                try {
-                    conversation = scan.nextInt();
-                    scan.nextLine();
-                } catch (InputMismatchException e) {
-                    System.out.println("Please enter a number");
-                    return mainDecision(scan, 2, user);
-                }
-                if (conversation != -1) {
-                    try {
-                        user.printConversation(conversation);
-                    } catch (IndexOutOfBoundsException e) {
-                        System.out.println("Invalid index please try again");
-                        return mainDecision(scan,2,user);
-                    }
-                }
-                return true;
+                return case2(scan, user);
             case 3:
-                int message;
-                FullUser receiver = null;
-                do {
-                    System.out.println("1.Create new message");
-                    System.out.println("2.Remove message");
-                    System.out.println("3.Edit message");
-                    System.out.println("4.Back");
-                    try {
-                        message = scan.nextInt();
-                        scan.nextLine();
-                    } catch (InputMismatchException e) {
-                        System.out.println("Enter a number");
-                        return mainDecision(scan, 3, user);
-                    }
-                } while (message > 4 || message < 1);
-                if (message == 1) {
-                    System.out.println("Who would you like to message?");
-                    String username = scan.nextLine();
-                    try {
-                        receiver = findUser(username, user);
-                    } catch (IllegalUserNameException e) {
-                        System.out.println("No such user exists");
-                        return mainDecision(scan, 3, user);
-                    }
-                    System.out.println("What would you like to send them?");
-                    String newMessage = scan.nextLine();
-                    try {
-                         user.createMessage(receiver, newMessage);
-                    } catch (IllegalTargetException e) {
-                        System.out.println("You must message a user of a different role");
-                        return mainDecision(scan, 3, user);
-                    }
-                    return true;
-                } else if (message == 2) {
-                    System.out.println("What is the other user's Name?");
-                    String username = scan.nextLine();
-                    try {
-                        receiver = findUser(username, user);
-                    } catch (IllegalUserNameException e) {
-                        System.out.println("No such user exists");
-                        return mainDecision(scan, 3, user);
-                    }
-                    System.out.println("What is the conversation number?");
-                    int conIndex = scan.nextInt();
-                    scan.nextLine();
-                    System.out.println("What is the message number?");
-                    int mesIndex = scan.nextInt();
-                    scan.nextLine();
-                    try {
-                        user.deleteMessage(conIndex, mesIndex);
-                    } catch (IllegalUserAccessException e) {
-                        System.out.println("You are not authorized to delete this message");
-                        return mainDecision(scan, 3, user);
-                    } catch (IndexOutOfBoundsException e) {
-                        System.out.println("The entered index does not exist");
-                        return mainDecision(scan, 3, user);
-                    }
-                    return true;
-                } else if (message == 3) {
-                    System.out.println("What is the conversation index?");
-                    int conIndex = scan.nextInt();
-                    scan.nextLine();
-                    System.out.println("What is the message index?");
-                    int mesIndex = scan.nextInt();
-                    scan.nextLine();
-                    System.out.println("What would you like to replace the message with?");
-                    String replace = scan.nextLine();
-                    try {
-                        user.editMessage(conIndex, mesIndex, replace);
-                    } catch (IndexOutOfBoundsException e) {
-                        System.out.println("The conversation or message index does not exist");
-                        return mainDecision(scan, 3, user);
-                    } catch (IllegalUserAccessException e) {
-                        System.out.println("You don't have permission to edit this message");
-                        return mainDecision(scan, 3, user);
-                    }
-                    return true;
-                } else {
-                    return true;
-                }
-            case 4: //only buyers can see sellers and store; and only sellers and see list of buyers
-                // maybe write 2 methods, one take in a FullBuyer, one take in a full seller, for this part
+                return case3(scan,user);
+            case 4:
                 if (user instanceof FullBuyer) {
-                    int list;
-                    do {
-                        System.out.println("1.Print list of Sellers");
-                        System.out.println("2.Print list of Stores");
-                        System.out.println("3.Back");
-                        try {
-                            list = scan.nextInt();
-                            scan.nextLine();
-                        } catch (InputMismatchException e) {
-                            System.out.println("Enter a number");
-                            return mainDecision(scan, 4, user);
-                        }
-                    } while (list > 3 || list < 1);
-                    if (list == 1) {
-                        System.out.println(sellerList());
-                    } else if (list == 2) {
-                        System.out.println(storeList());
-                    } else {
-                        return true;
-                    }
+                    return case4(scan, (FullBuyer) user);
                 } else {
-                    int list;
-                    do {
-                        System.out.println("1.Print list of Sellers");
-                        System.out.println("2.Back");
-                        try {
-                            list = scan.nextInt();
-                            scan.nextLine();
-                        } catch (InputMismatchException e) {
-                            System.out.println("Enter a number");
-                            return mainDecision(scan, 4, user);
-                        }
-                    } while (list > 2 || list < 1);
-                    if (list == 1) {
-                        System.out.println(sellerList());
-                    } else {
-                        return true;
-                    }
+                    return case4(scan, (FullSeller) user);
                 }
             case 5:
                 return false;
+        }
+        return true;
+    }
+    public static boolean case4(Scanner scan, FullBuyer buyer) {
+        //only buyers can see sellers and store; and only sellers and see list of buyers
+        // maybe write 2 methods, one take in a FullBuyer, one take in a full seller, for this part
+        int list;
+        do {
+            System.out.println("1.Print list of Sellers");
+            System.out.println("2.Print list of Stores");
+            System.out.println("3.Back");
+            try {
+                list = scan.nextInt();
+                scan.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Enter a number");
+                return case4(scan, buyer);
+            }
+        } while (list > 3 || list < 1);
+        if (list == 1) {
+            System.out.println(sellerList(buyer));
+        } else if (list == 2) {
+            System.out.println(storeList(buyer));
+        }
+        return true;
+    }
+
+    public static boolean case4(Scanner scan, FullSeller seller) {
+        int list;
+        do {
+            System.out.println("1.Print list of Sellers");
+            System.out.println("2.Back");
+            try {
+                list = scan.nextInt();
+                scan.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Enter a number");
+                return case4(scan, seller);
+            }
+        } while (list > 2 || list < 1);
+        if (list == 1) {
+            System.out.println(buyerList(seller));
+        }
+        return true;
+    }
+    public static boolean case3(Scanner scan, FullUser user) {
+        int message;
+        FullUser receiver = null;
+        do {
+            System.out.println("1.Create new message");
+            System.out.println("2.Remove message");
+            System.out.println("3.Edit message");
+            System.out.println("4.Back");
+            try {
+                message = scan.nextInt();
+                scan.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Enter a number");
+                return case3(scan, user);
+            }
+        } while (message > 4 || message < 1);
+        if (message == 1) {
+            System.out.println("Who would you like to message?");
+            String username = scan.nextLine();
+            try {
+                receiver = findUser(username, user);
+            } catch (IllegalUserNameException e) {
+                System.out.println("No such user exists");
+                return case3(scan, user);
+            }
+            System.out.println("What would you like to send them?");
+            String newMessage = scan.nextLine();
+            try {
+                user.createMessage(receiver, newMessage);
+            } catch (IllegalTargetException e) {
+                System.out.println("You must message a user of a different role");
+                return case3(scan, user);
+            }
+            return true;
+        } else if (message == 2) {
+            System.out.println("What is the other user's Name?");
+            String username = scan.nextLine();
+            try {
+                receiver = findUser(username, user);
+            } catch (IllegalUserNameException e) {
+                System.out.println("No such user exists");
+                return case3(scan, user);
+            }
+            System.out.println("What is the conversation number?");
+            int conIndex = scan.nextInt();
+            scan.nextLine();
+            System.out.println("What is the message number?");
+            int mesIndex = scan.nextInt();
+            scan.nextLine();
+            try {
+                user.deleteMessage(conIndex, mesIndex);
+            } catch (IllegalUserAccessException e) {
+                System.out.println("You are not authorized to delete this message");
+                return case3(scan, user);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("The entered index does not exist");
+                return case3(scan, user);
+            }
+            return true;
+        } else if (message == 3) {
+            System.out.println("What is the conversation index?");
+            int conIndex = scan.nextInt();
+            scan.nextLine();
+            System.out.println("What is the message index?");
+            int mesIndex = scan.nextInt();
+            scan.nextLine();
+            System.out.println("What would you like to replace the message with?");
+            String replace = scan.nextLine();
+            try {
+                user.editMessage(conIndex, mesIndex, replace);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("The conversation or message index does not exist");
+                return case3(scan, user);
+            } catch (IllegalUserAccessException e) {
+                System.out.println("You don't have permission to edit this message");
+                return case3(scan, user);
+            }
+            return true;
+        } else {
+            return true;
+        }
+    }
+    public static boolean case2(Scanner scan, FullUser user) {
+        System.out.println(user.printConversationTitles());
+        System.out.println("Enter conversation index");
+        System.out.println("Enter -1 to go back");
+        int conversation;
+        try {
+            conversation = scan.nextInt();
+            scan.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("Please enter a number");
+            return mainDecision(scan, 2, user);
+        }
+        if (conversation != -1) {
+            try {
+                user.printConversation(conversation);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Invalid index please try again");
+                return mainDecision(scan,2,user);
+            }
         }
         return true;
     }

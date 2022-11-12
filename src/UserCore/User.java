@@ -121,4 +121,12 @@ public class User implements Serializable {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "UserName= '" + userName + '\'' +
+                ", Email = '" + email + '\'' +
+                ", Password ='" + pwd + '\'' +
+                ", role =" + role;
+    }
 }

@@ -8,7 +8,7 @@ import MessageCore.IllegalUserAccessException;
 import java.io.*;
 import java.util.ArrayList;
 
-public abstract class FullUser implements Serializable {
+public class FullUser implements Serializable {
 
     // update this field everytime you update the field of the class
     // put in a random number or just increment the number
@@ -308,5 +308,8 @@ public abstract class FullUser implements Serializable {
         this.user.setLoginStatus(false);
     }
 
-    public abstract String viewDashboard(boolean increasingOrder);
+    @Override
+    public String toString() {
+        return "user: " + user;
+    }
 }
