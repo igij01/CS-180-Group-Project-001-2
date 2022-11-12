@@ -74,7 +74,7 @@ public class Main {
                     System.out.println("Who would you like to message?");
                     String username = scan.nextLine();
                     try {
-                        receiver = findUser(username);
+                        receiver = findUser(username, user);
                     } catch (IllegalUserNameException e) {
                         System.out.println("No such user exists");
                         return mainDecision(scan, 3, user);
@@ -92,7 +92,7 @@ public class Main {
                     System.out.println("What is the other user's Name?");
                     String username = scan.nextLine();
                     try {
-                        receiver = findUser(username);
+                        receiver = findUser(username, user);
                     } catch (IllegalUserNameException e) {
                         System.out.println("No such user exists");
                         return mainDecision(scan, 3, user);
@@ -135,7 +135,8 @@ public class Main {
                 } else {
                     return true;
                 }
-            case 4:
+            case 4: //only buyers can see sellers and store; and only sellers and see list of buyers
+                // maybe write 2 methods, one take in a FullBuyer, one take in a full seller, for this part
                 if (user instanceof FullBuyer) {
                     int list;
                     do {
@@ -181,6 +182,7 @@ public class Main {
         }
         return true;
     }
+
 
     public static int mainDash(Scanner scan) {
         int dashAction = 0;

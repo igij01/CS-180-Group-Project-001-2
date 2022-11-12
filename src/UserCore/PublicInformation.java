@@ -351,9 +351,10 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * Customer can get a list of stores to choose from
      * if the owner of a store made himself invisible to the buyer, it will not show up here
      *
+     * @param buyer the buyer requesting this action
      * @return list of stores in a string
      */
-    public static String storeList() {
+    public static String storeList(FullBuyer buyer) {
         StringBuilder sbd1 = new StringBuilder();
         for (int i = 0; i < listOfStores.size(); i++) {
             if (Objects.requireNonNull(findFullSellerFromStore(listOfStores.get(i))).checkInvisible(buyer.getUser()))
@@ -369,9 +370,10 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * Customer can get a list of sellers to choose from
      * if a seller made himself invisible to the buyer, it will not show up here
      *
+     * @param buyer the buyer requesting this action
      * @return list of sellers organized in a string
      */
-    public static String sellerList() {
+    public static String sellerList(FullBuyer buyer) {
         StringBuilder sbd2 = new StringBuilder();
         for (int i = 0; i < listOfSellers.size(); i++) {
             if (listOfSellers.get(i).checkInvisible(buyer.getUser()))
@@ -435,20 +437,102 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * @param username the username of the user
      * @return the {@code FullUser} instance of the user, null if such name cannot be found
      */
-    public static FullUser findUser(String username) throws IllegalUserNameException {
+    public static FullUser findUser(String username, FullUser user) throws IllegalUserNameException {
+        if (user instanceof FullBuyer)
+            findSeller(username, (FullBuyer) user);
+        else if (user instanceof FullSeller)
+            findBuyer(username, (FullSeller) user);
+        return null;
+    }
+
+    /**
+     * find the {@code FullBuyer} instance based on the name put in
+     *
+     * @param username the username of the buyer
+     * @return the {@code FullBuyer} instance of the buyer, null if such name cannot be found
+     */
+    public static FullBuyer findBuyer(String username, FullSeller requestingSeller) {
         for (FullBuyer fb : listOfBuyers) {
             if (fb.getUser().getUserName().equalsIgnoreCase(username)) {
+                if (fb.checkInvisible(requestingSeller.getUser()))
+                    return null;
                 return fb;
             }
         }
+        return null;
+    }
+
+    /**
+     * find the {@code FullBuyer} instance based on the name put in
+     *
+     * @param username the username of the buyer
+     * @return the {@code FullBuyer} instance of the buyer, null if such name cannot be found
+     */
+    public static FullSeller findSeller(String username, FullBuyer requestingBuyer) {
         for (FullSeller fs : listOfSellers) {
             if (fs.getUser().getUserName().equalsIgnoreCase(username)) {
+                if (fs.checkInvisible(requestingBuyer.getUser()))
+                    return null;
                 return fs;
             }
         }
         return null;
     }
 
+    /**
+     * display a string of buyers that contains the searched letters
+     *
+     * @param searchText the text you want to search
+     * @param seller     the seller requesting this action
+     * @return the string of all buyers' usernames that contain the search text,
+     * null if none of the buyers match contains the search text
+     */
+    public static String findBuyerBasedOnLetters(String searchText, FullSeller seller) {
+        StringBuilder str = new StringBuilder();
+        searchText = searchText.toLowerCase();
+        for (FullBuyer fb : listOfBuyers) {
+            if (fb.getUser().getUserName().toLowerCase().contains(searchText) && fb.checkInvisible(seller.getUser())) {
+                str.append(fb.getUser().getUserName()).append('\n');
+            }
+        }
+        if (str.isEmpty())
+            return null;
+        return str.deleteCharAt(str.length() - 1).toString();
+    }
+
+    /**
+     * display a string of sellers that contains the searched letters
+     *
+     * @param searchText the text you want to search
+     * @param buyer      the buyer requesting this action
+     * @return the string of all sellers' usernames that contain the search text,
+     * null if none of the sellers match contains the search text
+     */
+    public static String findSellerBasedOnLetters(String searchText, FullBuyer buyer) {
+        StringBuilder str = new StringBuilder();
+        searchText = searchText.toLowerCase();
+        for (FullSeller fb : listOfSellers) {
+            if (fb.getUser().getUserName().toLowerCase().contains(searchText) && fb.checkInvisible(buyer.getUser())) {
+                str.append(fb.getUser().getUserName()).append('\n');
+            }
+        }
+        if (str.isEmpty())
+            return null;
+        return str.deleteCharAt(str.length() - 1).toString();
+    }
+
+    /**
+     * Used for debugging purposes only
+     * <p>
+     * empty the lists
+     */
+    @SuppressWarnings("unused")
+    private static void deconstruct() {
+        listOfSellers = new ArrayList<>();
+        listOfUsersNames = new ArrayList<>();
+        listOfBuyers = new ArrayList<>();
+        listOfSellers = new ArrayList<>();
+    }
 
     public static void main(String[] args) {
         Store store = new Store("A", new Seller("fads", "samsonates@gmail.com", "asdf"));
@@ -456,4 +540,5 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         System.out.println(listOfStores.get(0).getStoreName());
         System.out.println(getSeller("sample_username"));
     }
+
 }

@@ -100,6 +100,13 @@ public class Message implements Serializable {
         return requestUser.equals(sender) || requestUser.equals(target);
     }
 
+    protected boolean visibleToUser(User requestUser) {
+        if (!isParticipant(requestUser))
+            throw new IllegalUserAccessException("User is not a participant of the message!");
+        if (isSender(requestUser))
+            return visibilitySender;
+        return visibilityReceiver;
+    }
 
     /**
      * set the visible status of the message
@@ -116,16 +123,6 @@ public class Message implements Serializable {
         else
             throw new IllegalUserAccessException("User is not a participant of the message!");
         return !visibilityReceiver && !visibilitySender;
-    }
-
-    /**
-     * @return the content of the message
-     * @throws IllegalUserAccessException when a requesting user is not a participant of the message
-     */
-    protected String getMessage(User requestingUser) {
-        if (!isParticipant(requestingUser))
-            throw new IllegalUserAccessException("User is not a participant of the message!");
-        return this.message;
     }
 
     /**
@@ -166,15 +163,18 @@ public class Message implements Serializable {
     /**
      * @param requestingUser the user requesting this action
      * @return the conversation in the format of "*sender: content \n time" if there is a new message
+     * null if the request user cannot see the message
      * @throws IllegalUserAccessException if the user is not a participant of the message
      */
     public String toStringUser(User requestingUser) {
-        String toString = String.format("%c%s: %s\n %s", ((readByTarget && !isSender(requestingUser)) ? ' ' : '*'),
+        String toString = String.format("%c%s: %s\n %s", ((!readByTarget && isSender(requestingUser)) ? ' ' : '*'),
                 User.userName(sender), message, dtf.format(time));
         if (!isParticipant(requestingUser))
             throw new IllegalUserAccessException();
         if (!isSender(requestingUser))
             readByTarget = true;
+        if ((isSender(requestingUser) && !visibilitySender) || (!isSender(requestingUser) && !visibilityReceiver))
+            return null;
         return toString;
     }
 }

@@ -188,9 +188,12 @@ public class Conversation implements Serializable {
             StringBuilder rawString = new StringBuilder();
             int index = 0;
             for (Message m : conversation) {
+                if (m.toStringUser(requestingUser) == null)
+                    continue;
                 rawString.append(index++).append('\t').append(m.toStringUser(requestingUser)).append('\n');
             }
-            rawString.deleteCharAt(rawString.length() - 1);
+            if (!rawString.isEmpty())
+                rawString.deleteCharAt(rawString.length() - 1);
             return rawString.toString();
         }
         else {
