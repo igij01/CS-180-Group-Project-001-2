@@ -59,6 +59,10 @@ public class Conversation implements Serializable {
         conversation = new ArrayList<>();
     }
 
+    public ArrayList<Message> getConversation() {
+        return conversation;
+    }
+    
     /**
      * Add a message to the conversation if the buyer and seller are participant of the message
      *
