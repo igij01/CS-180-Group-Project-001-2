@@ -107,6 +107,43 @@ public class TestCasesMethodsImplementation {
     }
 
     @Test(timeout = 1000)
+    public void testAccountDeletion() throws
+            InvalidPasswordException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Method getUser = FullUser.class.getDeclaredMethod("getUser");
+        getUser.setAccessible(true);
+        seller1.createStore("my store");
+        TestCase.assertEquals(1, PublicInformation.listOfStores.size());
+        PublicInformation.deleteAccount(buyer1, "12345");
+        PublicInformation.deleteAccount(seller1, "12345");
+        TestCase.assertFalse("Test username list buyer",
+                PublicInformation.listOfUsersNames.contains(User.userName((User) getUser.invoke(buyer1))));
+        TestCase.assertFalse("Test username list seller",
+                PublicInformation.listOfUsersNames.contains(User.userName((User) getUser.invoke(seller1))));
+        TestCase.assertFalse("Test FullBuyer list",
+                PublicInformation.listOfBuyers.contains(buyer1));
+        TestCase.assertFalse("Test FullSeller list",
+                PublicInformation.listOfSellers.contains(seller1));
+        TestCase.assertEquals(0, PublicInformation.listOfStores.size());
+
+    }
+
+    @Test(timeout = 1000)
+    public void testAccountRecovery() throws InvalidPasswordException {
+        ArrayList<String> expectedUserNames = PublicInformation.listOfUsersNames;
+        ArrayList<FullSeller> expectedFullSellers = PublicInformation.listOfSellers;
+        ArrayList<FullBuyer> expectedFullBuyers = PublicInformation.listOfBuyers;
+        ArrayList<Store> expectedStores = PublicInformation.listOfStores;
+        PublicInformation.deleteAccount(buyer1, "12345");
+        PublicInformation.deleteAccount(seller1, "12345");
+        PublicInformation.recoverAccount(buyer1);
+        PublicInformation.recoverAccount(seller1);
+        TestCase.assertEquals(expectedStores, PublicInformation.listOfStores);
+        TestCase.assertEquals(expectedFullBuyers, PublicInformation.listOfBuyers);
+        TestCase.assertEquals(expectedFullSellers, PublicInformation.listOfSellers);
+        TestCase.assertEquals(expectedUserNames, PublicInformation.listOfUsersNames);
+    }
+
+    @Test(timeout = 1000)
     public void testLoginSuccess() throws InvalidPasswordException {
         TestCase.assertFalse("test initial user login status",
                 buyer1.loginStatus());

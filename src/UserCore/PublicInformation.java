@@ -13,8 +13,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     public static ArrayList<FullSeller> listOfSellers = new ArrayList<>();
 
     public static ArrayList<FullBuyer> listOfBuyers = new ArrayList<>();
-    private static final ArrayList<FullSeller> listOfSellersWaitingDestruction = new ArrayList<>();
-    private static final ArrayList<FullBuyer> listOfBuyersWaitingDestruction = new ArrayList<>();
+    private static final ArrayList<FullUser> listOfUsersWaitingDestruction = new ArrayList<>();
 
     private static boolean deserialized = false;
 
@@ -118,16 +117,16 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     /**
      * serialize the lists and write them to the corresponding files
      * do this after everything is done
+     * <p>
+     * Calling this method also makes all deleted account unrecoverable
      */
     public static void serialize() {
-        for (FullBuyer b : listOfBuyersWaitingDestruction) {
+        for (FullUser user : listOfUsersWaitingDestruction) {
             for (FullSeller fullSeller : listOfSellers) {
-                fullSeller.receiveUserDestruction(b);
+                fullSeller.receiveUserDestruction(user);
             }
-        }
-        for (FullSeller s : listOfSellersWaitingDestruction) {
             for (FullBuyer fullBuyer : listOfBuyers) {
-                fullBuyer.receiveUserDestruction(s);
+                fullBuyer.receiveUserDestruction(user);
             }
         }
         try (ObjectOutputStream oinBuyers = new ObjectOutputStream
@@ -547,16 +546,15 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             throw new InvalidPasswordException();
         if (requestingUser instanceof FullBuyer) {
             listOfBuyers.remove(requestingUser);
-            listOfBuyersWaitingDestruction.add((FullBuyer) requestingUser);
         }
         if (requestingUser instanceof FullSeller) {
             FullSeller seller = (FullSeller) requestingUser;
             for (Store store : seller.getStores())
                 listOfStores.remove(store);
             listOfSellers.remove(seller);
-            listOfSellersWaitingDestruction.add(seller);
         }
         listOfUsersNames.remove(requestingUser.getUser().getUserName());
+        listOfUsersWaitingDestruction.add(requestingUser);
     }
 
     /**
@@ -567,18 +565,17 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * @see #deleteAccount(FullUser, String)
      */
     public static boolean recoverAccount(FullUser requestingUser) {
+        if (!listOfUsersWaitingDestruction.remove(requestingUser))
+            return false;
         if (requestingUser instanceof FullBuyer) {
-            if (!listOfBuyersWaitingDestruction.contains(requestingUser))
-                return false;
             listOfBuyers.add((FullBuyer) requestingUser);
         }
         if (requestingUser instanceof FullSeller) {
-            if (!listOfSellersWaitingDestruction.contains(requestingUser))
-                return false;
             FullSeller seller = (FullSeller) requestingUser;
             listOfStores.addAll(seller.getStores());
             listOfSellers.add(seller);
         }
+        listOfUsersNames.add(requestingUser.getUser().getUserName());
         return true;
     }
 
@@ -589,7 +586,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     @SuppressWarnings("unused")
     private static void deconstruct() {
-        listOfSellers = new ArrayList<>();
+        listOfStores = new ArrayList<>();
         listOfUsersNames = new ArrayList<>();
         listOfBuyers = new ArrayList<>();
         listOfSellers = new ArrayList<>();
