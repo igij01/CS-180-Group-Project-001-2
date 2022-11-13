@@ -14,9 +14,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
- * TestCases
+ * TestCasesMethodsImplementation
  * <p>
- * Run unit test based on the expected output
+ * Run Unit Test to check the implementations of methods works as expected per features
+ * Some Features are not tested, include:
+ * <i>Seller, Customer core features</i>
  *
  * @author Yulin Lin, 001
  * @version 11/5/2022

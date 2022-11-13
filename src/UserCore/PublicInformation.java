@@ -2,7 +2,6 @@ package UserCore;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller instead of Buyer/Seller. It will be used to send messages between 2 users - Lincoln
 
@@ -359,9 +358,6 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     public static String storeList(FullBuyer buyer) {
         StringBuilder sbd1 = new StringBuilder();
         for (int i = 0; i < listOfStores.size(); i++) {
-            if (Objects.requireNonNull(findFullSellerFromStore(listOfStores.get(i))).checkInvisible(buyer.getUser()))
-                //this is to check if the owner of the store made himself invisible to this buyer
-                continue;
             sbd1.append(i).append(". ");
             sbd1.append(listOfStores.get(i).getStoreName()).append("\n");
         }
@@ -380,6 +376,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         for (int i = 0; i < listOfSellers.size(); i++) {
             if (listOfSellers.get(i).checkInvisible(buyer.getUser()))
                 continue;
+            //this is to check if the owner of the store made himself invisible to this buyer
             sbd2.append(i).append(". ");
             sbd2.append(listOfSellers.get(i).getUser().getUserName()).append("\n");
         }
