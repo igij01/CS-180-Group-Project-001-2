@@ -161,6 +161,7 @@ public class FullSeller extends FullUser implements Serializable {
         
 
         //MOST POPULAR WORDS GO HERE
+        //this.mostCommonwords
 
 
         return customers + "\n" + mostPopularWords;
