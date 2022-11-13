@@ -108,7 +108,7 @@ public class TestCasesMethodsImplementation {
 
     @Test(timeout = 1000)
     public void testAccountDeletion() throws
-            InvalidPasswordException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+            InvalidPasswordException, InvocationTargetException, IllegalAccessException {
         seller1.createStore("my store");
         TestCase.assertEquals(1, PublicInformation.listOfStores.size());
         PublicInformation.deleteAccount(buyer1, "12345");
