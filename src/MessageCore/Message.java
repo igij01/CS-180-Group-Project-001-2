@@ -128,6 +128,7 @@ public class Message implements Serializable {
     /**
      * call this method when the user have read the message.
      * If the user passed in is the sender, it will be ignored.
+     *
      * @param requestingUser the user that read the message
      * @throws IllegalUserAccessException when the user is not a participant
      */
@@ -139,7 +140,21 @@ public class Message implements Serializable {
     }
 
     /**
+     * check whether the message is new to this user
+     * if the user is the sender, it will always return false
      *
+     * @param requestingUser the user requesting this action
+     * @return true if the message is new and the requesting user is the receiver
+     */
+    protected boolean isNew(User requestingUser) {
+        if (!isParticipant(requestingUser))
+            throw new IllegalUserAccessException("User is not a participant of the message!");
+        else if (!isSender(requestingUser))
+            return readByTarget;
+        return false;
+    }
+
+    /**
      * @return the sender of the message
      */
     protected User getSender() {

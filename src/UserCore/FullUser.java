@@ -188,7 +188,7 @@ public class FullUser implements Serializable {
      * adds new conversations list to start of conversations list
      * builds a string that puts asterisks for new conversations
      *
-     * @return String of conversations to be printed
+     * @return String of conversations to be printed, null if there are no conversations
      */
     public String printConversationTitles() {
         ArrayList<Conversation> newConversations = new ArrayList<>();
@@ -213,6 +213,8 @@ public class FullUser implements Serializable {
             }
             sdr.append(System.lineSeparator());
         }
+        if (sdr.isEmpty())
+            return null;
         return sdr.toString();
     }
 

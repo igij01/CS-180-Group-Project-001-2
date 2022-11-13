@@ -384,11 +384,12 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static String sellerList(FullBuyer buyer) {
         StringBuilder sbd2 = new StringBuilder();
+        int index = 0;
         for (int i = 0; i < listOfSellers.size(); i++) {
             if (listOfSellers.get(i).checkInvisible(buyer.getUser()))
                 continue;
             //this is to check if the owner of the store made himself invisible to this buyer
-            sbd2.append(i).append(". ");
+            sbd2.append(index++).append(". ");
             sbd2.append(listOfSellers.get(i).getUser().getUserName()).append("\n");
         }
         return sbd2.deleteCharAt(sbd2.length() - 1).toString(); //delete the last new line
@@ -397,16 +398,18 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     /**
      * seller can get a list of buyers to choose from
      * if a buyer made himself invisible to the seller, it will not show up here
+     * print in the form of "index: username"
      *
      * @param seller the buyer requesting to see the list
      * @return list of sellers organized in a string
      */
     public static String buyerList(FullSeller seller) {
         StringBuilder sbd3 = new StringBuilder();
+        int index = 0;
         for (int i = 0; i < listOfBuyers.size(); i++) {
             if (listOfBuyers.get(i).checkInvisible(seller.getUser()))
                 continue;
-            sbd3.append(i).append(". ");
+            sbd3.append(index++).append(". ");
             sbd3.append(listOfBuyers.get(i).getUser().getUserName()).append("\n");
         }
         return sbd3.deleteCharAt(sbd3.length() - 1).toString(); //delete the last new line

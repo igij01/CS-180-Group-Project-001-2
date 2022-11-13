@@ -234,6 +234,23 @@ public class TestCasesMethodsImplementation {
         String contentExcludingTimeStamp = out.substring(0, out.lastIndexOf('\n'));
         TestCase.assertEquals("0\t*Buyer: message", contentExcludingTimeStamp);
     }
+
+    @Test(timeout = 1000)
+    public void testBlocking() {
+        buyer1.block(seller1);
+        TestCase.assertFalse("method return check", seller1.createMessage(buyer1, "I am blocked!"));
+        TestCase.assertNull("message buyer check", buyer1.printConversationTitles());
+        TestCase.assertNull("message seller check", seller1.printConversationTitles());
+    }
+
+    @Test(timeout = 1000)
+    public void testInvisible() {
+        buyer1.makeInvisible(seller1);
+        String out = PublicInformation.buyerList(seller1);
+        TestCase.assertEquals("0. Buyer2", out);
+    }
+
+
 //
 //    /**
 //     * Test seller can message buyer with toFileString check

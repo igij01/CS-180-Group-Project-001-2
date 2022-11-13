@@ -87,8 +87,9 @@ public class Conversation implements Serializable {
     }
 
     /**
-     * a method to update the read status
+     * a method to update the read status by setting the RECEIVER new message flag to true
      * this assumes that the action User is already being checked that it's a participant
+     *
      * @param sender the sender
      */
     private void updateReadStatus(User sender) {
@@ -212,7 +213,10 @@ public class Conversation implements Serializable {
             for (Message m : conversation) {
                 if (m.toStringUser(requestingUser) == null)
                     continue;
-                rawString.append(index++).append('\t').append(m.toStringUser(requestingUser)).append('\n');
+                if (m.isNew(requestingUser))
+                    rawString.insert(0, (index++ + "\t" + m.toStringUser(requestingUser) + "\n"));
+                else
+                    rawString.append(index++).append('\t').append(m.toStringUser(requestingUser)).append('\n');
             }
             if (!rawString.isEmpty())
                 rawString.deleteCharAt(rawString.length() - 1);
