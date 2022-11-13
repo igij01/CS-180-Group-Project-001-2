@@ -1,8 +1,7 @@
-package UserCore;
-
 import MessageCore.Conversation;
 import MessageCore.IllegalTargetException;
 import MessageCore.IllegalUserAccessException;
+import UserCore.*;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -38,10 +37,21 @@ public class TestCases {
     private static FullBuyer buyer2;
     private static FullSeller seller2;
 
-    private static final File serBuy = new File("src/UserCore/UnitTestTxtFile/test_ser_buy");
-    private static final File serSell = new File("src/UserCore/UnitTestTxtFile/test_ser_sell");
-    private static final File serNames = new File("src/UserCore/UnitTestTxtFile/test_ser_names");
-    private static final File serStores = new File("src/UserCore/UnitTestTxtFile/test_ser_stores");
+    private static Method getUserMethod;
+
+    static {
+        try {
+            getUserMethod = FullUser.class.getDeclaredMethod("getUser");
+            getUserMethod.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static final File serBuy = new File("src/Test/UnitTestTxtFile/test_ser_buy");
+    private static final File serSell = new File("src/Test/UnitTestTxtFile/test_ser_sell");
+    private static final File serNames = new File("src/Test/UnitTestTxtFile/test_ser_names");
+    private static final File serStores = new File("src/Test/UnitTestTxtFile/test_ser_stores");
 
     static {
         try {
@@ -118,7 +128,7 @@ public class TestCases {
     }
 
     @Test(timeout = 1000)
-    public void testDatePersistence() throws NoSuchMethodException, InvocationTargetException,
+    public void testDataPersistence() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException {
         Method m = PublicInformation.class.getDeclaredMethod("initFromFiles",
                 File.class, File.class, File.class, File.class);
@@ -200,12 +210,12 @@ public class TestCases {
     }
 
     @Test(timeout = 1000, expected = IllegalUserAccessException.class)
-    public void testMessagesAccess() throws NoSuchFieldException, IllegalAccessException {
+    public void testMessagesAccess() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
         buyer1.messageSeller(seller1, "message");
         Field f = FullUser.class.getDeclaredField("conversations");
         f.setAccessible(true);
         ArrayList<Conversation> list = (ArrayList<Conversation>) f.get(buyer1);
-        list.get(0).toStringConversation(buyer2.getUser());
+        list.get(0).toStringConversation((User) getUserMethod.invoke(buyer2));
     }
 
     @Test(timeout = 1000)

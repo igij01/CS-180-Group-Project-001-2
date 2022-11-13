@@ -45,7 +45,6 @@ public class FullSeller extends FullUser implements Serializable {
      *                        else just in order of history
      * @return String of dashboard
      */
-    @Override
     public String viewDashboard(boolean increasingOrder) {
         StringBuilder customers = new StringBuilder("Highest Messaging Customers\n");
         String mostPopularWords = "Most Popular Words\n";
