@@ -44,6 +44,10 @@ public class FullUser implements Serializable {
         ignoreFiltering = false;
     }
 
+    public ArrayList<Conversation> getConversations() {
+        return conversations;
+    }
+    
     /**
      * creates a new message to the conversation between user and receiver
      * If there's no existing conversation between user and the receiver, it will be created
