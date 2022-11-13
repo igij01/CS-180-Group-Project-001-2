@@ -7,6 +7,7 @@ import UserCore.User;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Conversation
@@ -188,7 +189,6 @@ public class Conversation implements Serializable {
         if (requestingUser.equals(this.buyer) || requestingUser.equals(this.seller)) {
             updateReadStatus(requestingUser);
             StringBuilder rawString = new StringBuilder();
-            int index = 0;
             for (Message m : conversation) {
                 rawString.append(m.fileToString(requestingUser)).append('\n');
             }
@@ -226,5 +226,23 @@ public class Conversation implements Serializable {
         } else {
             throw new IllegalUserAccessException();
         }
+    }
+
+    /**
+     * return all words in a conversation
+     *
+     * @param requestingSeller the seller requesting this action
+     * @return an array of all the words in the conversations, including duplicates
+     * @throws IllegalUserAccessException when the requesting seller is not a participant of the conversation
+     */
+    public ArrayList<String> allWordsFromMessages(Seller requestingSeller) {
+        if (requestingSeller.equals(this.seller)) {
+            ArrayList<String> words = new ArrayList<>();
+            for (Message m : conversation) {
+                words.addAll(List.of(m.words()));
+            }
+            return words;
+        } else
+            throw new IllegalUserAccessException();
     }
 }

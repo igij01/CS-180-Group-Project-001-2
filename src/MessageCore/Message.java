@@ -164,6 +164,14 @@ public class Message implements Serializable {
         return this.sender;
     }
 
+    /**
+     * @return a list of all the words in the message, including duplicates
+     */
+    protected String[] words() {
+        return this.message.toLowerCase().replaceAll("\\W", " ")
+                .split("\\s+");
+    }
+
 
     /**
      * method that format each field for csv export

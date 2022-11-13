@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,7 +33,7 @@ public class TestCasesMethodsImplementation {
 
     private static Method getUserMethod;
 
-    static {
+    static { //set up the getUserMethod
         try {
             getUserMethod = FullUser.class.getDeclaredMethod("getUser");
             getUserMethod.setAccessible(true);
@@ -46,7 +47,7 @@ public class TestCasesMethodsImplementation {
     private static final File serNames = new File("src/Test/UnitTestTxtFile/test_ser_names");
     private static final File serStores = new File("src/Test/UnitTestTxtFile/test_ser_stores");
 
-    static {
+    static { //used for testing for data persistence
         try {
             @SuppressWarnings("unused")
             FullBuyer buyerTest = new FullBuyer("TestBuyer", "test@test.com", "123");
@@ -276,6 +277,12 @@ public class TestCasesMethodsImplementation {
         TestCase.assertEquals("0\t*Buyer: message ************", contentExcludingTimeStamp);
     }
 
+    @Test(timeout = 1000)
+    public void testMostFrequentWord() throws IOException {
+        TestCase.assertNull("test initial conditions", seller1.mostCommonWordsOverall());
+        buyer1.messageSeller(seller1, new File("src/Test/UnitTestTxtFile/TestMostCommonWord.txt"));
+        TestCase.assertEquals("word", seller1.mostCommonWordsOverall());
+    }
 
 //
 //    /**

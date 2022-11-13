@@ -1,15 +1,28 @@
 package UserCore;
 
+import MessageCore.Conversation;
 import MessageCore.IllegalMessageException;
 import MessageCore.IllegalTargetException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serial;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class FullSeller extends FullUser implements Serializable {
+
+    private static ArrayList<String> stopWords = new ArrayList<>();
+
+    static {
+        try (BufferedReader bfr = new BufferedReader(new FileReader("stop_words_english.txt"))) {
+            String words;
+            while ((words = bfr.readLine()) != null) {
+                stopWords.add(words);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     // update this field everytime you update the field of the class
     // put in a random number or just increment the number
@@ -67,84 +80,35 @@ public class FullSeller extends FullUser implements Serializable {
         super.createMessage(buyer, txtFile);
     }
 
-    //returns list of buyers whose usernames contain search
-    public ArrayList<FullBuyer> searchCustomers(String search) {
-        ArrayList<FullBuyer> r = null;
-        for(int i = 0; i < PublicInformation.listOfBuyers.size(); i++){
-            if(PublicInformation.listOfBuyers.get(i).getUser().getUserName().contains(search)){
-                r.add(PublicInformation.listOfBuyers.get(i));
+    /**
+     * find the most frequent words in overall messages
+     *
+     * @return the first most frequent word in all messages send and received
+     */
+    public String mostCommonWordsOverall() {
+        Hashtable<String, Integer> hashtable = new Hashtable<>();
+        for (Conversation c : super.getConversations()) {
+            for (String w : c.allWordsFromMessages((Seller) this.getUser())) {
+                if (!stopWords.contains(w)) {
+                    if (hashtable.containsKey(w))
+                        hashtable.put(w, hashtable.get(w) + 1);
+                    else
+                        hashtable.put(w, 1);
+                }
             }
         }
-        return r;
+        String result = null;
+        int mostFrequent = 0;
+        for (Map.Entry<String, Integer> entry : hashtable.entrySet()) {
+            if (mostFrequent < entry.getValue()) {
+                mostFrequent = entry.getValue();
+                result = entry.getKey();
+            }
+        }
+        return result;
     }
-    
-    //from PublicInformation
-    public static Store[] sortStoresByPopularity(Store[] storeList) {
-        for (int i = 0; i < storeList.length; i++) {
-            for (int j = i + 1; j < storeList.length; j++) {
-                Store temp;
-                if (storeList[i].getCounter() < storeList[j].getCounter()) {
-                    temp = storeList[i];
-                    storeList[i] = storeList[j];
-                    storeList[j] = temp;
-                }
-            }
-        }
-        return storeList;
-    }
-    
-    //finds most common word, if multiple, returns all
-    public ArrayList<String> mostCommonWords() {
-        ArrayList<String> words = null;
-        ArrayList<Integer> occurrences = null;
-        ArrayList<String> mcwords= null;
-        //loops through conversations
-        for(int i = 0; i < this.getConversations().size(); i++) {
-            //loops through messages
-            //added conversation getter to FullUser and Conversation, added message getter in Message
-            for(int k = 0; k < this.getConversations().get(i).getConversation().size(); k++){
-                //counts number of words in conversation
-                int wordNum = 1;
-                for(int j = 0; j < (this.getConversations().get(i).getConversation().get(k).getMessage().length()); j++){
-                    if(this.getConversations().get(i).getConversation().get(k).getMessage().charAt(j) == ' '){
-                        wordNum++;
-                    }
-                }
-                //splits each conversation into array of words
-                String[] temp = new String[wordNum];
-                //loops through words
-                for(int j = 0; j < wordNum; j++) {;
-                    //if word already in words arraylist
-                    boolean wiw = false;
-                    for(int l = 0; l < words.size(); l++){
-                        if(temp[j].equals(words.get(l))){
-                            wiw = true;
-                        }
-                    }
-                    if(wiw){
-                        occurrences.set(j, occurrences.get(j) + 1);
-                    } else {
-                        words.add(temp[j]);
-                        occurrences.add(1);
-                    }
-                }
-            }
-        }
 
-        //finds the max
-        int max = 0;
-        for(int i = 0; i < occurrences.size(); i++){
-            if(occurrences.get(i) > max){
-                mcwords= null;
-                mcwords.add(words.get(i));
-            } else if(occurrences.get(i) == max){
-                mcwords.add(words.get(i));
-            }
-        }
 
-        return mcwords;
-    }
-    
     /**
      * @param increasingOrder if true then the sort will go in order from the highest message count to lowest,
      *                        else just in order of history
@@ -152,20 +116,12 @@ public class FullSeller extends FullUser implements Serializable {
      */
     public String viewDashboard(boolean increasingOrder) {
         StringBuilder customers = new StringBuilder("Highest Messaging Customers\n");
-        String mostPopularWords = "Most Popular Words\n";
+        String mostPopularWords = "Most Popular Words\n" + mostCommonWordsOverall();
         for (Store store : stores) {
             FullBuyer[] buyers = store.getAllMessagingBuyers().toArray(new FullBuyer[0]);
             Integer[] buyersMessageCount = store.getMessagingBuyersMessageCount().toArray(new Integer[0]);
             customers.append(PublicInformation.correspondingArraysToString(buyers, buyersMessageCount, increasingOrder));
         }
-        
-
-        //MOST POPULAR WORDS GO HERE
-        ArrayList<String> wordList = this.mostCommonWords();
-        for(int i = 0; i < wordList.size(); i++){
-            mostPopularWords = mostPopularWords + wordList.get(i) + "\n";
-        }
-
         return customers + "\n" + mostPopularWords;
     }
 
