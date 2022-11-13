@@ -7,6 +7,8 @@ import MessageCore.IllegalUserAccessException;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 public class FullUser implements Serializable {
 
@@ -19,6 +21,9 @@ public class FullUser implements Serializable {
     private final ArrayList<Conversation> conversations; //a list of the conversation a user has
     private final ArrayList<User> blocked; //a list of blocked users
     private final ArrayList<User> invisible;
+    private final ArrayList<String> filterWords;
+    private char replaceChar;
+    private boolean ignoreFiltering;
 
     /**
      * the user is set to the user field
@@ -34,6 +39,9 @@ public class FullUser implements Serializable {
         conversations = new ArrayList<>();
         blocked = new ArrayList<>();
         invisible = new ArrayList<>();
+        filterWords = new ArrayList<>();
+        replaceChar = '*';
+        ignoreFiltering = false;
     }
 
     /**
@@ -215,7 +223,7 @@ public class FullUser implements Serializable {
         }
         if (sdr.isEmpty())
             return null;
-        return sdr.toString();
+        return filter(sdr.toString());
     }
 
     /**
@@ -225,7 +233,24 @@ public class FullUser implements Serializable {
      * @throws IndexOutOfBoundsException is thrown from editMessage when an invalid index is specified
      */
     public String printConversation(int index) throws IndexOutOfBoundsException {
-        return conversations.get(index).toStringConversation(this.user);
+        String out = conversations.get(index).toStringConversation(this.user);
+        return filter(out);
+    }
+
+    /**
+     * filter the input according to user settings
+     * @param strToBeFiltered string to be filtered
+     * @return the filtered string
+     */
+    private String filter(String strToBeFiltered) {
+        if (ignoreFiltering)
+            return strToBeFiltered;
+        for (String str : filterWords) {
+            char[] replacement = new char[str.length()];
+            Arrays.fill(replacement, this.replaceChar);
+            strToBeFiltered = strToBeFiltered.replaceAll(String.format("\\b%s\\b", str), String.valueOf(replacement));
+        }
+        return strToBeFiltered;
     }
 
 
@@ -280,6 +305,39 @@ public class FullUser implements Serializable {
      */
     public void makeInvisible(FullUser fullUser) {
         invisible.add(fullUser.user);
+    }
+
+    /**
+     * add a word for filtering
+     * @param filterWord the word to be filtered
+     */
+    public void addFilterWord(String filterWord) {
+        filterWords.add(filterWord);
+    }
+
+    /**
+     * remove a word for filtering
+     * @param filterWord the filtered word
+     * @return true if the filterWord was in the list
+     */
+    public boolean removeFilteredWord(String filterWord) {
+        return filterWords.remove(filterWord);
+    }
+
+    /**
+     * change the replacement characters
+     * @param replaceChar the replacement characters
+     */
+    public void changeReplacedChar(char replaceChar) {
+        this.replaceChar = replaceChar;
+    }
+
+    /**
+     * change the filter mode. true if you want to turn it off
+     * @param off whether you want to turn it off
+     */
+    public void changeFilteringMode(boolean off) {
+        this.ignoreFiltering = off;
     }
 
     /**
