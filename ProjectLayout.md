@@ -25,7 +25,7 @@
       3. list of stores by number of messages received - PublicInformation
       4. list of stores by the number of messages that particular customer has sent - PublicInformation
       5. Sorting algorithm - should be in PublicInformation as well
-   5. [ ] FullSeller extends FullUser(NOT Seller.java) that takes in a seller instance
+   5. [X] FullSeller extends FullUser(NOT Seller.java) that takes in a seller instance
       1. view a list of customers to select an individual to message - PublicInformation
       2. Sellers should be able to search for a specific customer to message. (This is fine) - can be implemented in
          either pub / FullSeller
