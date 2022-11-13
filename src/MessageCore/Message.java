@@ -56,7 +56,10 @@ public class Message implements Serializable {
         setTimeToNow();
     }
 
-
+    public String getMessage() {
+        return message;
+    }
+    
     /**
      * Update time field to now
      */
