@@ -161,8 +161,10 @@ public class FullSeller extends FullUser implements Serializable {
         
 
         //MOST POPULAR WORDS GO HERE
-        //this.mostCommonwords
-
+        ArrayList<String> wordList = this.mostCommonWords();
+        for(int i = 0; i < wordList.size(); i++){
+            mostPopularWords = mostPopularWords + wordList.get(i) + "\n";
+        }
 
         return customers + "\n" + mostPopularWords;
     }
