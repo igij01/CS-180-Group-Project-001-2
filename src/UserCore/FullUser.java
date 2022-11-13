@@ -116,6 +116,20 @@ public class FullUser implements Serializable {
     }
 
     /**
+     * call this method IF AND ONLY IF the FullUser is going to be deconstructed and not recoverable
+     *
+     * @param user the user deleted his/her account
+     */
+    protected void receiveUserDestruction(FullUser user) {
+        for (Conversation i : conversations) {
+            if (i.getOtherUser(this.user).equals(user.user))
+                i.messageDestruction(user.user);
+        }
+        blocked.remove(user.user);
+        invisible.remove(user.user);
+    }
+
+    /**
      * Deletes the specific message in a specific conversation of a user
      * if all messages are deleted the conversation is removed.
      *

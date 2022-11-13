@@ -13,6 +13,8 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     public static ArrayList<FullSeller> listOfSellers = new ArrayList<>();
 
     public static ArrayList<FullBuyer> listOfBuyers = new ArrayList<>();
+    private static final ArrayList<FullSeller> listOfSellersWaitingDestruction = new ArrayList<>();
+    private static final ArrayList<FullBuyer> listOfBuyersWaitingDestruction = new ArrayList<>();
 
     private static boolean deserialized = false;
 
@@ -118,6 +120,16 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * do this after everything is done
      */
     public static void serialize() {
+        for (FullBuyer b : listOfBuyersWaitingDestruction) {
+            for (FullSeller fullSeller : listOfSellers) {
+                fullSeller.receiveUserDestruction(b);
+            }
+        }
+        for (FullSeller s : listOfSellersWaitingDestruction) {
+            for (FullBuyer fullBuyer : listOfBuyers) {
+                fullBuyer.receiveUserDestruction(s);
+            }
+        }
         try (ObjectOutputStream oinBuyers = new ObjectOutputStream
                 (new FileOutputStream("src/UserCore/serialized_buyers"));
              ObjectOutputStream oinSellers = new ObjectOutputStream
@@ -438,9 +450,9 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static FullUser findUser(String username, FullUser user) throws IllegalUserNameException {
         if (user instanceof FullBuyer)
-            findSeller(username, (FullBuyer) user);
+            return findSeller(username, (FullBuyer) user);
         else if (user instanceof FullSeller)
-            findBuyer(username, (FullSeller) user);
+            return findBuyer(username, (FullSeller) user);
         return null;
     }
 
@@ -518,6 +530,56 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         if (str.isEmpty())
             return null;
         return str.deleteCharAt(str.length() - 1).toString();
+    }
+
+    /**
+     * Delete the account from public information lists
+     * <p>
+     * Can only be recovered BEFORE the serialization and program closes
+     *
+     * @param requestingUser the user requesting the deletion
+     * @param password       the password of insure user's identity
+     * @throws InvalidPasswordException when the password is incorrect
+     * @see #recoverAccount(FullUser)
+     */
+    public static void deleteAccount(FullUser requestingUser, String password) throws InvalidPasswordException {
+        if (!requestingUser.passwordCheck(password))
+            throw new InvalidPasswordException();
+        if (requestingUser instanceof FullBuyer) {
+            listOfBuyers.remove(requestingUser);
+            listOfBuyersWaitingDestruction.add((FullBuyer) requestingUser);
+        }
+        if (requestingUser instanceof FullSeller) {
+            FullSeller seller = (FullSeller) requestingUser;
+            for (Store store : seller.getStores())
+                listOfStores.remove(store);
+            listOfSellers.remove(seller);
+            listOfSellersWaitingDestruction.add(seller);
+        }
+        listOfUsersNames.remove(requestingUser.getUser().getUserName());
+    }
+
+    /**
+     * Recover the account and add everything back to the Public Information lists
+     *
+     * @param requestingUser the user requesting the recovery
+     * @return false if the user never requested deletion or cannot be recovered
+     * @see #deleteAccount(FullUser, String)
+     */
+    public static boolean recoverAccount(FullUser requestingUser) {
+        if (requestingUser instanceof FullBuyer) {
+            if (!listOfBuyersWaitingDestruction.contains(requestingUser))
+                return false;
+            listOfBuyers.add((FullBuyer) requestingUser);
+        }
+        if (requestingUser instanceof FullSeller) {
+            if (!listOfSellersWaitingDestruction.contains(requestingUser))
+                return false;
+            FullSeller seller = (FullSeller) requestingUser;
+            listOfStores.addAll(seller.getStores());
+            listOfSellers.add(seller);
+        }
+        return true;
     }
 
     /**

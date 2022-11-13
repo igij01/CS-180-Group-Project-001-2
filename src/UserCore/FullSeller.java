@@ -57,8 +57,11 @@ public class FullSeller extends FullUser implements Serializable {
         //MOST POPULAR WORDS GO HERE
 
 
-
         return customers + "\n" + mostPopularWords;
+    }
+
+    protected ArrayList<Store> getStores() {
+        return this.stores;
     }
 
 }

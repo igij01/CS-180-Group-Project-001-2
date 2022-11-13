@@ -157,6 +157,24 @@ public class Conversation implements Serializable {
     }
 
     /**
+     * send a message in the conversation that the user deleted his account
+     *
+     * @param requestingUser the that made the deletion
+     */
+    public void messageDestruction(User requestingUser) {
+        if (requestingUser.equals(this.buyer) || requestingUser.equals(this.seller)) {
+            if (requestingUser instanceof Seller) {
+                //TODO should we empty the whole conversation history?
+                addMessage(seller, buyer, "The user deleted his/her account!");
+            } else {
+                addMessage(buyer, seller, "The user deleted his/her account!");
+            }
+        } else {
+            throw new IllegalUserAccessException();
+        }
+    }
+
+    /**
      * Print out the conversation in csv format
      *
      * @param requestingUser the user requesting this action
@@ -199,8 +217,7 @@ public class Conversation implements Serializable {
             if (!rawString.isEmpty())
                 rawString.deleteCharAt(rawString.length() - 1);
             return rawString.toString();
-        }
-        else {
+        } else {
             throw new IllegalUserAccessException();
         }
     }

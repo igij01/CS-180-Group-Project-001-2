@@ -35,6 +35,36 @@ public class FullBuyer extends FullUser implements Serializable {
     }
 
     /**
+     * Used to receive a store destructed and remove store from storeMessaged list
+     *
+     * @param store store destructed
+     */
+    private void notifyStoreDestruction(Store store) {
+        if (storesMessaged.contains(store)) {
+            int index = storesMessaged.indexOf(store);
+            storesMessaged.remove(index);
+            timesStoresMessaged.remove(index);
+        }
+    }
+
+    /**
+     * call this method IF AND ONLY IF the FullUser is going to be deconstructed and not recoverable
+     * <p>
+     * and remove store from storeMessaged list
+     *
+     * @param user the {@code FullSeller} that deleted his/her account
+     */
+    @Override
+    protected void receiveUserDestruction(FullUser user) {
+        if (user instanceof FullSeller) {
+            for (Store store : ((FullSeller) user).getStores())
+                notifyStoreDestruction(store);
+            super.receiveUserDestruction(user);
+        } else
+            throw new IllegalTargetException("The user is a Buyer!");
+    }
+
+    /**
      * message the store
      * <p>
      * and update the message counter accordingly
