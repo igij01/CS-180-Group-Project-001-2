@@ -40,23 +40,21 @@ public class Conversation implements Serializable {
      * @throws ClassCastException     when the note is violated; i.e. the sender/target is a User instead of Buyer/Seller
      */
     public Conversation(User sender, User target) throws IllegalTargetException {
+        if (!(sender instanceof Buyer) && !(sender instanceof Seller) ||
+                !(target instanceof Buyer) && !(target instanceof Seller))
+            throw new ClassCastException("Either sender or target is a User instance");
+        if ((sender instanceof Buyer) ^ (target instanceof Seller))
+            throw new IllegalTargetException(target);
         if (sender instanceof Buyer) {
             this.buyer = (Buyer) sender;
             newMessageSeller = true;
             newMessageBuyer = false;
-            if (target instanceof Seller)
-                this.seller = (Seller) target;
-            else
-                throw new IllegalTargetException(target);
+            this.seller = (Seller) target;
         } else {
             this.buyer = (Buyer) target;
-            if (sender instanceof Seller) {
-                this.seller = (Seller) sender;
-                newMessageSeller = false;
-                newMessageBuyer = true;
-            }
-            else
-                throw new IllegalTargetException(target);
+            newMessageSeller = false;
+            newMessageBuyer = true;
+            this.seller = (Seller) sender;
         }
         conversation = new ArrayList<>();
     }

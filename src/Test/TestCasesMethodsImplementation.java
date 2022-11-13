@@ -203,7 +203,12 @@ public class TestCasesMethodsImplementation {
 
     @Test(timeout = 1000, expected = IllegalTargetException.class)
     public void testMessageBuyerToBuyer() {
-        buyer1.createMessage(buyer1, "message");
+        buyer1.createMessage(buyer2, "message");
+    }
+
+    @Test(timeout = 1000, expected = IllegalTargetException.class)
+    public void testMessageSellerToSeller() {
+        seller1.createMessage(seller2, "message");
     }
 
     @Test(timeout = 1000, expected = IllegalUserAccessException.class)
@@ -233,6 +238,18 @@ public class TestCasesMethodsImplementation {
         String out = seller1.printConversation(0);
         String contentExcludingTimeStamp = out.substring(0, out.lastIndexOf('\n'));
         TestCase.assertEquals("0\t*Buyer: message", contentExcludingTimeStamp);
+    }
+
+    @Test(timeout = 1000)
+    public void testNewMessagesInConversation() {
+        buyer1.messageSeller(seller1, "message");
+        seller1.createMessage(buyer1, "reply");
+        String outBuyer = buyer1.printConversation(0);
+        String outSeller = seller1.printConversation(0);
+        String outBuyerExcludeTime = outBuyer.substring(0, outBuyer.indexOf('\n'));
+        String outSellerExcludeTime = outSeller.substring(0, outSeller.indexOf('\n'));
+        TestCase.assertEquals("0\t*Buyer: message", outSellerExcludeTime);
+        TestCase.assertEquals("1\t*Seller: reply", outBuyerExcludeTime);
     }
 
     @Test(timeout = 1000)
