@@ -109,16 +109,14 @@ public class TestCasesMethodsImplementation {
     @Test(timeout = 1000)
     public void testAccountDeletion() throws
             InvalidPasswordException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Method getUser = FullUser.class.getDeclaredMethod("getUser");
-        getUser.setAccessible(true);
         seller1.createStore("my store");
         TestCase.assertEquals(1, PublicInformation.listOfStores.size());
         PublicInformation.deleteAccount(buyer1, "12345");
         PublicInformation.deleteAccount(seller1, "12345");
         TestCase.assertFalse("Test username list buyer",
-                PublicInformation.listOfUsersNames.contains(User.userName((User) getUser.invoke(buyer1))));
+                PublicInformation.listOfUsersNames.contains(User.userName((User) getUserMethod.invoke(buyer1))));
         TestCase.assertFalse("Test username list seller",
-                PublicInformation.listOfUsersNames.contains(User.userName((User) getUser.invoke(seller1))));
+                PublicInformation.listOfUsersNames.contains(User.userName((User) getUserMethod.invoke(seller1))));
         TestCase.assertFalse("Test FullBuyer list",
                 PublicInformation.listOfBuyers.contains(buyer1));
         TestCase.assertFalse("Test FullSeller list",
