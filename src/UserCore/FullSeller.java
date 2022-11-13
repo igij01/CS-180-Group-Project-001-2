@@ -1,5 +1,10 @@
 package UserCore;
 
+import MessageCore.IllegalMessageException;
+import MessageCore.IllegalTargetException;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,6 +42,29 @@ public class FullSeller extends FullUser implements Serializable {
     public void createStore(String storeName) throws IllegalStoreNameException {
         Store store = new Store(storeName, (Seller) getUser());
         stores.add(store);
+    }
+
+    /**
+     * message a specific buyer
+     *
+     * @param buyer  the buyer you want to message
+     * @param content the content of the message
+     */
+    public void messageBuyer(FullBuyer buyer, String content) throws
+            IllegalTargetException, IllegalMessageException {
+        super.createMessage(buyer, content);
+    }
+
+    /**
+     * message a specific buyer
+     *
+     * @param buyer  the buyer you want to message
+     * @param txtFile the content of the message
+     * @throws IOException when io exception occurs
+     */
+    public void messageBuyer(FullBuyer buyer, File txtFile) throws
+            IllegalTargetException, IllegalMessageException, IOException {
+        super.createMessage(buyer, txtFile);
     }
 
 

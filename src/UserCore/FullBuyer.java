@@ -88,12 +88,34 @@ public class FullBuyer extends FullUser implements Serializable {
     }
 
     /**
+     * message the store
+     * <p>
+     * and update the message counter accordingly
+     *
+     * @param store the store you want to message
+     * @param txtFile the txt file that contains the message content
+     * @throws IOException when IO exception occurs
+     */
+    public void messageStore(Store store, File txtFile) throws IOException {
+        super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)), txtFile);
+        store.incrementCounter(this);
+
+
+        if (!storesMessaged.contains(store)) {
+            storesMessaged.add(store);
+            timesStoresMessaged.add(1);
+            //it will always append to last element
+        } else {
+            int index = storesMessaged.indexOf(store);
+            timesStoresMessaged.set(index, timesStoresMessaged.get(index) + 1);
+        }
+    }
+
+    /**
      * message a specific seller
      *
      * @param seller  the seller you want to message
      * @param content the content of the message
-     * @throws IllegalTargetException  when the target and the sender are the same role
-     * @throws IllegalMessageException when either the sender or the receiver is not a participant of the conversation
      */
     public void messageSeller(FullSeller seller, String content) throws
             IllegalTargetException, IllegalMessageException {
@@ -105,8 +127,6 @@ public class FullBuyer extends FullUser implements Serializable {
      *
      * @param seller the seller you want to message
      * @param file   the file that contains the content of the message
-     * @throws IllegalTargetException  when the target and the sender are the same role
-     * @throws IllegalMessageException when either the sender or the receiver is not a participant of the conversation
      * @throws IOException             when IO exception occurs
      */
     public void messageSeller(FullSeller seller, File file) throws
