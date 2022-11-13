@@ -11,16 +11,22 @@ public class Main {
     public static void main(String[] args) {
     Scanner scan = new Scanner(System.in);
     int rl = 0;
+    boolean repeat = false;
     do {
+        repeat = false;
         System.out.println("1.Login");
         System.out.println("2.Register");
         try {
-            rl = scan.nextInt();
-            scan.nextLine();
-        } catch (InputMismatchException e) {
+            rl = Integer.parseInt(scan.nextLine());
+            if (rl != 1 && rl != 2) {
+                System.out.println("Please choose between 1 or 2");
+                repeat = true;
+            }
+        } catch (NumberFormatException e) {
+            repeat = true;
             System.out.println("Please enter the number 1 or 2");
         }
-    } while (rl != 1 && rl != 2);
+    } while (repeat);
     FullUser user = mainLogin(scan);
     int decision = 0;
     do {
@@ -215,19 +221,20 @@ public class Main {
         return dashAction;
     }
     public static FullUser mainLogin(Scanner scan) {
-        boolean loginLoop = true;
+        boolean loginLoop;
         int register = 0;
-        System.out.println("Please enter username.");
-        String username = scan.nextLine();
-        System.out.println("Please enter password.");
-        String password = scan.nextLine();
         FullUser fullUser = null;
         do {
+            loginLoop = true;
+            System.out.println("Please enter username.");
+            String username = scan.nextLine();
+            System.out.println("Please enter password.");
+            String password = scan.nextLine();
             try {
                 fullUser = login(username, password);
-                System.out.println("Login successful!");
                 loginLoop = false;
-            } catch (IllegalUserAccessException e) {
+                System.out.println("Login successful!");
+            } catch (IllegalUserNameException e) {
                 System.out.println("Invalid Username.");
             } catch (InvalidPasswordException e) {
                 System.out.println("Invalid password.");
@@ -241,6 +248,7 @@ public class Main {
                     scan.nextLine();
                 } while (register != 1 && register != 2);
                 if (register == 1) {
+                    loginLoop = false;
                     return mainRegister(scan);
                 }
             }
@@ -256,18 +264,40 @@ public class Main {
             System.out.println("Enter desired Username");
             username = scan.nextLine();
         } while (listOfUsersNames.contains(username));
-        System.out.println("Enter desired Email");
-        String email = scan.nextLine();
-        System.out.println("Enter desired password");
-        String password = scan.nextLine();
-        System.out.println("enter \"buyer\" or \"seller\"");
-        String role = scan.nextLine();
-        if (role.equalsIgnoreCase("buyer")) {
-            return new FullBuyer(username, email, password);
-        } else if (role.equalsIgnoreCase("seller")) {
-            return new FullSeller(username, email, password);
-        }
-        return null;
+        do {
+            System.out.println("Enter desired Email");
+            String email = scan.nextLine();
+            System.out.println("Enter desired password");
+            String password = scan.nextLine();
+            boolean repeat;
+            try {
+                do {
+                    repeat = false;
+                    System.out.println("enter \"buyer\" or \"seller\"");
+                    String role = scan.nextLine();
+                    if (role.equalsIgnoreCase("buyer")) {
+                        System.out.printf("Username: %s\temail: %s\tpassword: %s\trole: Buyer\n",
+                                username, email, password);
+                        System.out.println("Confirm?(y/n)");
+                        String decision = scan.nextLine();
+                        if (decision.equalsIgnoreCase("y") || decision.equalsIgnoreCase("yes"))
+                            return new FullBuyer(username, email, password);
+                    } else if (role.equalsIgnoreCase("seller")) {
+                        System.out.printf("Username: %s\temail: %s\tpassword: %s\trole: Seller\n",
+                                username, email, password);
+                        System.out.println("Confirm?(y/n)");
+                        String decision = scan.nextLine();
+                        if (decision.equalsIgnoreCase("y") || decision.equalsIgnoreCase("yes"))
+                          return new FullSeller(username, email, password);
+                    } else {
+                        repeat = true;
+                        System.out.println("Please enter buyer or seller!");
+                    }
+                } while (repeat);
+            } catch (EmailFormatException e) {
+                System.out.println("Please enter a valid email!");
+            }
+        } while (true);
     }
 
 
