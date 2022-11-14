@@ -69,7 +69,7 @@ public class FullSeller extends FullUser implements Serializable {
     /**
      * message a specific buyer
      *
-     * @param buyer  the buyer you want to message
+     * @param buyer   the buyer you want to message
      * @param content the content of the message
      */
     public void messageBuyer(FullBuyer buyer, String content) throws
@@ -80,7 +80,7 @@ public class FullSeller extends FullUser implements Serializable {
     /**
      * message a specific buyer
      *
-     * @param buyer  the buyer you want to message
+     * @param buyer   the buyer you want to message
      * @param txtFile the content of the message
      * @throws IOException when io exception occurs
      */
