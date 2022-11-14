@@ -108,6 +108,18 @@ public class FullSeller extends FullUser implements Serializable {
         return result;
     }
 
+    /**
+     * The sellers can view a list of the customers names
+     * @return a String with a list of the usernames of customers
+     */
+    public String viewCustomers() {
+        String listOfCustomers = "";
+        for (FullBuyer fb : PublicInformation.listOfBuyers) {
+            listOfCustomers += fb.getUser().getUserName() + " ";
+        }
+        return listOfCustomers;
+    }
+
 
     /**
      * @param increasingOrder if true then the sort will go in order from the highest message count to lowest,
