@@ -10,6 +10,7 @@ import java.util.ArrayList;
  * Store
  * <p>
  * Store object that is related to a Seller Object with simple variables associated
+ *
  * @author Samson Tesfagiorgis, Yulin Lin, 001
  * @version 11/11/2022
  */
@@ -69,7 +70,6 @@ public class Store implements Serializable {
     }
 
     /**
-     *
      * @return the counter of messages sends to this store
      */
     public int getCounter() {
@@ -89,7 +89,6 @@ public class Store implements Serializable {
     }
 
     /**
-     *
      * @return an {@code ArrayList} of {@code FullBuyer} that send to this store
      */
     protected ArrayList<FullBuyer> getAllMessagingBuyers() {
@@ -97,7 +96,6 @@ public class Store implements Serializable {
     }
 
     /**
-     *
      * @return an {@code ArrayList} of {@code Integer} of # of messages each costumer send
      */
     protected ArrayList<Integer> getMessagingBuyersMessageCount() {
@@ -106,6 +104,7 @@ public class Store implements Serializable {
 
     /**
      * add a FullBuyer to the list
+     *
      * @param fullBuyer the FullBuyer requesting this action
      */
     private void addMessagingBuyer(FullBuyer fullBuyer) {
