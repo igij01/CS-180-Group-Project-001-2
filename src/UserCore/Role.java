@@ -2,7 +2,7 @@ package UserCore;
 
 /**
  * Role
- *
+ * <p>
  * enum for roles in users
  *
  * @author Yulin Lin, 001
