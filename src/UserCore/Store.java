@@ -104,7 +104,7 @@ public class Store implements Serializable {
     private void addMessagingBuyer(FullBuyer fullBuyer) {
         allMessagingBuyers.add(fullBuyer);
         int index = PublicInformation.findMatchingObjectIndex(allMessagingBuyers, fullBuyer);
-        messagingBuyersMessageCount.set(index, 1);
+        messagingBuyersMessageCount.add(1);
     }
 
     /**

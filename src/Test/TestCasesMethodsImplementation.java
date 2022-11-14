@@ -284,6 +284,51 @@ public class TestCasesMethodsImplementation {
         TestCase.assertEquals("word", seller1.mostCommonWordsOverall());
     }
 
+    @Test(timeout = 1000)
+    public void testBuyerDashBoard() {
+        seller1.createStore("New store 1");
+        seller1.createStore("New store 2");
+        seller2.createStore("store");
+        buyer1.messageStore(PublicInformation.getStore("New Store 1"), "what commodity do you have?");
+        seller1.messageBuyer(buyer1, "I have xxxx");
+        buyer1.messageStore(PublicInformation.getStore("New Store 1"), "How much does xxxx cost");
+        buyer1.messageStore(PublicInformation.getStore("store"), "do you have xxxx");
+        seller2.messageBuyer(buyer1, "No I don't have xxxx, I have xxxx tho");
+        buyer2.messageStore(PublicInformation.getStore("new store 2"), "can I get 3 of that xxxx");
+        seller1.messageBuyer(buyer2, "yeah sure");
+        buyer2.messageStore(PublicInformation.getStore("store"), "how much does xxxx cost");
+        TestCase.assertEquals("""
+                Most Popular Stores
+                (New store 1) : 2
+                (store) : 2
+                (New store 2) : 1
+                Your Most Messaged Stores
+                (New store 1) : 2 messages sent
+                (store) : 1 messages sent
+                """, buyer1.viewDashboard(true));
+    }
+
+    @Test(timeout = 1000)
+    public void testSellerDashBoard() {
+        seller1.createStore("New store 1");
+        seller1.createStore("New store 2");
+        seller2.createStore("store");
+        buyer1.messageStore(PublicInformation.getStore("New Store 1"), "what commodity do you have?");
+        seller1.messageBuyer(buyer1, "I have xxxx");
+        buyer1.messageStore(PublicInformation.getStore("New Store 1"), "How much does xxxx cost");
+        buyer1.messageStore(PublicInformation.getStore("store"), "do you have xxxx");
+        seller2.messageBuyer(buyer1, "No I don't have xxxx, I have xxxx tho");
+        buyer2.messageStore(PublicInformation.getStore("new store 2"), "can I get 3 of that xxxx");
+        seller1.messageBuyer(buyer2, "yeah sure");
+        buyer2.messageStore(PublicInformation.getStore("store"), "how much does xxxx cost");
+        TestCase.assertEquals("""
+                Highest Messaging Customers
+                | Buyer: 2|| Buyer2: 1|
+                Most Popular Words
+                xxxx
+                """, seller1.viewDashboard(true));
+    }
+
 //
 //    /**
 //     * Test seller can message buyer with toFileString check

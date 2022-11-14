@@ -1,0 +1,13 @@
+Welcome to the market messaging system
+Please enter username.
+[Buyer]
+Please enter password.
+[1]
+Login successful!
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
+[5]
+Thank you for using the market messaging system

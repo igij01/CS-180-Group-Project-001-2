@@ -434,6 +434,13 @@ public class FullUser implements Serializable {
     }
 
     /**
+     * @return true if the user is waiting to be deleted
+     */
+    public boolean waitingToBeDeletedStatus() {
+        return this.user.isWaitingToBeDeleted();
+    }
+
+    /**
      * change the username of the user
      *
      * @param newUsername the new username
@@ -464,6 +471,11 @@ public class FullUser implements Serializable {
 
     @Override
     public String toString() {
-        return "user: " + user;
+        return "account info: " + user +
+                "\nblocked users: " + blocked +
+                "\nmade invisible users: " + invisible +
+                "\ncensor mode: " + (ignoreFiltering ? "OFF" : "ON") +
+                "\nfiltered words: " + filterWords +
+                "\ncensored pattern: " + this.replaceChar;
     }
 }

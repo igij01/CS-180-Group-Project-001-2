@@ -42,11 +42,18 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     private static void readFromSerializedFile(ObjectInputStream oinBuyers, ObjectInputStream oinSellers,
                                                ObjectInputStream oinStores, ObjectInputStream oinNames)
             throws IOException, ClassNotFoundException {
-        listOfBuyers = (ArrayList<FullBuyer>) oinBuyers.readObject();
-        listOfSellers = (ArrayList<FullSeller>) oinSellers.readObject();
-        listOfStores = (ArrayList<Store>) oinStores.readObject();
-        listOfUsersNames = (ArrayList<String>) oinNames.readObject();
-        deserialized = true;
+        try {
+            listOfBuyers = (ArrayList<FullBuyer>) oinBuyers.readObject();
+            listOfSellers = (ArrayList<FullSeller>) oinSellers.readObject();
+            listOfStores = (ArrayList<Store>) oinStores.readObject();
+            listOfUsersNames = (ArrayList<String>) oinNames.readObject();
+            deserialized = true;
+        } catch (EOFException e) {
+            listOfBuyers = new ArrayList<>();
+            listOfUsersNames = new ArrayList<>();
+            listOfStores = new ArrayList<>();
+            listOfSellers = new ArrayList<>();
+        }
     }
 
     /**

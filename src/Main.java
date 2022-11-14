@@ -12,7 +12,8 @@ import static UserCore.PublicInformation.*;
 
 public class Main {
     public static void main(String[] args) {
-        PublicInformation.init();
+        if (!(args != null && args.length > 0 && args[0].equalsIgnoreCase("debug")))
+            PublicInformation.init();
         Scanner scan = new Scanner(System.in);
         System.out.println("Welcome to the market messaging system");
         FullUser user = mainLogin(scan);
@@ -22,8 +23,10 @@ public class Main {
         do {
             decision = mainDash(scan);
         } while (mainDecision(scan, decision, user));
+        System.out.println("Thank you for using the market messaging system");
         user.logout();
-        PublicInformation.serialize();
+        if (!(args != null && args.length > 0 && args[0].equalsIgnoreCase("debug")))
+            PublicInformation.serialize();
     }
 
     public static boolean mainDecision(Scanner scan, int decision, FullUser user) {
@@ -42,7 +45,13 @@ public class Main {
                     return case4(scan, (FullSeller) user);
                 }
             case 5:
-                PublicInformation.logout(user);
+                String input;
+                if (user.waitingToBeDeletedStatus()) {
+                    System.out.println("You will lost your account if you log out!");
+                    System.out.println("Are you sure you want to continue?");
+                    input = scan.nextLine();
+                    return (!((input.equalsIgnoreCase("y")) || input.equalsIgnoreCase("yes")));
+                }
                 return false;
         }
         return true;
@@ -50,11 +59,11 @@ public class Main {
 
     public static void case1(Scanner scan, FullUser user) {
         boolean repeat;
-        System.out.println(user.toString());
         do {
+            System.out.println(user.toString());
             repeat = true;
             System.out.println("1. Change username");
-            System.out.println("2. Change password");
+            System.out.println("2. Change email");
             System.out.println("3. Block users");
             System.out.println("4. Unblock users");
             System.out.println("5. Make yourself invisible to users");
@@ -83,6 +92,7 @@ public class Main {
             switch (choice) {
                 case 1:
                     do {
+                        loop = false;
                         System.out.println("Please enter the new username");
                         String newUsername = scan.nextLine();
                         System.out.println("Please enter the password to confirm your action");
@@ -97,6 +107,7 @@ public class Main {
                     break;
                 case 2:
                     do {
+                        loop = false;
                         System.out.println("Please enter the new email");
                         String newEmail = scan.nextLine();
                         System.out.println("Please enter the password to confirm your action");
@@ -112,6 +123,7 @@ public class Main {
                 case 3:
                     FullUser blockUser = null;
                     do {
+                        loop = false;
                         System.out.println("Please enter the name of the buyer/seller to block");
                         String blockUsername = scan.nextLine();
                         if (user instanceof FullSeller) {
@@ -132,6 +144,7 @@ public class Main {
                 case 4:
                     FullUser unBlockUser = null;
                     do {
+                        loop = false;
                         System.out.println("Please enter the name of the buyer/seller to unblock");
                         String unBlockUsername = scan.nextLine();
                         if (user instanceof FullSeller) {
@@ -153,6 +166,7 @@ public class Main {
                 case 5:
                     FullUser invisUser = null;
                     do {
+                        loop = false;
                         System.out.println("Please enter the name of the buyer/seller to become invisible");
                         String invisUsername = scan.nextLine();
                         if (user instanceof FullSeller) {
@@ -173,6 +187,7 @@ public class Main {
                 case 6:
                     FullUser unInvisUser = null;
                     do {
+                        loop = false;
                         System.out.println("Please enter the name of the buyer/seller to become un-invisible");
                         String unInvisUsername = scan.nextLine();
                         if (user instanceof FullSeller) {
@@ -194,6 +209,7 @@ public class Main {
                 case 7:
                     String filterWord;
                     do {
+                        loop = false;
                         System.out.println("Please enter a word to be filtered");
                         filterWord = scan.nextLine();
                         if (filterWord.matches("[^\\w']+")) {
@@ -208,6 +224,7 @@ public class Main {
                 case 8:
                     String unFilterWord;
                     do {
+                        loop = false;
                         System.out.println("Please enter a word to be un-filtered");
                         unFilterWord = scan.nextLine();
                         if (unFilterWord.matches("[^\\w']+")) {
@@ -223,6 +240,7 @@ public class Main {
                 case 9:
                     char censoredChar = (char) -1;
                     do {
+                        loop = false;
                         System.out.println("Please enter a character to be used as censored pattern");
                         String str = scan.nextLine();
                         if (str.length() == 1)
@@ -241,10 +259,11 @@ public class Main {
                         System.out.println("1. Turn off filter");
                         System.out.println("2. Turn on filter");
                         try {
+                            loop = false;
                             int select = Integer.parseInt(scan.nextLine());
                             if (select == 1)
                                 user.changeFilteringMode(true);
-                            if (select == 2)
+                            else if (select == 2)
                                 user.changeFilteringMode(false);
                             else {
                                 System.out.println("Please enter 1 or 2");
@@ -255,6 +274,7 @@ public class Main {
                             loop = true;
                         }
                     } while (loop);
+                    break;
                 case 11:
                     System.out.println("You are about to delete your account!");
                     System.out.println("Recovery is only possible before you logout");
