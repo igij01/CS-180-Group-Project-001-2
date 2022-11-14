@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * A class that manages all of the information that would be publicly available to any user
  * @author Alexander Roth -- Samson Tesfagiorgis -- Yulin Lin
- * @version November 14th, 2022
+ * @version November 14, 2022
  */
 public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller instead of Buyer/Seller. It will be used to send messages between 2 users - Lincoln
 
