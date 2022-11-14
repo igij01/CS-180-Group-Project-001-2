@@ -6,6 +6,13 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Store
+ * <p>
+ * Store object that is related to a Seller Object with simple variables associated
+ * @author Samson Tesfagiorgis, Yulin Lin, 001
+ * @version 11/11/2022
+ */
 public class Store implements Serializable {
     // update this field everytime you update the field of the class
     // put in a random number or just increment the number
