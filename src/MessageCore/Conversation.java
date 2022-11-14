@@ -63,7 +63,7 @@ public class Conversation implements Serializable {
     public ArrayList<Message> getConversation() {
         return conversation;
     }
-    
+
     /**
      * Add a message to the conversation if the buyer and seller are participant of the message
      *
@@ -78,6 +78,7 @@ public class Conversation implements Serializable {
 
     /**
      * Add a message to the conversation and change the target read status to
+     *
      * @param sender      the user sending the message
      * @param receiver    the intended receiver
      * @param messageBody the message body
@@ -134,6 +135,7 @@ public class Conversation implements Serializable {
 
     /**
      * allow the participant of the conversation to get the other User instance
+     *
      * @param requestingUser the user requesting the action
      * @return the User instance of the other user
      * @throws IllegalUserAccessException when the requesting user is not a participant
@@ -148,6 +150,7 @@ public class Conversation implements Serializable {
 
     /**
      * check if the user has new unread messages
+     *
      * @param requestingUser the requesting user
      * @return true if the user has unread messages
      * @throws IllegalUserAccessException when the requesting user is not a participant
