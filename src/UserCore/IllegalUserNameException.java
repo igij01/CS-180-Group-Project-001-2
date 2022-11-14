@@ -18,6 +18,7 @@ public class IllegalUserNameException extends IllegalArgumentException {
     public IllegalUserNameException(String invalidName) {
         super(String.format("the name %s is already taken!", invalidName));
     }
+
     public IllegalUserNameException() {
         super("This Username Cannot Be Found");
     }
