@@ -68,6 +68,22 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             for (FullBuyer buyer : listOfBuyers) {
                 buyer.linker();
             }
+            for (Store store : listOfStores) {
+                for (FullBuyer buyer : listOfBuyers) {
+                    int index = 0;
+                    for (Store buyerStore : buyer.getStoresMessaged()) {
+                        if (store != buyerStore && store.equals(buyerStore))
+                            buyer.getStoresMessaged().set(index, store);
+                    }
+                }
+                for (FullSeller seller : listOfSellers) {
+                    int index = 0;
+                    for (Store sellerStore : seller.getStores()) {
+                        if (store != sellerStore && store.equals(sellerStore))
+                            seller.getStores().set(index, store);
+                    }
+                }
+            }
         } catch (EOFException e) {
             listOfBuyers = new ArrayList<>();
             listOfUsersNames = new ArrayList<>();

@@ -129,7 +129,7 @@ censored pattern: *
 13. Go back
 [3]
 Please enter the name of the buyer/seller to block
-[seller]
+[Seller]
 account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
 blocked users: [UserName = 'Seller', Email = 'sample@email.com', role = SELLER]
 made invisible users: []
@@ -151,7 +151,7 @@ censored pattern: *
 13. Go back
 [3]
 Please enter the name of the buyer/seller to block
-[seller]
+[Seller]
 account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
 blocked users: [UserName = 'Seller', Email = 'sample@email.com', role = SELLER]
 made invisible users: []
@@ -223,7 +223,7 @@ censored pattern: *
 13. Go back
 [5]
 Please enter the name of the buyer/seller to become invisible
-[seller]
+[Seller]
 account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
 blocked users: []
 made invisible users: [UserName = 'Seller', Email = 'sample@email.com', role = SELLER]
@@ -245,7 +245,7 @@ censored pattern: *
 13. Go back
 [6]
 Please enter the name of the buyer/seller to become un-invisible
-[seller]
+[Seller]
 account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
 blocked users: []
 made invisible users: []

@@ -523,4 +523,15 @@ public class FullUser implements Serializable {
                 "\nfiltered words: " + filterWords +
                 "\ncensored pattern: " + this.replaceChar;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj instanceof FullUser) {
+            FullUser fullUser = (FullUser) obj;
+            return fullUser.user.equals(this.user);
+        }
+        return false;
+    }
 }

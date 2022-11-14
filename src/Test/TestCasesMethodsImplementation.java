@@ -228,7 +228,7 @@ public class TestCasesMethodsImplementation {
         buyer1.editMessage(0, 0, "new message");
         String out = seller1.printConversation(0);
         String contentExcludingTimeStamp = out.substring(0, out.lastIndexOf('\n'));
-        TestCase.assertEquals("0\t*Buyer: new message", contentExcludingTimeStamp);
+        TestCase.assertEquals("0\t*Buyer: new message\n\t  (edited)", contentExcludingTimeStamp);
     }
 
     @Test(timeout = 1000)
@@ -244,13 +244,9 @@ public class TestCasesMethodsImplementation {
     @Test(timeout = 1000)
     public void testNewMessagesInConversation() {
         buyer1.messageSeller(seller1, "message");
-        seller1.createMessage(buyer1, "reply");
-        String outBuyer = buyer1.printConversation(0);
         String outSeller = seller1.printConversation(0);
-        String outBuyerExcludeTime = outBuyer.substring(0, outBuyer.indexOf('\n'));
         String outSellerExcludeTime = outSeller.substring(0, outSeller.indexOf('\n'));
         TestCase.assertEquals("0\t*Buyer: message", outSellerExcludeTime);
-        TestCase.assertEquals("1\t*Seller: reply", outBuyerExcludeTime);
     }
 
     @Test(timeout = 1000)
@@ -324,7 +320,7 @@ public class TestCasesMethodsImplementation {
         TestCase.assertEquals("""
                 Highest Messaging Customers
                 | Buyer: 2|| Buyer2: 1|
-                Most Popular Words
+                Most Popular meaningful word
                 xxxx
                 """, seller1.viewDashboard(true));
     }

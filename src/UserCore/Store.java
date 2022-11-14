@@ -133,4 +133,9 @@ public class Store implements Serializable {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "store name: '" + this.storeName + "', owner: " + this.owner.getUserName();
+    }
 }

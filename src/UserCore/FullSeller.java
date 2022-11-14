@@ -124,7 +124,10 @@ public class FullSeller extends FullUser implements Serializable {
      */
     public String viewDashboard(boolean increasingOrder) {
         StringBuilder customers = new StringBuilder("Highest Messaging Customers\n");
-        String mostPopularWords = "Most Popular Words\n" + mostCommonWordsOverall();
+        String word = mostCommonWordsOverall();
+        if (word == null)
+            word = "You haven't received nor send any messages";
+        String mostPopularWords = "Most Popular meaningful word\n" + word;
         for (Store store : stores) {
             FullBuyer[] buyers = store.getAllMessagingBuyers().toArray(new FullBuyer[0]);
             Integer[] buyersMessageCount = store.getMessagingBuyersMessageCount().toArray(new Integer[0]);
@@ -137,4 +140,8 @@ public class FullSeller extends FullUser implements Serializable {
         return this.stores;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + "\nStore: " + stores;
+    }
 }

@@ -77,7 +77,7 @@ public class Message implements Serializable {
     public void editMessage(User requestUser, String newMessage) throws IllegalUserAccessException {
         if (!isSender(requestUser))
             throw new IllegalUserAccessException("User is not a sender therefore cannot edit the message");
-        this.message = newMessage;
+        this.message = newMessage + "\n\t  (edited)";
         readByTarget = false;
         setTimeToNow();
     }
@@ -154,7 +154,7 @@ public class Message implements Serializable {
         if (!isParticipant(requestingUser))
             throw new IllegalUserAccessException("User is not a participant of the message!");
         else if (!isSender(requestingUser))
-            return readByTarget;
+            return !readByTarget;
         return false;
     }
 

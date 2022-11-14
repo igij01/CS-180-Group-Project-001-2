@@ -119,6 +119,10 @@ public class FullBuyer extends FullUser implements Serializable {
         }
     }
 
+    protected ArrayList<Store> getStoresMessaged() {
+        return storesMessaged;
+    }
+
     /**
      * message a specific seller
      *
@@ -165,25 +169,8 @@ public class FullBuyer extends FullUser implements Serializable {
         return mostPopStores + personalStores;
     }
 
-
-    public static void main(String[] args) {
-        FullBuyer f1 = new FullBuyer("username1", "sample@gmail.com", "abc123");
-        Seller s1 = new Seller("user2", "sample@gmail.com", "abc123");
-        Seller s2 = new Seller("user3", "sample@gmail.com", "pwd123");
-        Seller s3 = new Seller("user4", "sample@gmail.com", "pwd123");
-
-        //FullSeller fs1 = new FullSeller("user2" , "sample@gmail.com", "abc123");
-        //FullSeller fs2 = new FullSeller("user3", "sample@gmail.com", "pwd123");
-        //FullSeller fs3 = new FullSeller("user4", "sample@gmail.com", "pwd123");
-
-        Store store1 = new Store("Store1", s1);
-        Store store2 = new Store("Store2", s2);
-        Store store3 = new Store("Store3", s3);
-
-        //f1.messageStore(store1, "Hi");
-        //f1.messageStore(store2, "Hey");
-        //f1.messageStore(store2, "MOst");
-        System.out.println(f1.viewDashboard(true));
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
-
 }

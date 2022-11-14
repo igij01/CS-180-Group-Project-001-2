@@ -2,10 +2,7 @@ import UserCore.FullBuyer;
 import UserCore.FullSeller;
 import UserCore.PublicInformation;
 import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -118,6 +115,14 @@ public class TestCasesMain extends TestCase {
                 File.class, File.class, File.class, File.class);
         m.setAccessible(true);
         m.invoke(PublicInformation.class, serBuy, serSell, serStores, serNames);
+    }
+
+    @AfterClass
+    public static void deleteFiles() throws Exception {
+        serBuy.delete();
+        serSell.delete();
+        serNames.delete();
+        serStores.delete();
     }
 
     /**

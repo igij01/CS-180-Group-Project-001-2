@@ -466,9 +466,8 @@ public class Main {
             System.out.println("3.Edit message");
             System.out.println("4.Back");
             try {
-                message = scan.nextInt();
-                scan.nextLine();
-            } catch (InputMismatchException e) {
+                message = Integer.parseInt(scan.nextLine());
+            } catch (NumberFormatException e) {
                 System.out.println("Enter a number");
                 return case3(scan, user);
             }
@@ -537,9 +536,6 @@ public class Main {
             String replace = scan.nextLine();
             try {
                 user.editMessage(conIndex, mesIndex, replace);
-                FullUser seller1 = PublicInformation.findSeller("seller", (FullBuyer) user);
-                assert seller1 != null;
-                System.out.println(seller1.printConversation(0));
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("The conversation or message index does not exist");
                 System.out.println("Please navigate to Mail to see list of conversations and messages");
@@ -670,8 +666,11 @@ public class Main {
                     System.out.println("Would you like to register? Or try again?");
                     System.out.println("1.Register");
                     System.out.println("2.Again");
-                    register = scan.nextInt();
-                    scan.nextLine();
+                    try {
+                        register = Integer.parseInt(scan.nextLine());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please input a number");
+                    }
                 } while (register != 1 && register != 2);
                 if (register == 1) {
                     loginLoop = false;

@@ -55,5 +55,29 @@ What would you like to send them?
 3.Message
 4.List
 5.Logout
+[3]
+1.Create new message
+2.Remove message
+3.Edit message
+4.Back
+[1]
+Who would you like to message?
+[Seller]
+Do you want to send a string message or a file
+1 for string    2 for txt file
+[2]
+Please put in the file path
+[s]
+Something went wrong when trying to read the file
+1.Create new message
+2.Remove message
+3.Edit message
+4.Back
+[4]
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
 [5]
 Thank you for using the market messaging system
