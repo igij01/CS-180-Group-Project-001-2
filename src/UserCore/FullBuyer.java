@@ -10,6 +10,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * FullBuyer
+ * <p>
+ * A FullBuyer class where the FullUser's role is a buyer and operates as a buyer
+ *
+ * @author Arthur Ruano, Samson Tesfagiorgis, Yulin Lin, 001
+ * @version 11/5/2022
+ */
 public class FullBuyer extends FullUser implements Serializable {
 
     // update this field everytime you update the field of the class
