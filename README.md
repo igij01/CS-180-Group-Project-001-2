@@ -15,7 +15,9 @@ to message directly
 for each stores
 * Users can also block another user or become invisible to them
 * Conversations with new messages will be marked and automatically put to the top
+
 ## Run the app!
+
 If you are using an IDE like Intellij, you can simply download the project and put it in your ide and run the 
 Main class
 <p>
@@ -273,3 +275,5 @@ include all the sellers, buyers, stores, and used usernames
 * testDataPersistence
 
 # list of students submit part of assignment
+* Yulin Lin - submit codes
+* Teresa Wan - submit report
