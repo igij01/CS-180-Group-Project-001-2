@@ -32,23 +32,41 @@ java Main
 ### UserCore
 #### User.java and its children
 
-User and its children Buyer and Seller are served as a stand in class for classes other than UserCore to use. 
-They only contain attributes the makes up a user - the username, password, email, and role - which constitute a 
-unique identifier for other classes to use them, and status indicator login status. 
-User classes does not have any utility methods; it only has protected simple 
+User and its children Buyer and Seller are served as a stand in class for classes other than UserCore to use.
+They only contain attributes the makes up a user - the username, password, email, and role - which constitute a
+unique identifier for other classes to use them, and status indicator login status and waiting for deletion status.
+User classes does not have any utility methods; it only has protected simple
 getters and setters for classes in UserCore and public static getters for username, roles, login status which are public
 information that can be shared. User also has a equal method and toString method to help aid other classes to identify
-the user. **User and its children has protected constructors to prevent unauthorized instantiation.** 
+the user. **User and its children has protected constructors to prevent unauthorized instantiation.**
 <p>
 Buyer and Seller inherit the User class, they are there to simplify user creation as they don't need to take Role as 
 one of its parameter during creation and limit the fields that use them to only contain buyer/seller instances.
 
+#### Store.java
+
+A class that represent store and contains attributes of a store include owner, store names, and number of message
+received by each customer
+
+##### Test Done To Verify Functionalities
+
+##### TestCasesMethodsImplementation
+
+* testCreateStore
+* testTakenStoreName
+
 ### MessageCore
+
 #### Message
+
 The message class represents the individual messages each user send in a conversation.
+
 ##### Dependencies
+
 * Uses User class as field
+
 ##### Attributes
+
 * sender
 * receiver
 * content of the message
@@ -98,14 +116,160 @@ The conversation encapsulate all messages functionalities plus additional includ
 * testMessageSellerToSeller
 
 ### UserCore
+
 #### FullUser and its children
+
 FullUser and its children combine User classes attributes and message functionalities and provide an interface
-for user to interact. 
+for user to interact.
 
+#### FullUser
 
+Full User class represent common attributes and functionalities that each Buyer and Seller share like:
+
+* Attributes in User - username, password, email, login status, waiting for deletion status
+* message creation, edition, deletion
+* Provide a way for user to interact with their profile
 
 ##### Dependencies
+
+* Uses User class as field
+* Uses Conversation class as field
+* Uses Public Information class methods
+
 ##### Attributes
+
+* User
+* list of conversations
+* list of blocked user
+* list of make invisible user
+* list of filtered word
+* censoring character
+* flag for censoring mode
+
 ##### Functionalities
+
+The Full User implement all conversation functionalities plus additional include:
+
+* converting files to string for message manipulations
+* provide a way to notify and link 2 users in the conversation
+* Print a list of conversation by the titled by the other parties' name for user to select
+* Display the conversation based on user selection
+* Provide a password check method to verify user's identity
+* Print the profile information
+* Uses export to csv methods in conversation to output csv to a file designated by the user
+
 ##### Test Done To Verify Functionalities
+
+* TestCasesMain
+
 ###### TestCasesMethodsImplementation
+
+* testFilterMessages
+* testInvisible
+* testLoginSuccess
+* testWrongUsername
+* testBlocking
+* testWrongPassword
+* testLogout
+*
+
+#### FullBuyer
+
+FullBuyer class represents attributes and functionalities associated with the buyer
+
+##### Dependencies
+
+* Uses Full User as parent
+* Uses Public Information Methods
+
+##### Attributes
+
+* list of store messaged and the frequency list
+
+##### Functionalities
+
+* create a buyer
+* message store
+* message seller
+* view buyer dashboard
+
+##### Test Done To Verify Functionalities
+
+* TestCasesMain
+
+###### TestCasesMethodsImplementation
+
+* testBuyerDashBoard
+
+#### FullSeller
+
+FullSeller class represents attributes and functionalities associated with the seller
+
+##### Dependencies
+
+* Uses Full User as parent
+* Uses Public Information Methods
+
+##### Attributes
+
+* a static list of stop words in English to filter out stop words for common word method
+
+##### Functionalities
+
+* create a seller
+* create a store
+* message buyer
+* view seller dashboard
+
+##### Test Done To Verify Functionalities
+
+* TestCasesMain
+
+###### TestCasesMethodsImplementation
+
+* testSellerDashBoard
+* testMostFrequentWord
+* testCreateStore
+
+#### Public Information
+
+Public information contains a collection of static utility methods for accessing and exchanging public information
+include all the sellers, buyers, stores, and used usernames
+
+##### Dependencies
+
+* Uses Full Seller as field
+* Uses Full Buyer as field
+* Uses Store as field
+
+##### Attributes
+
+* a static list of all the Full Buyers
+* a static list of all the Full Sellers
+* a static list of all the usernames in
+* a static list of stores
+
+##### Functionalities
+
+* Data persistence by serializing all static lists
+* Translate a user instance to FullUser
+* provide a global login and logout method
+* Find the owner of a store
+* Sort all stores by the messages they received
+* Method to check for duplication during account creation and edition
+* Search for seller and buyer by usernames
+* Find the seller, buyer, and store by putting in the exact name for them
+* Delete user and recover user
+* And various unsafe debugging methods
+
+##### Test Done To Verify Functionalities
+
+* TestCasesMain
+
+###### TestCasesMethodsImplementation
+
+* testAccountDeletion
+* testAccountRecovery
+* testDataPersistence
+
+# list of students submit part of assignment

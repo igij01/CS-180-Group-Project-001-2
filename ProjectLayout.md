@@ -1,11 +1,13 @@
 # Rough Layout of Project 4 Option 2
 
-1. [ ] User Functionality - ___vacant___
+1. [X] User Functionality - ___vacant___
    1. [x] Super class placeholder User(buyer and seller inherit from user) Lincoln
       1. include common data and methods that both buyer and the seller have
-      2. User should have number of messages in one of the field and a static public method to increment message as a user construct a new Message
+      2. User should have number of messages in one of the field and a static public method to increment message as a
+         user construct a new Message
       3. Seller should have store array field
-   2. [x] FullUser is a utility class that contains User. Arthur __This is the class that will interact with the user. So all
+   2. [x] FullUser is a utility class that contains User. Arthur __This is the class that will interact with the user.
+      So all
       functionality methods should be all public(besides helper methods)__
       1. Fields: User, list of Conversations that this user is associated with. _TODO: someway to notify the target
          about the conversation_
@@ -19,7 +21,7 @@
          Awaits further discussion_)
       6. Blocking: can be 2 arrays - one block, another invisible assoc. with a __protected__ method that checks whether
          a user is invisible to them
-   4. [ ] FullBuyer utility class(NOT Buyer.java) that takes in a buyer instance -
+   4. [X] FullBuyer utility class(NOT Buyer.java) that takes in a buyer instance -
       1. Method that return a list of stores for user to select - PublicInformation
       2. Also can search for a specific seller (?WHAT?)
       3. list of stores by number of messages received - PublicInformation
@@ -46,17 +48,17 @@
    2. [X] import message
       1. again utility method
    3. Pretty light work load but would need a template at least from functionality group
-4. [ ] Statistics - Samson - _look at user functionality for requirement_
+4. [X] Statistics - Samson - _look at user functionality for requirement_
    1. Prob. utility classes since they are pretty big
-   2. [ ] Can be summed up into a single class or at least a super class with 2 children
+   2. [X] Can be summed up into a single class or at least a super class with 2 children
       1. list of buyer/seller with number of message received/sent and message sent/common word
       2. sort
    3. probably the most challenging part
 5. [x] Blocking - Arthur
    1. EASY!
    2. can be 2 simple arrays of block and invisible or a class
-6. [ ] Connecting the dots
-   1. [ ] Main class
+6. [X] Connecting the dots
+   1. [X] Main class
       1. page for user login
       2. dashboard
          1. stats
@@ -64,7 +66,7 @@
          3. messages open
       3. Message
          1. messaging body
-         2. options 
+         2. options
    2. could have some subclasses to sum different section together to make it more presentable
 
 note:

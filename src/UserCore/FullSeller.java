@@ -12,10 +12,10 @@ import java.util.Map;
 /**
  * FullSeller
  * <p>
- *
+ * <p>
  * A FullSeller class where the FullUser takes the role of a seller has operations specific to its class
  *
- * @author Samson Tesfagiorgis, Yulin Lin, 001
+ * @author Samson Tesfagiorgis, Yulin Lin, Teresa Wan, 001
  * @version 11/3/2022
  */
 public class FullSeller extends FullUser implements Serializable {

@@ -10,6 +10,14 @@ import java.util.Scanner;
 
 import static UserCore.PublicInformation.*;
 
+/**
+ * Main
+ * <p>
+ * main class that run the market messaging system
+ *
+ * @author Samson Tesfagiorgis, Yulin Lin, Teresa Wan, Arthur Ruano, Alexander Roth, 001
+ * @version 11/14/2022
+ */
 public class Main {
     public static void main(String[] args) {
         if (!(args != null && args.length > 0 && args[0].equalsIgnoreCase("debug")))

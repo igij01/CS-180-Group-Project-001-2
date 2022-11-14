@@ -5,7 +5,8 @@ import java.util.ArrayList;
 
 /**
  * A class that manages all of the information that would be publicly available to any user
- * @author Alexander Roth -- Samson Tesfagiorgis -- Yulin Lin
+ *
+ * @author Alexander Roth -- Samson Tesfagiorgis -- Yulin Lin, 001
  * @version November 14, 2022
  */
 public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller instead of Buyer/Seller. It will be used to send messages between 2 users - Lincoln
@@ -311,9 +312,10 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     /**
      * Goes through array and finds the matching full buyer
+     *
      * @return matching index
      */
-    public static int findMatchingObjectIndex(ArrayList<FullBuyer> fbArray, FullBuyer fb) {
+    protected static int findMatchingObjectIndex(ArrayList<FullBuyer> fbArray, FullBuyer fb) {
         int index = -1;
         for (int i = 0; i < fbArray.size(); i++) {
             if (fb.equals(fbArray.get(i))) {

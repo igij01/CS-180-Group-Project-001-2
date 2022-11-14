@@ -20,10 +20,10 @@ import java.util.Collection;
  * <p>
  * Run unit test based on the expected output from txt files
  * <p>
- * Note: This class was written in September in one of my personal project!
+ * Note: This class is adapted from one of my personal project
  *
  * @author Yulin, Lin
- * @version 1.0.0, 10/1/2022
+ * @version 1.0.0, 11/14/2022
  */
 @RunWith(Parameterized.class)
 public class TestCasesMain extends TestCase {

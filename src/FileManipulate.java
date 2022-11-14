@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  * <p>
  * a class that contains static methods to separate output and input from files used by Main Unit Test
  * <p>
- * Note: This class was written in September in one of my personal project!
+ * Note: This class was written in September in one of my personal project
  *
  * @author Yulin Lin, 001
  * @version 1.0.0, 9/30/2022
