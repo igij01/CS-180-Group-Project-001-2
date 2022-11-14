@@ -1,0 +1,44 @@
+Welcome to the market messaging system
+Please enter username.
+[buyer]
+Please enter password.
+[1]
+Login successful!
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
+[4]
+1.search sellers
+2.Print list of Stores
+3.Print Buyer Dashboard
+4.Back
+[2]
+There are no stores!
+1.search sellers
+2.Print list of Stores
+3.Print Buyer Dashboard
+4.Back
+[1]
+Please enter search text
+[seller]
+Seller
+Seller2
+1.search sellers
+2.Print list of Stores
+3.Print Buyer Dashboard
+4.Back
+[3]
+Do you want to view dashboard in increasing order?
+[n]
+Most Popular Stores
+Your Most Messaged Stores
+
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
+[5]
+Thank you for using the market messaging system

@@ -60,7 +60,7 @@ public class FileManipulate {
             assert scan != null;
             if (isScannerEmpty(scan)) continue;
             StringBuilder resultFile = new StringBuilder();
-            scan.useDelimiter("\\n+");
+            scan.useDelimiter("\\n");
             while (scan.hasNext()) {
                 String line = scan.next().strip();
                 if (line.startsWith("[")) continue;

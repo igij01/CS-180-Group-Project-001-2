@@ -193,7 +193,7 @@ public class Message implements Serializable {
      * @throws IllegalUserAccessException if the user is not a participant of the message
      */
     public String toStringUser(User requestingUser) {
-        String toString = String.format("%c%s: %s\n %s", ((!readByTarget && isSender(requestingUser)) ? ' ' : '*'),
+        String toString = String.format("%c%s: %s\n %s", ((readByTarget || isSender(requestingUser)) ? ' ' : '*'),
                 User.userName(sender), message, dtf.format(time));
         if (!isParticipant(requestingUser))
             throw new IllegalUserAccessException();

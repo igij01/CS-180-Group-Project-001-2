@@ -209,17 +209,21 @@ public class Conversation implements Serializable {
      */
     public String toStringConversation(User requestingUser) {
         if (requestingUser.equals(this.buyer) || requestingUser.equals(this.seller)) {
-            updateReadStatus(requestingUser);
             StringBuilder rawString = new StringBuilder();
             int index = 0;
             for (Message m : conversation) {
-                if (m.toStringUser(requestingUser) == null)
+                String out;
+                if ((out = m.toStringUser(requestingUser)) == null)
                     continue;
                 if (m.isNew(requestingUser))
-                    rawString.insert(0, (index++ + "\t" + m.toStringUser(requestingUser) + "\n"));
+                    rawString.insert(0, (index++ + "\t" + out + "\n"));
                 else
-                    rawString.append(index++).append('\t').append(m.toStringUser(requestingUser)).append('\n');
+                    rawString.append(index++).append('\t').append(out).append('\n');
             }
+            if (requestingUser.equals(this.buyer))
+                this.newMessageBuyer = false;
+            else if (requestingUser.equals(this.seller))
+                this.newMessageSeller = false;
             if (!rawString.isEmpty())
                 rawString.deleteCharAt(rawString.length() - 1);
             return rawString.toString();

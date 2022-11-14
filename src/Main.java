@@ -18,7 +18,7 @@ public class Main {
         System.out.println("Welcome to the market messaging system");
         FullUser user = mainLogin(scan);
         if (user.newMessage())
-            System.out.println("You have a unread message!");
+            System.out.println("You have an unread message!");
         int decision = 0;
         do {
             decision = mainDash(scan);
@@ -78,10 +78,11 @@ public class Main {
             boolean loop = false;
             int choice = 0;
             do {
+                loop = false;
                 try {
                     choice = Integer.parseInt(scan.nextLine());
                     if (choice < 1 || choice > 13) {
-                        System.out.println("Please choose a number between 1 and 10");
+                        System.out.println("Please choose a number between 1 and 13");
                         loop = true;
                     }
                 } catch (NumberFormatException e) {
@@ -329,9 +330,12 @@ public class Main {
             System.out.println("Please enter search text");
             String searchText = scan.nextLine();
             System.out.println(PublicInformation.findSellerBasedOnLetters(searchText, buyer));
-            System.out.println();
             case4(scan, buyer);
         } else if (list == 2) {
+            if (storeList(buyer) == null) {
+                System.out.println("There are no stores!");
+                return case4(scan, buyer);
+            }
             System.out.println(storeList(buyer));
             System.out.println();
             System.out.println("Please put in the name of the store you want to message");
@@ -384,7 +388,6 @@ public class Main {
                     repeat = true;
                 }
             } while (repeat);
-            System.out.println();
         }
         return true;
     }
@@ -468,6 +471,7 @@ public class Main {
             receiver = findUser(username, user);
             if (receiver == null) {
                 System.out.println("No such user exists");
+                System.out.println("Please navigate to list to search for username to message");
                 return case3(scan, user);
             }
             System.out.println("Do you want to send a string message or a file");
@@ -510,6 +514,7 @@ public class Main {
                 return case3(scan, user);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("The entered index does not exist");
+                System.out.println("Please navigate to Mail to see list of conversations and messages");
                 return case3(scan, user);
             }
             return true;
@@ -526,6 +531,7 @@ public class Main {
                 user.editMessage(conIndex, mesIndex, replace);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("The conversation or message index does not exist");
+                System.out.println("Please navigate to Mail to see list of conversations and messages");
                 return case3(scan, user);
             } catch (IllegalUserAccessException e) {
                 System.out.println("You don't have permission to edit this message");
@@ -565,14 +571,20 @@ public class Main {
                 System.out.println("Enter -1 to stop");
                 try {
                     i = Integer.parseInt(scan.nextLine());
-                    indexes.add(i);
+                    if (i >= 0)
+                        indexes.add(i);
                 } catch (NumberFormatException e) {
                     System.out.println("Please put in a number");
                     i = -2;
                 }
             } while (i != -1);
             try {
-                user.printConversationInCSV(indexes, file);
+                if (indexes.isEmpty())
+                    System.out.println("You did not put in any indexes!");
+                else {
+                    user.printConversationInCSV(indexes, file);
+                    System.out.printf("Successfully written to %s\n", file);
+                }
             } catch (IOException e) {
                 System.out.println("something went wrong when trying to write to the file");
                 return mainDecision(scan, 2, user);
@@ -582,7 +594,7 @@ public class Main {
             }
         } else if (conversation != -1) {
             try {
-                user.printConversation(conversation);
+                System.out.println(user.printConversation(conversation));
                 System.out.println("Do you want to save this conversation in csv?");
                 String choice = scan.nextLine();
                 if (choice.equalsIgnoreCase("yes") || choice.equalsIgnoreCase("y")) {

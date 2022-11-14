@@ -1,0 +1,63 @@
+Welcome to the market messaging system
+Please enter username.
+[buyer]
+Please enter password.
+[1]
+Login successful!
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
+[2]
+You got no conversation!
+Go message some one
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
+[3]
+1.Create new message
+2.Remove message
+3.Edit message
+4.Back
+[1]
+Who would you like to message?
+[s]
+No such user exists
+Please navigate to list to search for username to message
+1.Create new message
+2.Remove message
+3.Edit message
+4.Back
+[2]
+What is the conversation number?
+[5]
+What is the message number?
+[-1]
+The entered index does not exist
+Please navigate to Mail to see list of conversations and messages
+1.Create new message
+2.Remove message
+3.Edit message
+4.Back
+[1]
+Who would you like to message?
+[Seller]
+Do you want to send a string message or a file
+1 for string    2 for txt file
+[1]
+What would you like to send them?
+[Hello!]
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
+[5]

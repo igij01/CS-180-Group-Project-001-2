@@ -29,7 +29,25 @@ censored pattern: *
 11. Delete account
 12. Recover Account
 13. Go back
+[fff]
+Please enter a number
+[-1]
+Please choose a number between 1 and 13
 [1]
+Please enter the new username
+[Seller]
+Please enter the password to confirm your action
+[1]
+the name Seller is already taken!
+Do you want to try again?(y/n)
+[y]
+Please enter the new username
+[buyer]
+Please enter the password to confirm your action
+[2]
+INCORRECT PASSCODE
+Do you want to try again?(y/n)
+[Yes]
 Please enter the new username
 [buyer]
 Please enter the password to confirm your action
@@ -57,6 +75,13 @@ censored pattern: *
 Please enter the new email
 [mail@mail.com]
 Please enter the password to confirm your action
+[2]
+INCORRECT PASSCODE
+Do you want to try again?(y/n)
+[yEs]
+Please enter the new email
+[mail@mail.com]
+Please enter the password to confirm your action
 [1]
 account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
 blocked users: []
@@ -79,7 +104,82 @@ censored pattern: *
 13. Go back
 [3]
 Please enter the name of the buyer/seller to block
+[g]
+The seller name cannot be found
+Do you want to try again?(y/n)
+[n]
+account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
+blocked users: []
+made invisible users: []
+censor mode: ON
+filtered words: []
+censored pattern: *
+1. Change username
+2. Change email
+3. Block users
+4. Unblock users
+5. Make yourself invisible to users
+6. Unmake yourself invisible to users
+7. Add a word to be filtered
+8. Unblock a word
+9. Change the current censor pattern
+10. Change filtering mode
+11. Delete account
+12. Recover Account
+13. Go back
+[3]
+Please enter the name of the buyer/seller to block
 [seller]
+account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
+blocked users: [UserName = 'Seller', Email = 'sample@email.com', role = SELLER]
+made invisible users: []
+censor mode: ON
+filtered words: []
+censored pattern: *
+1. Change username
+2. Change email
+3. Block users
+4. Unblock users
+5. Make yourself invisible to users
+6. Unmake yourself invisible to users
+7. Add a word to be filtered
+8. Unblock a word
+9. Change the current censor pattern
+10. Change filtering mode
+11. Delete account
+12. Recover Account
+13. Go back
+[3]
+Please enter the name of the buyer/seller to block
+[seller]
+account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
+blocked users: [UserName = 'Seller', Email = 'sample@email.com', role = SELLER]
+made invisible users: []
+censor mode: ON
+filtered words: []
+censored pattern: *
+1. Change username
+2. Change email
+3. Block users
+4. Unblock users
+5. Make yourself invisible to users
+6. Unmake yourself invisible to users
+7. Add a word to be filtered
+8. Unblock a word
+9. Change the current censor pattern
+10. Change filtering mode
+11. Delete account
+12. Recover Account
+13. Go back
+[4]
+Please enter the name of the buyer/seller to unblock
+[s]
+The seller name cannot be found
+Do you want to try again?(y/n)
+[y]
+Please enter the name of the buyer/seller to unblock
+[Seller2]
+The user is not blocked by you!
 account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
 blocked users: [UserName = 'Seller', Email = 'sample@email.com', role = SELLER]
 made invisible users: []
@@ -187,6 +287,28 @@ censored pattern: *
 11. Delete account
 12. Recover Account
 13. Go back
+[7]
+Please enter a word to be filtered
+[blOckEd]
+account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
+blocked users: []
+made invisible users: []
+censor mode: ON
+filtered words: [blocked]
+censored pattern: *
+1. Change username
+2. Change email
+3. Block users
+4. Unblock users
+5. Make yourself invisible to users
+6. Unmake yourself invisible to users
+7. Add a word to be filtered
+8. Unblock a word
+9. Change the current censor pattern
+10. Change filtering mode
+11. Delete account
+12. Recover Account
+13. Go back
 [8]
 Please enter a word to be un-filtered
 [blocked]
@@ -235,6 +357,58 @@ censored pattern: @
 Please choose the new filtering mode
 1. Turn off filter
 2. Turn on filter
+[1]
+account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
+blocked users: []
+made invisible users: []
+censor mode: OFF
+filtered words: []
+censored pattern: @
+1. Change username
+2. Change email
+3. Block users
+4. Unblock users
+5. Make yourself invisible to users
+6. Unmake yourself invisible to users
+7. Add a word to be filtered
+8. Unblock a word
+9. Change the current censor pattern
+10. Change filtering mode
+11. Delete account
+12. Recover Account
+13. Go back
+[11]
+You are about to delete your account!
+Recovery is only possible before you logout
+Please enter your password to confirm this action
+[4]
+Wrong Password!
+account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
+blocked users: []
+made invisible users: []
+censor mode: OFF
+filtered words: []
+censored pattern: @
+1. Change username
+2. Change email
+3. Block users
+4. Unblock users
+5. Make yourself invisible to users
+6. Unmake yourself invisible to users
+7. Add a word to be filtered
+8. Unblock a word
+9. Change the current censor pattern
+10. Change filtering mode
+11. Delete account
+12. Recover Account
+13. Go back
+[12]
+You never try to delete your account!
+1.Profile
+2.Mail
+3.Message
+4.List
+5.Logout
 [1]
 account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
 blocked users: []

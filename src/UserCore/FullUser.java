@@ -303,7 +303,8 @@ public class FullUser implements Serializable {
         for (String str : filterWords) {
             char[] replacement = new char[str.length()];
             Arrays.fill(replacement, this.replaceChar);
-            strToBeFiltered = strToBeFiltered.replaceAll(String.format("\\b%s\\b", str), String.valueOf(replacement));
+            strToBeFiltered = strToBeFiltered.replaceAll(String.format("(?i)\\b%s\\b", str),
+                    String.valueOf(replacement)); // (?i) starts case-insensitive mode apparently
         }
         return strToBeFiltered;
     }
@@ -350,7 +351,8 @@ public class FullUser implements Serializable {
      * @param fullUser specified user
      */
     public void block(FullUser fullUser) {
-        blocked.add(fullUser.user);
+        if (!blocked.contains(fullUser.user))
+            blocked.add(fullUser.user);
     }
 
     /**
@@ -359,7 +361,8 @@ public class FullUser implements Serializable {
      * @param fullUser specified user
      */
     public void makeInvisible(FullUser fullUser) {
-        invisible.add(fullUser.user);
+        if (!invisible.contains(fullUser.user))
+            invisible.add(fullUser.user);
     }
 
     /**
@@ -368,7 +371,9 @@ public class FullUser implements Serializable {
      * @param filterWord the word to be filtered
      */
     public void addFilterWord(String filterWord) {
-        filterWords.add(filterWord);
+        filterWord = filterWord.toLowerCase();
+        if (!filterWords.contains(filterWord))
+            filterWords.add(filterWord);
     }
 
     /**
@@ -378,7 +383,7 @@ public class FullUser implements Serializable {
      * @return true if the filterWord was in the list
      */
     public boolean removeFilteredWord(String filterWord) {
-        return filterWords.remove(filterWord);
+        return filterWords.remove(filterWord.toLowerCase());
     }
 
     /**
