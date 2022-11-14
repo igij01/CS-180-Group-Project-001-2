@@ -38,6 +38,14 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
     }
 
+    /**
+     * @param oinBuyers  the buyer object input stream
+     * @param oinSellers the seller object input stream
+     * @param oinStores  the store object input stream
+     * @param oinNames   the names object input stream
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @SuppressWarnings("unchecked")
     private static void readFromSerializedFile(ObjectInputStream oinBuyers, ObjectInputStream oinSellers,
                                                ObjectInputStream oinStores, ObjectInputStream oinNames)

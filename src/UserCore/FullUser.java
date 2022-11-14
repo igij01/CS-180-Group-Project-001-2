@@ -8,6 +8,7 @@ import MessageCore.IllegalUserAccessException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class FullUser implements Serializable {
 
@@ -43,6 +44,12 @@ public class FullUser implements Serializable {
         ignoreFiltering = false;
     }
 
+    /**
+     * links the conversations in both parties together so same point to the same memory location
+     * <p>
+     * This is used to fix the issues of both user copies of conversations instead of all point to one conversation
+     * after serialization and deserialization cycle
+     */
     protected void linker() {
         for (Conversation c : conversations) {
             FullUser other = PublicInformation.userTranslate(c.getOtherUser(this.user));
@@ -142,6 +149,15 @@ public class FullUser implements Serializable {
     }
 
     /**
+     * receive signal that a conversation can be deleted since all the participant deleted all the messages
+     *
+     * @param conversation the conversation that can be deleted
+     */
+    private void receiveDestroyConversation(Conversation conversation) {
+        conversations.remove(conversation);
+    }
+
+    /**
      * call this method IF AND ONLY IF the FullUser is going to be deconstructed and not recoverable
      *
      * @param user the user deleted his/her account
@@ -167,7 +183,9 @@ public class FullUser implements Serializable {
     public void deleteMessage(int conversationIndex, int messageIndex)
             throws IllegalUserAccessException, IndexOutOfBoundsException {
         if (this.conversations.get(conversationIndex).deleteMessage(this.user, messageIndex)) {
-            this.conversations.remove(conversationIndex);
+            Conversation c = this.conversations.remove(conversationIndex);
+            Objects.requireNonNull(PublicInformation.userTranslate(c.getOtherUser(this.user)))
+                    .receiveDestroyConversation(c);
         }
     }
 
