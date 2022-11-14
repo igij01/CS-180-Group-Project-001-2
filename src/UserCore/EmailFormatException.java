@@ -3,8 +3,9 @@ package UserCore;
 /**
  * EmailFormatException
  * <p>
- *
+ * <p>
  * an exception that throws when user's email is in an invalid format
+ *
  * @author Yulin Lin, 001
  * @version 11/3/2022
  */
