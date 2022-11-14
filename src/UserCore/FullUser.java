@@ -8,7 +8,6 @@ import MessageCore.IllegalUserAccessException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 public class FullUser implements Serializable {
 
@@ -47,7 +46,7 @@ public class FullUser implements Serializable {
     public ArrayList<Conversation> getConversations() {
         return conversations;
     }
-    
+
     /**
      * creates a new message to the conversation between user and receiver
      * If there's no existing conversation between user and the receiver, it will be created
@@ -186,9 +185,18 @@ public class FullUser implements Serializable {
         this.editMessage(conversationIndex, messageIndex, convertFileToString(newMessage));
     }
 
-    public String viewDashboard() {
-        return "Username: " + this.user.getUserName() +
-                "\nEmail: " + this.user.getEmail();
+    /**
+     * check to see if the user has new message
+     *
+     * @return if the user has new message
+     */
+    public boolean newMessage() {
+        for (Conversation c : conversations) {
+            if (c.newMessageStatus(this.user)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -232,6 +240,7 @@ public class FullUser implements Serializable {
 
     /**
      * print the content of the conversation by index the user select
+     *
      * @param index index
      * @return the conversation content
      * @throws IndexOutOfBoundsException is thrown from editMessage when an invalid index is specified
@@ -242,7 +251,49 @@ public class FullUser implements Serializable {
     }
 
     /**
+     * print the content of the conversation by index the user select
+     *
+     * @param index index
+     * @throws IndexOutOfBoundsException is thrown from editMessage when an invalid index is specified
+     * @throws IOException               when io exception occurred
+     */
+    public void printConversationInCSV(int index, File destination) throws IndexOutOfBoundsException, IOException {
+        if (conversations.size() == 0)
+            return;
+        String out = conversations.get(index).toStringCSV(this.user);
+        out = filter(out);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(destination))) {
+            pw.println("receiver,sender,timestamp,content");
+            pw.print(out);
+        }
+    }
+
+    /**
+     * print the content of the conversation by index the user select
+     *
+     * @param indexes indexes
+     * @throws IndexOutOfBoundsException is thrown from editMessage when an invalid index is specified
+     * @throws IOException               when io exception occurred
+     */
+    public void printConversationInCSV(ArrayList<Integer> indexes, File destination) throws IndexOutOfBoundsException,
+            IOException {
+        if (conversations.size() == 0)
+            return;
+        for (int i : indexes) {
+            if (i >= conversations.size() || i < 0)
+                throw new IndexOutOfBoundsException();
+        }
+        try (PrintWriter pw = new PrintWriter(new FileWriter(destination))) {
+            pw.println("receiver,sender,timestamp,content");
+            for (int i : indexes) {
+                pw.println(filter(conversations.get(i).toStringCSV(this.user)));
+            }
+        }
+    }
+
+    /**
      * filter the input according to user settings
+     *
      * @param strToBeFiltered string to be filtered
      * @return the filtered string
      */
@@ -313,6 +364,7 @@ public class FullUser implements Serializable {
 
     /**
      * add a word for filtering
+     *
      * @param filterWord the word to be filtered
      */
     public void addFilterWord(String filterWord) {
@@ -321,6 +373,7 @@ public class FullUser implements Serializable {
 
     /**
      * remove a word for filtering
+     *
      * @param filterWord the filtered word
      * @return true if the filterWord was in the list
      */
@@ -330,6 +383,7 @@ public class FullUser implements Serializable {
 
     /**
      * change the replacement characters
+     *
      * @param replaceChar the replacement characters
      */
     public void changeReplacedChar(char replaceChar) {
@@ -338,6 +392,7 @@ public class FullUser implements Serializable {
 
     /**
      * change the filter mode. true if you want to turn it off
+     *
      * @param off whether you want to turn it off
      */
     public void changeFilteringMode(boolean off) {
@@ -376,6 +431,27 @@ public class FullUser implements Serializable {
      */
     protected User getUser() {
         return this.user;
+    }
+
+    /**
+     * change the username of the user
+     *
+     * @param newUsername the new username
+     * @param password    the password to confirm the action
+     * @throws InvalidPasswordException when the password is incorrect
+     * @throws IllegalUserNameException when the new username is already taken
+     */
+    public void changeUsername(String newUsername, String password)
+            throws InvalidPasswordException, IllegalUserNameException {
+        if (!this.passwordCheck(password))
+            throw new InvalidPasswordException();
+        this.user.setUserName(newUsername);
+    }
+
+    public void changeEmail(String newEmail, String password) throws EmailFormatException, InvalidPasswordException {
+        if (!this.passwordCheck(password))
+            throw new InvalidPasswordException();
+        this.user.setEmail(newEmail);
     }
 
     /**

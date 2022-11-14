@@ -2,6 +2,9 @@ import MessageCore.IllegalTargetException;
 import MessageCore.IllegalUserAccessException;
 import UserCore.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -9,40 +12,29 @@ import static UserCore.PublicInformation.*;
 
 public class Main {
     public static void main(String[] args) {
-    Scanner scan = new Scanner(System.in);
-    int rl = 0;
-    boolean repeat = false;
-    do {
-        repeat = false;
-        System.out.println("1.Login");
-        System.out.println("2.Register");
-        try {
-            rl = Integer.parseInt(scan.nextLine());
-            if (rl != 1 && rl != 2) {
-                System.out.println("Please choose between 1 or 2");
-                repeat = true;
-            }
-        } catch (NumberFormatException e) {
-            repeat = true;
-            System.out.println("Please enter the number 1 or 2");
-        }
-    } while (repeat);
-    FullUser user = mainLogin(scan);
-    int decision = 0;
-    do {
-        decision = mainDash(scan);
-    } while(mainDecision(scan, decision, user));
-
+        PublicInformation.init();
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Welcome to the market messaging system");
+        FullUser user = mainLogin(scan);
+        if (user.newMessage())
+            System.out.println("You have a unread message!");
+        int decision = 0;
+        do {
+            decision = mainDash(scan);
+        } while (mainDecision(scan, decision, user));
+        user.logout();
+        PublicInformation.serialize();
     }
+
     public static boolean mainDecision(Scanner scan, int decision, FullUser user) {
         switch (decision) {
             case 1:
-                System.out.print(user.toString());
+                case1(scan, user);
                 return true;
             case 2:
                 return case2(scan, user);
             case 3:
-                return case3(scan,user);
+                return case3(scan, user);
             case 4:
                 if (user instanceof FullBuyer) {
                     return case4(scan, (FullBuyer) user);
@@ -50,30 +42,326 @@ public class Main {
                     return case4(scan, (FullSeller) user);
                 }
             case 5:
+                PublicInformation.logout(user);
                 return false;
         }
         return true;
     }
+
+    public static void case1(Scanner scan, FullUser user) {
+        boolean repeat;
+        System.out.println(user.toString());
+        do {
+            repeat = true;
+            System.out.println("1. Change username");
+            System.out.println("2. Change password");
+            System.out.println("3. Block users");
+            System.out.println("4. Unblock users");
+            System.out.println("5. Make yourself invisible to users");
+            System.out.println("6. Unmake yourself invisible to users");
+            System.out.println("7. Add a word to be filtered");
+            System.out.println("8. Unblock a word");
+            System.out.println("9. Change the current censor pattern");
+            System.out.println("10. Change filtering mode");
+            System.out.println("11. Delete account");
+            System.out.println("12. Recover Account");
+            System.out.println("13. Go back");
+            boolean loop = false;
+            int choice = 0;
+            do {
+                try {
+                    choice = Integer.parseInt(scan.nextLine());
+                    if (choice < 1 || choice > 13) {
+                        System.out.println("Please choose a number between 1 and 10");
+                        loop = true;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a number");
+                    loop = true;
+                }
+            } while (loop);
+            switch (choice) {
+                case 1:
+                    do {
+                        System.out.println("Please enter the new username");
+                        String newUsername = scan.nextLine();
+                        System.out.println("Please enter the password to confirm your action");
+                        String password = scan.nextLine();
+                        try {
+                            user.changeUsername(newUsername, password);
+                        } catch (InvalidPasswordException | IllegalUserNameException e) {
+                            System.out.println(e.getMessage());
+                            loop = tryAgain(scan);
+                        }
+                    } while (loop);
+                    break;
+                case 2:
+                    do {
+                        System.out.println("Please enter the new email");
+                        String newEmail = scan.nextLine();
+                        System.out.println("Please enter the password to confirm your action");
+                        String password = scan.nextLine();
+                        try {
+                            user.changeEmail(newEmail, password);
+                        } catch (InvalidPasswordException | EmailFormatException e) {
+                            System.out.println(e.getMessage());
+                            loop = tryAgain(scan);
+                        }
+                    } while (loop);
+                    break;
+                case 3:
+                    FullUser blockUser = null;
+                    do {
+                        System.out.println("Please enter the name of the buyer/seller to block");
+                        String blockUsername = scan.nextLine();
+                        if (user instanceof FullSeller) {
+                            if ((blockUser = PublicInformation.findBuyer(blockUsername, (FullSeller) user)) == null) {
+                                System.out.println("The buyer name cannot be found");
+                                loop = tryAgain(scan);
+                            }
+                        } else if (user instanceof FullBuyer) {
+                            if ((blockUser = PublicInformation.findSeller(blockUsername, (FullBuyer) user)) == null) {
+                                System.out.println("The seller name cannot be found");
+                                loop = tryAgain(scan);
+                            }
+                        }
+                    } while (loop);
+                    if (blockUser != null)
+                        user.block(blockUser);
+                    break;
+                case 4:
+                    FullUser unBlockUser = null;
+                    do {
+                        System.out.println("Please enter the name of the buyer/seller to unblock");
+                        String unBlockUsername = scan.nextLine();
+                        if (user instanceof FullSeller) {
+                            if ((unBlockUser = PublicInformation.findBuyer(unBlockUsername, (FullSeller) user)) == null) {
+                                System.out.println("The buyer name cannot be found");
+                                loop = tryAgain(scan);
+                            }
+                        } else if (user instanceof FullBuyer) {
+                            if ((unBlockUser = PublicInformation.findSeller(unBlockUsername, (FullBuyer) user)) == null) {
+                                System.out.println("The seller name cannot be found");
+                                loop = tryAgain(scan);
+                            }
+                        }
+                    } while (loop);
+                    if (unBlockUser != null)
+                        if (!user.unblock(unBlockUser))
+                            System.out.println("The user is not blocked by you!");
+                    break;
+                case 5:
+                    FullUser invisUser = null;
+                    do {
+                        System.out.println("Please enter the name of the buyer/seller to become invisible");
+                        String invisUsername = scan.nextLine();
+                        if (user instanceof FullSeller) {
+                            if ((invisUser = PublicInformation.findBuyer(invisUsername, (FullSeller) user)) == null) {
+                                System.out.println("The buyer name cannot be found");
+                                loop = tryAgain(scan);
+                            }
+                        } else if (user instanceof FullBuyer) {
+                            if ((invisUser = PublicInformation.findSeller(invisUsername, (FullBuyer) user)) == null) {
+                                System.out.println("The seller name cannot be found");
+                                loop = tryAgain(scan);
+                            }
+                        }
+                    } while (loop);
+                    if (invisUser != null)
+                        user.makeInvisible(invisUser);
+                    break;
+                case 6:
+                    FullUser unInvisUser = null;
+                    do {
+                        System.out.println("Please enter the name of the buyer/seller to become un-invisible");
+                        String unInvisUsername = scan.nextLine();
+                        if (user instanceof FullSeller) {
+                            if ((unInvisUser = PublicInformation.findBuyer(unInvisUsername, (FullSeller) user)) == null) {
+                                System.out.println("The buyer name cannot be found");
+                                loop = tryAgain(scan);
+                            }
+                        } else if (user instanceof FullBuyer) {
+                            if ((unInvisUser = PublicInformation.findSeller(unInvisUsername, (FullBuyer) user)) == null) {
+                                System.out.println("The seller name cannot be found");
+                                loop = tryAgain(scan);
+                            }
+                        }
+                    } while (loop);
+                    if (unInvisUser != null)
+                        if (!user.unInvisible(unInvisUser))
+                            System.out.println("You did not become invisible to this user");
+                    break;
+                case 7:
+                    String filterWord;
+                    do {
+                        System.out.println("Please enter a word to be filtered");
+                        filterWord = scan.nextLine();
+                        if (filterWord.matches("[^\\w']+")) {
+                            System.out.println("contains characters that are not used in a word");
+                            filterWord = null;
+                            loop = tryAgain(scan);
+                        }
+                    } while (loop);
+                    if (filterWord != null)
+                        user.addFilterWord(filterWord);
+                    break;
+                case 8:
+                    String unFilterWord;
+                    do {
+                        System.out.println("Please enter a word to be un-filtered");
+                        unFilterWord = scan.nextLine();
+                        if (unFilterWord.matches("[^\\w']+")) {
+                            System.out.println("contains characters that are not used in a word");
+                            unFilterWord = null;
+                            loop = tryAgain(scan);
+                        }
+                    } while (loop);
+                    if (unFilterWord != null)
+                        if (!user.removeFilteredWord(unFilterWord))
+                            System.out.println("The word was not filtered");
+                    break;
+                case 9:
+                    char censoredChar = (char) -1;
+                    do {
+                        System.out.println("Please enter a character to be used as censored pattern");
+                        String str = scan.nextLine();
+                        if (str.length() == 1)
+                            censoredChar = str.charAt(0);
+                        else {
+                            System.out.println("Not a valid character");
+                            loop = tryAgain(scan);
+                        }
+                    } while (loop);
+                    if (censoredChar != (char) -1)
+                        user.changeReplacedChar(censoredChar);
+                    break;
+                case 10:
+                    do {
+                        System.out.println("Please choose the new filtering mode");
+                        System.out.println("1. Turn off filter");
+                        System.out.println("2. Turn on filter");
+                        try {
+                            int select = Integer.parseInt(scan.nextLine());
+                            if (select == 1)
+                                user.changeFilteringMode(true);
+                            if (select == 2)
+                                user.changeFilteringMode(false);
+                            else {
+                                System.out.println("Please enter 1 or 2");
+                                loop = true;
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Please enter a number");
+                            loop = true;
+                        }
+                    } while (loop);
+                case 11:
+                    System.out.println("You are about to delete your account!");
+                    System.out.println("Recovery is only possible before you logout");
+                    System.out.println("Please enter your password to confirm this action");
+                    String pass = scan.nextLine();
+                    try {
+                        PublicInformation.deleteAccount(user, pass);
+                    } catch (InvalidPasswordException e) {
+                        System.out.println("Wrong Password!");
+                    }
+                    break;
+                case 12:
+                    if (PublicInformation.recoverAccount(user)) {
+                        System.out.println("Glad you are back!");
+                    } else {
+                        System.out.println("You never try to delete your account!");
+                    }
+                case 13:
+                    repeat = false;
+                    break;
+            }
+        }
+        while (repeat);
+    }
+
+    public static boolean tryAgain(Scanner scan) {
+        do {
+            System.out.println("Do you want to try again?(y/n)");
+            String choice = scan.nextLine();
+            if (choice.equalsIgnoreCase("yes") || choice.equalsIgnoreCase("y"))
+                return true;
+            else if (choice.equalsIgnoreCase("no") || choice.equalsIgnoreCase("n"))
+                return false;
+        } while (true);
+    }
+
     public static boolean case4(Scanner scan, FullBuyer buyer) {
-        //only buyers can see sellers and store; and only sellers and see list of buyers
-        // maybe write 2 methods, one take in a FullBuyer, one take in a full seller, for this part
         int list;
         do {
-            System.out.println("1.Print list of Sellers");
+            System.out.println("1.search sellers");
             System.out.println("2.Print list of Stores");
-            System.out.println("3.Back");
+            System.out.println("3.Print Buyer Dashboard");
+            System.out.println("4.Back");
             try {
-                list = scan.nextInt();
-                scan.nextLine();
-            } catch (InputMismatchException e) {
+                list = Integer.parseInt(scan.nextLine());
+            } catch (NumberFormatException e) {
                 System.out.println("Enter a number");
                 return case4(scan, buyer);
             }
-        } while (list > 3 || list < 1);
+        } while (list > 4 || list < 1);
         if (list == 1) {
-            System.out.println(sellerList(buyer));
+            System.out.println("Please enter search text");
+            String searchText = scan.nextLine();
+            System.out.println(PublicInformation.findSellerBasedOnLetters(searchText, buyer));
+            case4(scan, buyer);
         } else if (list == 2) {
             System.out.println(storeList(buyer));
+            System.out.println("Please put in the name of the store you want to message");
+            String storeName = scan.nextLine();
+            Store store;
+            if ((store = PublicInformation.getStore(storeName)) != null) {
+                System.out.println("The store owner for the store " + store.getStoreName() + " is " +
+                        User.userName(store.getOwner()));
+                System.out.println("Do you want to send a string message or a file");
+                System.out.println("1 for string    2 for txt file");
+                String selection = scan.nextLine();
+                if (selection.equals("1")) {
+                    System.out.println("What would you like to send them?");
+                    String newMessage = scan.nextLine();
+                    try {
+                        buyer.messageStore(store, newMessage);
+                    } catch (IllegalTargetException e) {
+                        System.out.println("You must message a user of a different role");
+                        return case4(scan, buyer);
+                    }
+                } else if (selection.equals("2")) {
+                    System.out.println("Please put in the file path");
+                    File txtFile = new File(scan.nextLine());
+                    try {
+                        buyer.messageStore(store, txtFile);
+                    } catch (IOException e) {
+                        System.out.println("Something went wrong when trying to read the file");
+                        return case4(scan, buyer);
+                    } catch (IllegalTargetException e) {
+                        System.out.println("You must message a user of a different role");
+                        return case4(scan, buyer);
+                    }
+                }
+            } else {
+                System.out.println("Please put in a valid store name");
+            }
+            case4(scan, buyer);
+        } else if (list == 3) {
+            boolean repeat;
+            do {
+                repeat = false;
+                System.out.println("Do you want to view dashboard in increasing order?");
+                String choice = scan.nextLine();
+                if (choice.equalsIgnoreCase("yes") || choice.equalsIgnoreCase("y"))
+                    System.out.println(buyer.viewDashboard(true));
+                else if (choice.equalsIgnoreCase("no") || choice.equalsIgnoreCase("n"))
+                    System.out.println(buyer.viewDashboard(false));
+                else {
+                    System.out.println("Please enter yes or no");
+                    repeat = true;
+                }
+            } while (repeat);
         }
         return true;
     }
@@ -81,8 +369,11 @@ public class Main {
     public static boolean case4(Scanner scan, FullSeller seller) {
         int list;
         do {
-            System.out.println("1.Print list of Sellers");
-            System.out.println("2.Back");
+            System.out.println("1.Print list of buyers");
+            System.out.println("2.Search buyer");
+            System.out.println("3.Print Dashboard");
+            System.out.println("4.Create store");
+            System.out.println("5.Back");
             try {
                 list = scan.nextInt();
                 scan.nextLine();
@@ -90,12 +381,46 @@ public class Main {
                 System.out.println("Enter a number");
                 return case4(scan, seller);
             }
-        } while (list > 2 || list < 1);
+        } while (list > 5 || list < 1);
         if (list == 1) {
             System.out.println(buyerList(seller));
+        } else if (list == 2) {
+            System.out.println("Please enter search text");
+            String searchText = scan.nextLine();
+            System.out.println(PublicInformation.findBuyerBasedOnLetters(searchText, seller));
+            case4(scan, seller);
+        } else if (list == 3) {
+            boolean repeat;
+            do {
+                repeat = false;
+                System.out.println("Do you want to view dashboard in increasing order?");
+                String choice = scan.nextLine();
+                if (choice.equalsIgnoreCase("yes") || choice.equalsIgnoreCase("y"))
+                    System.out.println(seller.viewDashboard(true));
+                else if (choice.equalsIgnoreCase("no") || choice.equalsIgnoreCase("n"))
+                    System.out.println(seller.viewDashboard(false));
+                else {
+                    System.out.println("Please enter yes or no");
+                    repeat = true;
+                }
+            } while (repeat);
+        } else if (list == 4) {
+            boolean repeat;
+            do {
+                repeat = false;
+                System.out.println("Please enter the name for your store");
+                String storeName = scan.nextLine();
+                try {
+                    seller.createStore(storeName);
+                } catch (IllegalStoreNameException e) {
+                    System.out.println(e.getMessage());
+                    repeat = tryAgain(scan);
+                }
+            } while (repeat);
         }
         return true;
     }
+
     public static boolean case3(Scanner scan, FullUser user) {
         int message;
         FullUser receiver = null;
@@ -115,30 +440,38 @@ public class Main {
         if (message == 1) {
             System.out.println("Who would you like to message?");
             String username = scan.nextLine();
-            try {
-                receiver = findUser(username, user);
-            } catch (IllegalUserNameException e) {
+            receiver = findUser(username, user);
+            if (receiver == null) {
                 System.out.println("No such user exists");
                 return case3(scan, user);
             }
-            System.out.println("What would you like to send them?");
-            String newMessage = scan.nextLine();
-            try {
-                user.createMessage(receiver, newMessage);
-            } catch (IllegalTargetException e) {
-                System.out.println("You must message a user of a different role");
-                return case3(scan, user);
+            System.out.println("Do you want to send a string message or a file");
+            System.out.println("1 for string    2 for txt file");
+            String selection = scan.nextLine();
+            if (selection.equals("1")) {
+                System.out.println("What would you like to send them?");
+                String newMessage = scan.nextLine();
+                try {
+                    user.createMessage(receiver, newMessage);
+                } catch (IllegalTargetException e) {
+                    System.out.println("You must message a user of a different role");
+                    return case3(scan, user);
+                }
+            } else if (selection.equals("2")) {
+                System.out.println("Please put in the file path");
+                File txtFile = new File(scan.nextLine());
+                try {
+                    user.createMessage(receiver, txtFile);
+                } catch (IOException e) {
+                    System.out.println("Something went wrong when trying to read the file");
+                    return case3(scan, user);
+                } catch (IllegalTargetException e) {
+                    System.out.println("You must message a user of a different role");
+                    return case3(scan, user);
+                }
             }
             return true;
         } else if (message == 2) {
-            System.out.println("What is the other user's Name?");
-            String username = scan.nextLine();
-            try {
-                receiver = findUser(username, user);
-            } catch (IllegalUserNameException e) {
-                System.out.println("No such user exists");
-                return case3(scan, user);
-            }
             System.out.println("What is the conversation number?");
             int conIndex = scan.nextInt();
             scan.nextLine();
@@ -178,24 +511,68 @@ public class Main {
             return true;
         }
     }
+
+
     public static boolean case2(Scanner scan, FullUser user) {
+        if (user.printConversationTitles() == null || user.printConversationTitles().isBlank()) {
+            System.out.println("You got no conversation!");
+            System.out.println("Go message some one");
+            return true;
+        }
         System.out.println(user.printConversationTitles());
         System.out.println("Enter conversation index");
         System.out.println("Enter -1 to go back");
+        System.out.println("Enter -2 to go to export mode");
         int conversation;
         try {
-            conversation = scan.nextInt();
-            scan.nextLine();
-        } catch (InputMismatchException e) {
+            conversation = Integer.parseInt(scan.nextLine());
+        } catch (NumberFormatException e) {
             System.out.println("Please enter a number");
             return mainDecision(scan, 2, user);
         }
-        if (conversation != -1) {
+        if (conversation == -2) {
+            ArrayList<Integer> indexes = new ArrayList<>();
+            System.out.println("Please specify the file path");
+            File file = new File(scan.nextLine());
+            int i;
+            do {
+                System.out.println("Enter conversation index for export");
+                System.out.println("Enter -1 to stop");
+                try {
+                    i = Integer.parseInt(scan.nextLine());
+                    indexes.add(i);
+                } catch (NumberFormatException e) {
+                    System.out.println("Please put in a number");
+                    i = -2;
+                }
+            } while (i != -1);
+            try {
+                user.printConversationInCSV(indexes, file);
+            } catch (IOException e) {
+                System.out.println("something went wrong when trying to write to the file");
+                return mainDecision(scan, 2, user);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("list contain Invalid index. please try again");
+                return mainDecision(scan, 2, user);
+            }
+        } else if (conversation != -1) {
             try {
                 user.printConversation(conversation);
+                System.out.println("Do you want to save this conversation in csv?");
+                String choice = scan.nextLine();
+                if (choice.equalsIgnoreCase("yes") || choice.equalsIgnoreCase("y")) {
+                    System.out.println("Please specify the file path");
+                    File file = new File(scan.nextLine());
+                    try {
+                        user.printConversationInCSV(conversation, file);
+                    } catch (IOException e) {
+                        System.out.println("Something went wrong when trying to write to this file");
+                        return case2(scan, user);
+                    }
+                }
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Invalid index please try again");
-                return mainDecision(scan,2,user);
+                return mainDecision(scan, 2, user);
             }
         }
         return true;
@@ -220,6 +597,7 @@ public class Main {
         } while (dashAction < 1 || dashAction > 5);
         return dashAction;
     }
+
     public static FullUser mainLogin(Scanner scan) {
         boolean loginLoop;
         int register = 0;
@@ -255,6 +633,7 @@ public class Main {
         } while (loginLoop);
         return fullUser;
     }
+
     public static FullUser mainRegister(Scanner scan) {
         String username = "start";
         do {
@@ -288,7 +667,7 @@ public class Main {
                         System.out.println("Confirm?(y/n)");
                         String decision = scan.nextLine();
                         if (decision.equalsIgnoreCase("y") || decision.equalsIgnoreCase("yes"))
-                          return new FullSeller(username, email, password);
+                            return new FullSeller(username, email, password);
                     } else {
                         repeat = true;
                         System.out.println("Please enter buyer or seller!");
@@ -299,10 +678,6 @@ public class Main {
             }
         } while (true);
     }
-
-
-
-
 
 
 }

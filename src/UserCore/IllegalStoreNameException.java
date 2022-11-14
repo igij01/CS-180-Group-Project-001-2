@@ -10,7 +10,7 @@ package UserCore;
 public class IllegalStoreNameException extends IllegalArgumentException {
 
     public IllegalStoreNameException(String s) {
-        super(s);
+        super("store name " + s + " is already taken");
     }
 
 }

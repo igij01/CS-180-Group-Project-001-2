@@ -32,6 +32,7 @@ public class User implements Serializable {
     private String pwd;
     private Role role;
     private boolean loginStatus;
+    private boolean waitingToBeDeleted;
 
     /**
      * create an instance of user. Note that users can't have the same name
@@ -55,6 +56,7 @@ public class User implements Serializable {
         this.pwd = pwd;
         this.role = role;
         loginStatus = false;
+        waitingToBeDeleted = false;
         PublicInformation.addListOfUsersNames(userName);
     }
 
@@ -62,15 +64,33 @@ public class User implements Serializable {
         return userName;
     }
 
+    /**
+     * set the username and add it to the list of usernames while delete the old one
+     *
+     * @param userName the new username
+     * @throws IllegalUserNameException when the new name is already taken
+     */
     protected void setUserName(String userName) {
+        if (PublicInformation.listOfUsersNames.contains(userName))
+            throw new IllegalUserNameException(userName);
+        PublicInformation.listOfUsersNames.remove(this.userName);
         this.userName = userName;
+        PublicInformation.listOfUsersNames.add(this.userName);
     }
 
     protected String getEmail() {
         return email;
     }
 
+    /**
+     * change the email to the new email
+     *
+     * @param email the new email
+     * @throws EmailFormatException when the email format is wrong
+     */
     protected void setEmail(String email) {
+        if (!email.matches("\\b[\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b"))
+            throw new EmailFormatException(email);
         this.email = email;
     }
 
@@ -98,6 +118,14 @@ public class User implements Serializable {
         this.loginStatus = loginStatus;
     }
 
+    protected boolean isWaitingToBeDeleted() {
+        return this.waitingToBeDeleted;
+    }
+
+    protected void setWaitingDeletionStatus(boolean status) {
+        this.waitingToBeDeleted = status;
+    }
+
     public static String userName(User user) {
         return user.userName;
     }
@@ -109,6 +137,7 @@ public class User implements Serializable {
     public static boolean isLogIn(User user) {
         return user.loginStatus;
     }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -124,9 +153,9 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "UserName= '" + userName + '\'' +
+        return "UserName = '" + userName + '\'' +
                 ", Email = '" + email + '\'' +
-                ", Password ='" + pwd + '\'' +
-                ", role =" + role;
+                ", role = " + role +
+                (waitingToBeDeleted ? ", ACCOUNT WAITING TO BE DELETED!" : "");
     }
 }

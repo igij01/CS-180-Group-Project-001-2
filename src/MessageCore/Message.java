@@ -168,7 +168,7 @@ public class Message implements Serializable {
      * @return a list of all the words in the message, including duplicates
      */
     protected String[] words() {
-        return this.message.toLowerCase().replaceAll("\\W", " ")
+        return this.message.toLowerCase().replaceAll("[^\\w']", " ")
                 .split("\\s+");
     }
 

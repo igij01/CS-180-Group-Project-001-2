@@ -21,7 +21,6 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * initialize the lists from serialized files. Can only be called once per runtime
      * multiples calls will be ignored
      */
-    @SuppressWarnings("unchecked")
     public static void init() {
         if (!deserialized) {
             try (ObjectInputStream oinBuyers = new ObjectInputStream
@@ -32,15 +31,22 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
                          (new FileInputStream("src/UserCore/serialized_stores"));
                  ObjectInputStream oinNames = new ObjectInputStream
                          (new FileInputStream("src/UserCore/serialized_usernames"))) {
-                listOfBuyers = (ArrayList<FullBuyer>) oinBuyers.readObject();
-                listOfSellers = (ArrayList<FullSeller>) oinSellers.readObject();
-                listOfStores = (ArrayList<Store>) oinStores.readObject();
-                listOfUsersNames = (ArrayList<String>) oinNames.readObject();
-                deserialized = true;
+                readFromSerializedFile(oinBuyers, oinSellers, oinStores, oinNames);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void readFromSerializedFile(ObjectInputStream oinBuyers, ObjectInputStream oinSellers,
+                                               ObjectInputStream oinStores, ObjectInputStream oinNames)
+            throws IOException, ClassNotFoundException {
+        listOfBuyers = (ArrayList<FullBuyer>) oinBuyers.readObject();
+        listOfSellers = (ArrayList<FullSeller>) oinSellers.readObject();
+        listOfStores = (ArrayList<Store>) oinStores.readObject();
+        listOfUsersNames = (ArrayList<String>) oinNames.readObject();
+        deserialized = true;
     }
 
     /**
@@ -61,7 +67,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * @see java.lang.reflect.Method#setAccessible(boolean)
      * @see java.lang.reflect.Method#invoke(Object, Object...)
      */
-    @SuppressWarnings({"unchecked", "unused"})
+    @SuppressWarnings({"unused"})
     private static void initFromFiles(File buyers, File sellers, File stores, File usernames) {
         try (ObjectInputStream oinBuyers = new ObjectInputStream
                 (new FileInputStream(buyers));
@@ -71,11 +77,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
                      (new FileInputStream(stores));
              ObjectInputStream oinNames = new ObjectInputStream
                      (new FileInputStream(usernames))) {
-            listOfBuyers = (ArrayList<FullBuyer>) oinBuyers.readObject();
-            listOfSellers = (ArrayList<FullSeller>) oinSellers.readObject();
-            listOfStores = (ArrayList<Store>) oinStores.readObject();
-            listOfUsersNames = (ArrayList<String>) oinNames.readObject();
-            deserialized = true;
+            readFromSerializedFile(oinBuyers, oinSellers, oinStores, oinNames);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -316,15 +318,15 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
                 }
             }
         }
-        String s = "| ";
+        StringBuilder s = new StringBuilder("| ");
         for (int i = 0; i < users.length; i++) {
             if (i == users.length - 1) {
-                s += users[i].getUser().getUserName() + ": " + usersCount[i] + "|";
+                s.append(users[i].getUser().getUserName()).append(": ").append(usersCount[i]).append("|");
             } else {
-                s += users[i].getUser().getUserName() + ": " + usersCount[i] + "\n";
+                s.append(users[i].getUser().getUserName()).append(": ").append(usersCount[i]).append("\n");
             }
         }
-        return s;
+        return s.toString();
     }
 
     /**
@@ -352,11 +354,11 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
                 }
             }
         }
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < stores.length; i++) {
-            s += "(" + stores[i].getStoreName() + ") : " + counts[i] + " messages sent\n";
+            s.append("(").append(stores[i].getStoreName()).append(") : ").append(counts[i]).append(" messages sent\n");
         }
-        return s;
+        return s.toString();
     }
 
     /**
@@ -366,12 +368,15 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * @param buyer the buyer requesting this action
      * @return list of stores in a string
      */
+    @SuppressWarnings("unused")
     public static String storeList(FullBuyer buyer) {
         StringBuilder sbd1 = new StringBuilder();
         for (int i = 0; i < listOfStores.size(); i++) {
             sbd1.append(i).append(". ");
             sbd1.append(listOfStores.get(i).getStoreName()).append("\n");
         }
+        if (sbd1.isEmpty())
+            return null;
         return sbd1.deleteCharAt(sbd1.length() - 1).toString(); //delete the last new line
     }
 
@@ -385,13 +390,15 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     public static String sellerList(FullBuyer buyer) {
         StringBuilder sbd2 = new StringBuilder();
         int index = 0;
-        for (int i = 0; i < listOfSellers.size(); i++) {
-            if (listOfSellers.get(i).checkInvisible(buyer.getUser()))
+        for (FullSeller listOfSeller : listOfSellers) {
+            if (listOfSeller.checkInvisible(buyer.getUser()))
                 continue;
             //this is to check if the owner of the store made himself invisible to this buyer
             sbd2.append(index++).append(". ");
-            sbd2.append(listOfSellers.get(i).getUser().getUserName()).append("\n");
+            sbd2.append(listOfSeller.getUser().getUserName()).append("\n");
         }
+        if (sbd2.isEmpty())
+            return null;
         return sbd2.deleteCharAt(sbd2.length() - 1).toString(); //delete the last new line
     }
 
@@ -406,12 +413,14 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     public static String buyerList(FullSeller seller) {
         StringBuilder sbd3 = new StringBuilder();
         int index = 0;
-        for (int i = 0; i < listOfBuyers.size(); i++) {
-            if (listOfBuyers.get(i).checkInvisible(seller.getUser()))
+        for (FullBuyer listOfBuyer : listOfBuyers) {
+            if (listOfBuyer.checkInvisible(seller.getUser()))
                 continue;
             sbd3.append(index++).append(". ");
-            sbd3.append(listOfBuyers.get(i).getUser().getUserName()).append("\n");
+            sbd3.append(listOfBuyer.getUser().getUserName()).append("\n");
         }
+        if (sbd3.isEmpty())
+            return null;
         return sbd3.deleteCharAt(sbd3.length() - 1).toString(); //delete the last new line
     }
 
@@ -421,9 +430,9 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * @return the store that the customer picked, null if it doesn't exist
      */
     public static Store getStore(String storeName) {
-        for (int i = 0; i < listOfStores.size(); i++) {
-            if (storeName.equalsIgnoreCase(listOfStores.get(i).getStoreName())) {
-                return listOfStores.get(i);
+        for (Store listOfStore : listOfStores) {
+            if (storeName.equalsIgnoreCase(listOfStore.getStoreName())) {
+                return listOfStore;
             }
         }
         return null;
@@ -450,7 +459,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * @param username the username of the user
      * @return the {@code FullUser} instance of the user, null if such name cannot be found
      */
-    public static FullUser findUser(String username, FullUser user) throws IllegalUserNameException {
+    public static FullUser findUser(String username, FullUser user) {
         if (user instanceof FullBuyer)
             return findSeller(username, (FullBuyer) user);
         else if (user instanceof FullSeller)
@@ -504,12 +513,12 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         StringBuilder str = new StringBuilder();
         searchText = searchText.toLowerCase();
         for (FullBuyer fb : listOfBuyers) {
-            if (fb.getUser().getUserName().toLowerCase().contains(searchText) && fb.checkInvisible(seller.getUser())) {
+            if (fb.getUser().getUserName().toLowerCase().contains(searchText) && !fb.checkInvisible(seller.getUser())) {
                 str.append(fb.getUser().getUserName()).append('\n');
             }
         }
         if (str.isEmpty())
-            return null;
+            return "No user found";
         return str.deleteCharAt(str.length() - 1).toString();
     }
 
@@ -525,12 +534,12 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         StringBuilder str = new StringBuilder();
         searchText = searchText.toLowerCase();
         for (FullSeller fb : listOfSellers) {
-            if (fb.getUser().getUserName().toLowerCase().contains(searchText) && fb.checkInvisible(buyer.getUser())) {
+            if (fb.getUser().getUserName().toLowerCase().contains(searchText) && !fb.checkInvisible(buyer.getUser())) {
                 str.append(fb.getUser().getUserName()).append('\n');
             }
         }
         if (str.isEmpty())
-            return null;
+            return "No user found";
         return str.deleteCharAt(str.length() - 1).toString();
     }
 
@@ -558,6 +567,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
         listOfUsersNames.remove(requestingUser.getUser().getUserName());
         listOfUsersWaitingDestruction.add(requestingUser);
+        requestingUser.getUser().setWaitingDeletionStatus(true);
     }
 
     /**
@@ -579,6 +589,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             listOfSellers.add(seller);
         }
         listOfUsersNames.add(requestingUser.getUser().getUserName());
+        requestingUser.getUser().setWaitingDeletionStatus(false);
         return true;
     }
 
@@ -593,13 +604,6 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         listOfUsersNames = new ArrayList<>();
         listOfBuyers = new ArrayList<>();
         listOfSellers = new ArrayList<>();
-    }
-
-    public static void main(String[] args) {
-        Store store = new Store("A", new Seller("fads", "samsonates@gmail.com", "asdf"));
-        FullSeller seller = new FullSeller("sample_username", "alexroth111@gmail.com", "samplePassword123");
-        System.out.println(listOfStores.get(0).getStoreName());
-        System.out.println(getSeller("sample_username"));
     }
 
 }
