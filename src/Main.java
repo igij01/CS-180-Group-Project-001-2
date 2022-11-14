@@ -529,6 +529,9 @@ public class Main {
             String replace = scan.nextLine();
             try {
                 user.editMessage(conIndex, mesIndex, replace);
+                FullUser seller1 = PublicInformation.findSeller("seller", (FullBuyer) user);
+                assert seller1 != null;
+                System.out.println(seller1.printConversation(0));
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("The conversation or message index does not exist");
                 System.out.println("Please navigate to Mail to see list of conversations and messages");

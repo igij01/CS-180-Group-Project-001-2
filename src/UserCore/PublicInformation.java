@@ -48,6 +48,12 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             listOfStores = (ArrayList<Store>) oinStores.readObject();
             listOfUsersNames = (ArrayList<String>) oinNames.readObject();
             deserialized = true;
+            for (FullSeller seller : listOfSellers) {
+                seller.linker();
+            }
+            for (FullBuyer buyer : listOfBuyers) {
+                buyer.linker();
+            }
         } catch (EOFException e) {
             listOfBuyers = new ArrayList<>();
             listOfUsersNames = new ArrayList<>();
@@ -155,7 +161,26 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
     }
 
-    private PublicInformation() {}
+    /**
+     * translate an instance of user to FullUser
+     *
+     * @param user the user that need to be translated
+     * @return the Full User that has the user as its field
+     */
+    protected static FullUser userTranslate(User user) {
+        for (FullBuyer buyer : listOfBuyers) {
+            if (buyer.getUser().equals(user))
+                return buyer;
+        }
+        for (FullSeller seller : listOfSellers) {
+            if (seller.getUser().equals(user))
+                return seller;
+        }
+        return null;
+    }
+
+    private PublicInformation() {
+    }
 
     /**
      * LOGIN METHOD
@@ -446,21 +471,6 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     }
 
     /**
-     * Customer can pick a specific seller from list
-     *
-     * @param sellerName name of seller that customer wants to choose
-     * @return the seller that the customer picked, null if it doesn't exist
-     */
-    public static FullSeller getSeller(String sellerName) {
-        for (FullSeller listOfSeller : listOfSellers) {
-            if (sellerName.equalsIgnoreCase(listOfSeller.getUser().getUserName())) {
-                return listOfSeller;
-            }
-        }
-        return null;
-    }
-
-    /**
      * find the {@code FullUser} instance based on the name put in
      *
      * @param username the username of the user
@@ -482,7 +492,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static FullBuyer findBuyer(String username, FullSeller requestingSeller) {
         for (FullBuyer fb : listOfBuyers) {
-            if (fb.getUser().getUserName().equalsIgnoreCase(username)) {
+            if (fb.getUser().getUserName().equals(username)) {
                 if (fb.checkInvisible(requestingSeller.getUser()))
                     return null;
                 return fb;
@@ -499,7 +509,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static FullSeller findSeller(String username, FullBuyer requestingBuyer) {
         for (FullSeller fs : listOfSellers) {
-            if (fs.getUser().getUserName().equalsIgnoreCase(username)) {
+            if (fs.getUser().getUserName().equals(username)) {
                 if (fs.checkInvisible(requestingBuyer.getUser()))
                     return null;
                 return fs;
