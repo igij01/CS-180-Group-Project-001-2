@@ -86,9 +86,10 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * <p>
      * This will ignore the serialization flag,
      * so it's guaranteed that it will always have an effect.
-     * @param buyers the file that has the buyers serialized
-     * @param sellers the file that has the sellers serialized
-     * @param stores the file that has the stores serialized
+     *
+     * @param buyers    the file that has the buyers serialized
+     * @param sellers   the file that has the sellers serialized
+     * @param stores    the file that has the stores serialized
      * @param usernames the file that has the usernames serialized
      * @see #serializeToFiles(File, File, File, File)
      * @see java.lang.reflect.Method#setAccessible(boolean)
@@ -116,9 +117,10 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * <p>
      * This method is used to generate a serialized files to check data persistence
      * Use in conjunction with initFromFiles
-     * @param buyers the file that buyers serialize to
-     * @param sellers the file that sellers serialize to
-     * @param stores the file that stores serialize to
+     *
+     * @param buyers    the file that buyers serialize to
+     * @param sellers   the file that sellers serialize to
+     * @param stores    the file that stores serialize to
      * @param usernames the file that usernames serialize to
      * @see #initFromFiles(File, File, File, File)
      * @see java.lang.reflect.Method#setAccessible(boolean)
@@ -231,11 +233,13 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     /**
      * Log the user out by setting the login status to false
      * do this at the program termination phase
+     *
      * @param user the user who wants to log out
      */
     public static void logout(FullUser user) {
         user.logout();
     }
+
     /**
      * Add store into the public list of stores
      * Always call this when you create a store(Already added in the last line of {@code Store} constructor)
@@ -291,9 +295,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     }
 
     /**
-     *
      * @param storeList list of stores to iterate through and organize based on each store's message received counter
-     *
      * @return organized list of stores in order from most popular to the least popular
      */
     public static Store[] sortStoresByPopularity(Store[] storeList) {
@@ -473,6 +475,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     /**
      * Customer can pick specific store from list
+     *
      * @param storeName name of store that customer wants to choose
      * @return the store that the customer picked, null if it doesn't exist
      */
