@@ -10,6 +10,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * FullUser
+ * Fully operational User class where the main user core messaging components occur at
+ *
+ * @author Arthur Ruano, Yulin Lin, 001
+ * @version 11/12/2022
+ */
 public class FullUser implements Serializable {
 
     // update this field everytime you update the field of the class

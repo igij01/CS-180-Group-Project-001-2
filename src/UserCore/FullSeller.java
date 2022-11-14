@@ -9,6 +9,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+/**
+ * FullSeller
+ * <p>
+ *
+ * A FullSeller class where the FullUser takes the role of a seller has operations specific to its class
+ *
+ * @author Samson Tesfagiorgis, Yulin Lin, 001
+ * @version 11/3/2022
+ */
 public class FullSeller extends FullUser implements Serializable {
 
     private static final ArrayList<String> stopWords = new ArrayList<>();
