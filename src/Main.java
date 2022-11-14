@@ -309,9 +309,11 @@ public class Main {
             System.out.println("Please enter search text");
             String searchText = scan.nextLine();
             System.out.println(PublicInformation.findSellerBasedOnLetters(searchText, buyer));
+            System.out.println();
             case4(scan, buyer);
         } else if (list == 2) {
             System.out.println(storeList(buyer));
+            System.out.println();
             System.out.println("Please put in the name of the store you want to message");
             String storeName = scan.nextLine();
             Store store;
@@ -362,6 +364,7 @@ public class Main {
                     repeat = true;
                 }
             } while (repeat);
+            System.out.println();
         }
         return true;
     }
@@ -384,10 +387,12 @@ public class Main {
         } while (list > 5 || list < 1);
         if (list == 1) {
             System.out.println(buyerList(seller));
+            System.out.println();
         } else if (list == 2) {
             System.out.println("Please enter search text");
             String searchText = scan.nextLine();
             System.out.println(PublicInformation.findBuyerBasedOnLetters(searchText, seller));
+            System.out.println();
             case4(scan, seller);
         } else if (list == 3) {
             boolean repeat;

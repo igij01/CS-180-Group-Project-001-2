@@ -109,10 +109,22 @@ public class Store implements Serializable {
 
     /**
      * increment the FullBuyer message count
+     *
      * @param fullBuyer the FullBuyer requesting this action
      */
     private void incrementBuyerMessageCount(FullBuyer fullBuyer) {
         int index = PublicInformation.findMatchingObjectIndex(allMessagingBuyers, fullBuyer);
         messagingBuyersMessageCount.set(index, messagingBuyersMessageCount.get(index) + 1);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj instanceof Store) {
+            Store store = (Store) obj;
+            return this.owner.equals(store.owner) && this.storeName.equals(store.storeName);
+        }
+        return false;
     }
 }

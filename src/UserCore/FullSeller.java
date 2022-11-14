@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class FullSeller extends FullUser implements Serializable {
 
-    private static ArrayList<String> stopWords = new ArrayList<>();
+    private static final ArrayList<String> stopWords = new ArrayList<>();
 
     static {
         try (BufferedReader bfr = new BufferedReader(new FileReader("stop_words_english.txt"))) {
