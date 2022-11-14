@@ -100,7 +100,7 @@ public class FullBuyer extends FullUser implements Serializable {
      * <p>
      * and update the message counter accordingly
      *
-     * @param store the store you want to message
+     * @param store   the store you want to message
      * @param txtFile the txt file that contains the message content
      * @throws IOException when IO exception occurs
      */
@@ -135,7 +135,7 @@ public class FullBuyer extends FullUser implements Serializable {
      *
      * @param seller the seller you want to message
      * @param file   the file that contains the content of the message
-     * @throws IOException             when IO exception occurs
+     * @throws IOException when IO exception occurs
      */
     public void messageSeller(FullSeller seller, File file) throws
             IllegalTargetException, IllegalMessageException, IOException {
