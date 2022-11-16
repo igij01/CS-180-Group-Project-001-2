@@ -7,7 +7,9 @@ __This update log is used to record the updates that happened to the project sin
 The linker for linking conversations and messages are removed and replaced by serializing all public information arrays
 into a single serialized file. 
 #### Notes
-* The reason that linker is not necessary when serializing to a single file is due to java serialization mechanisms:
+* The reason that linker is not necessary when serializing to a single file is due to java serialization mechanisms 
+that retain only a single copy of the object in the same serialized file and uses reference to the same objects that 
+appeared afterwards, (uses `.equals` method to compare objects). This allows the `ObjectInputStream` to link the same object.
   * below is a quote from [Discover the Secrets of Java Serialization](https://www.oracle.com/technical-resources/articles/java/serializationapi.html)
 > Caching Objects in the Stream
 > > First, consider the situation in which an object is written to a stream and then written again later. 
