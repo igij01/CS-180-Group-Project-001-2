@@ -29,15 +29,9 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static void init() {
         if (!deserialized) {
-            try (ObjectInputStream oinBuyers = new ObjectInputStream
-                    (new FileInputStream("src/UserCore/serialized_buyers"));
-                 ObjectInputStream oinSellers = new ObjectInputStream
-                         (new FileInputStream("src/UserCore/serialized_sellers"));
-                 ObjectInputStream oinStores = new ObjectInputStream
-                         (new FileInputStream("src/UserCore/serialized_stores"));
-                 ObjectInputStream oinNames = new ObjectInputStream
-                         (new FileInputStream("src/UserCore/serialized_usernames"))) {
-                readFromSerializedFile(oinBuyers, oinSellers, oinStores, oinNames);
+            try (ObjectInputStream oin = new ObjectInputStream
+                         (new FileInputStream("src/UserCore/serialized_File"))) {
+                readFromSerializedFile(oin);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -45,45 +39,19 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     }
 
     /**
-     * @param oinBuyers  the buyer object input stream
-     * @param oinSellers the seller object input stream
-     * @param oinStores  the store object input stream
-     * @param oinNames   the names object input stream
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @param oin   the object input stream that contains all the arrays
+     * @throws IOException when IOException occurred
+     * @throws ClassNotFoundException when the serialized file is corrupted
      */
     @SuppressWarnings("unchecked")
-    private static void readFromSerializedFile(ObjectInputStream oinBuyers, ObjectInputStream oinSellers,
-                                               ObjectInputStream oinStores, ObjectInputStream oinNames)
+    private static void readFromSerializedFile(ObjectInputStream oin)
             throws IOException, ClassNotFoundException {
         try {
-            listOfBuyers = (ArrayList<FullBuyer>) oinBuyers.readObject();
-            listOfSellers = (ArrayList<FullSeller>) oinSellers.readObject();
-            listOfStores = (ArrayList<Store>) oinStores.readObject();
-            listOfUsersNames = (ArrayList<String>) oinNames.readObject();
+            listOfBuyers = (ArrayList<FullBuyer>) oin.readObject();
+            listOfSellers = (ArrayList<FullSeller>) oin.readObject();
+            listOfStores = (ArrayList<Store>) oin.readObject();
+            listOfUsersNames = (ArrayList<String>) oin.readObject();
             deserialized = true;
-            for (FullSeller seller : listOfSellers) {
-                seller.linker();
-            }
-            for (FullBuyer buyer : listOfBuyers) {
-                buyer.linker();
-            }
-            for (Store store : listOfStores) {
-                for (FullBuyer buyer : listOfBuyers) {
-                    int index = 0;
-                    for (Store buyerStore : buyer.getStoresMessaged()) {
-                        if (store != buyerStore && store.equals(buyerStore))
-                            buyer.getStoresMessaged().set(index, store);
-                    }
-                }
-                for (FullSeller seller : listOfSellers) {
-                    int index = 0;
-                    for (Store sellerStore : seller.getStores()) {
-                        if (store != sellerStore && store.equals(sellerStore))
-                            seller.getStores().set(index, store);
-                    }
-                }
-            }
         } catch (EOFException e) {
             listOfBuyers = new ArrayList<>();
             listOfUsersNames = new ArrayList<>();
@@ -103,25 +71,16 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * This will ignore the serialization flag,
      * so it's guaranteed that it will always have an effect.
      *
-     * @param buyers    the file that has the buyers serialized
-     * @param sellers   the file that has the sellers serialized
-     * @param stores    the file that has the stores serialized
-     * @param usernames the file that has the usernames serialized
-     * @see #serializeToFiles(File, File, File, File)
+     * @param file    the file that has everything serialized
+     * @see #serializeToFiles(File)
      * @see java.lang.reflect.Method#setAccessible(boolean)
      * @see java.lang.reflect.Method#invoke(Object, Object...)
      */
     @SuppressWarnings({"unused"})
-    private static void initFromFiles(File buyers, File sellers, File stores, File usernames) {
-        try (ObjectInputStream oinBuyers = new ObjectInputStream
-                (new FileInputStream(buyers));
-             ObjectInputStream oinSellers = new ObjectInputStream
-                     (new FileInputStream(sellers));
-             ObjectInputStream oinStores = new ObjectInputStream
-                     (new FileInputStream(stores));
-             ObjectInputStream oinNames = new ObjectInputStream
-                     (new FileInputStream(usernames))) {
-            readFromSerializedFile(oinBuyers, oinSellers, oinStores, oinNames);
+    private static void initFromFiles(File file) {
+        try (ObjectInputStream oin = new ObjectInputStream
+                (new FileInputStream(file))) {
+            readFromSerializedFile(oin);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -134,28 +93,19 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * This method is used to generate a serialized files to check data persistence
      * Use in conjunction with initFromFiles
      *
-     * @param buyers    the file that buyers serialize to
-     * @param sellers   the file that sellers serialize to
-     * @param stores    the file that stores serialize to
-     * @param usernames the file that usernames serialize to
-     * @see #initFromFiles(File, File, File, File)
+     * @param file  the file that everything serialize to
+     * @see #initFromFiles(File)
      * @see java.lang.reflect.Method#setAccessible(boolean)
      * @see java.lang.reflect.Method#invoke(Object, Object...)
      */
     @SuppressWarnings({"unused"})
-    private static void serializeToFiles(File buyers, File sellers, File stores, File usernames) {
-        try (ObjectOutputStream oinBuyers = new ObjectOutputStream
-                (new FileOutputStream(buyers));
-             ObjectOutputStream oinSellers = new ObjectOutputStream
-                     (new FileOutputStream(sellers));
-             ObjectOutputStream oinStores = new ObjectOutputStream
-                     (new FileOutputStream(stores));
-             ObjectOutputStream oinNames = new ObjectOutputStream
-                     (new FileOutputStream(usernames))) {
-            oinBuyers.writeObject(listOfBuyers);
-            oinSellers.writeObject(listOfSellers);
-            oinNames.writeObject(listOfUsersNames);
-            oinStores.writeObject(listOfStores);
+    private static void serializeToFiles(File file) {
+        try (ObjectOutputStream oin = new ObjectOutputStream
+                (new FileOutputStream(file))) {
+            oin.writeObject(listOfBuyers);
+            oin.writeObject(listOfSellers);
+            oin.writeObject(listOfStores);
+            oin.writeObject(listOfUsersNames);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -176,18 +126,12 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
                 fullBuyer.receiveUserDestruction(user);
             }
         }
-        try (ObjectOutputStream oinBuyers = new ObjectOutputStream
-                (new FileOutputStream("src/UserCore/serialized_buyers"));
-             ObjectOutputStream oinSellers = new ObjectOutputStream
-                     (new FileOutputStream("src/UserCore/serialized_sellers"));
-             ObjectOutputStream oinStores = new ObjectOutputStream
-                     (new FileOutputStream("src/UserCore/serialized_stores"));
-             ObjectOutputStream oinNames = new ObjectOutputStream
-                     (new FileOutputStream("src/UserCore/serialized_usernames"))) {
-            oinBuyers.writeObject(listOfBuyers);
-            oinSellers.writeObject(listOfSellers);
-            oinNames.writeObject(listOfUsersNames);
-            oinStores.writeObject(listOfStores);
+        try (ObjectOutputStream oin = new ObjectOutputStream
+                (new FileOutputStream("src/UserCore/serialized_file"))) {
+            oin.writeObject(listOfBuyers);
+            oin.writeObject(listOfSellers);
+            oin.writeObject(listOfStores);
+            oin.writeObject(listOfUsersNames);
         } catch (IOException e) {
             e.printStackTrace();
         }

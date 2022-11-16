@@ -42,10 +42,7 @@ public class TestCasesMethodsImplementation {
         }
     }
 
-    private static final File serBuy = new File("src/Test/UnitTestTxtFile/test_ser_buy");
-    private static final File serSell = new File("src/Test/UnitTestTxtFile/test_ser_sell");
-    private static final File serNames = new File("src/Test/UnitTestTxtFile/test_ser_names");
-    private static final File serStores = new File("src/Test/UnitTestTxtFile/test_ser_stores");
+    private static final File ser = new File("src/Test/UnitTestTxtFile/test_ser");
 
     static { //used for testing for data persistence
         try {
@@ -53,10 +50,10 @@ public class TestCasesMethodsImplementation {
             FullBuyer buyerTest = new FullBuyer("TestBuyer", "test@test.com", "123");
             @SuppressWarnings("unused")
             FullSeller sellerTest = new FullSeller("TestSeller", "test@test.com", "123");
-            Method m = PublicInformation.class.getDeclaredMethod("serializeToFiles",
-                    File.class, File.class, File.class, File.class);
+            Method m = PublicInformation.class.getDeclaredMethod("serializeToFiles", File.class);
             m.setAccessible(true);
-            m.invoke(PublicInformation.class, serBuy, serSell, serStores, serNames);
+            m.invoke(PublicInformation.class, ser);
+            System.out.println(PublicInformation.listOfUsersNames);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,15 +92,14 @@ public class TestCasesMethodsImplementation {
     @Test(timeout = 1000)
     public void testDataPersistence() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException {
-        Method m = PublicInformation.class.getDeclaredMethod("initFromFiles",
-                File.class, File.class, File.class, File.class);
+        Method m = PublicInformation.class.getDeclaredMethod("initFromFiles", File.class);
         m.setAccessible(true);
-        m.invoke(PublicInformation.class, serBuy, serSell, serStores, serNames);
+        m.invoke(PublicInformation.class, ser);
         TestCase.assertTrue("persistence test buyer",
                 PublicInformation.listOfUsersNames.contains("TestBuyer"));
         TestCase.assertTrue("persistence test seller",
                 PublicInformation.listOfUsersNames.contains("TestSeller"));
-        if (!(serBuy.delete() && serSell.delete() && serStores.delete() && serNames.delete()))
+        if (!(ser.delete()))
             throw new RuntimeException("Problem with deleting serialize files used for testing!");
     }
 

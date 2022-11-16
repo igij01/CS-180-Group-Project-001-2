@@ -30,10 +30,7 @@ public class TestCasesMain extends TestCase {
     private static ArrayList<String> testInputs;
     private static ArrayList<String> testOutputs;
 
-    private static final File serBuy = new File("src/Test/UnitTestTxtFile/test_ser_buy");
-    private static final File serSell = new File("src/Test/UnitTestTxtFile/test_ser_sell");
-    private static final File serNames = new File("src/Test/UnitTestTxtFile/test_ser_names");
-    private static final File serStores = new File("src/Test/UnitTestTxtFile/test_ser_stores");
+    private static final File ser = new File("src/Test/UnitTestTxtFile/test_ser");
 
     private String input;
     private String output;
@@ -75,10 +72,9 @@ public class TestCasesMain extends TestCase {
         FullSeller seller1 = new FullSeller("Seller", "sample@email.com", "11");
         FullBuyer buyer2 = new FullBuyer("Buyer2", "sample@email.com", "2");
         FullSeller seller2 = new FullSeller("Seller2", "sample@email.com", "22");
-        Method m = PublicInformation.class.getDeclaredMethod("serializeToFiles",
-                File.class, File.class, File.class, File.class);
+        Method m = PublicInformation.class.getDeclaredMethod("serializeToFiles", File.class);
         m.setAccessible(true);
-        m.invoke(PublicInformation.class, serBuy, serSell, serStores, serNames);
+        m.invoke(PublicInformation.class, ser);
     }
 
     /**
@@ -94,9 +90,9 @@ public class TestCasesMain extends TestCase {
         testOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(testOut));
         Method m = PublicInformation.class.getDeclaredMethod("initFromFiles",
-                File.class, File.class, File.class, File.class);
+                File.class);
         m.setAccessible(true);
-        m.invoke(PublicInformation.class, serBuy, serSell, serStores, serNames);
+        m.invoke(PublicInformation.class, ser);
     }
 
     /**
@@ -111,18 +107,14 @@ public class TestCasesMain extends TestCase {
     public void tearDown() throws Exception {
         System.setIn(originalInput);
         System.setOut(originalOutput);
-        Method m = PublicInformation.class.getDeclaredMethod("serializeToFiles",
-                File.class, File.class, File.class, File.class);
+        Method m = PublicInformation.class.getDeclaredMethod("serializeToFiles", File.class);
         m.setAccessible(true);
-        m.invoke(PublicInformation.class, serBuy, serSell, serStores, serNames);
+        m.invoke(PublicInformation.class, ser);
     }
 
     @AfterClass
     public static void deleteFiles() throws Exception {
-        serBuy.delete();
-        serSell.delete();
-        serNames.delete();
-        serStores.delete();
+        ser.delete();
     }
 
     /**

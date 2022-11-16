@@ -51,26 +51,6 @@ public class FullUser implements Serializable {
         ignoreFiltering = false;
     }
 
-    /**
-     * links the conversations in both parties together so same point to the same memory location
-     * <p>
-     * This is used to fix the issues of both user copies of conversations instead of all point to one conversation
-     * after serialization and deserialization cycle
-     */
-    protected void linker() {
-        for (Conversation c : conversations) {
-            FullUser other = PublicInformation.userTranslate(c.getOtherUser(this.user));
-            assert other != null;
-            int index = 0;
-            for (Conversation cc : other.conversations) {
-                if (cc.getOtherUser(other.user).equals(this.user) && !cc.equals(c)) {
-                    conversations.set(index, cc);
-                    break;
-                }
-                index++;
-            }
-        }
-    }
 
     public ArrayList<Conversation> getConversations() {
         return conversations;
