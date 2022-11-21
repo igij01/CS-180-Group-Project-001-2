@@ -1,4 +1,4 @@
-package Server;
+package Experiment;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,7 +19,6 @@ public class TestGroundServer {
     private Hashtable<SocketAddress, String> authenticateTable;
 
     public static void main(String[] args) {
-
     }
 
     public TestGroundServer(String address) {

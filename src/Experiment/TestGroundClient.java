@@ -1,4 +1,4 @@
-package Server;
+package Experiment;
 
 public class TestGroundClient {
 }
