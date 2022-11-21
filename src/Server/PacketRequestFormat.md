@@ -16,6 +16,7 @@ try to minimize error and spot them early, so you won't pass the wrong request t
 ## Table of Request
 
 ### Table of user profile request
+___*The request type is case-sensitive___
 
 |     Request Type      |             Syntax              | comma allowed for the last param |                                         Special Exceptions                                         |
 |:---------------------:|:-------------------------------:|:--------------------------------:|:--------------------------------------------------------------------------------------------------:|

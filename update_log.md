@@ -149,3 +149,29 @@ asynchronously write to a client to achieve real time update
   * implement observer and observable programming scheme
   * the observer will be notified when an observable object changes
   * However, those classes are _deprecated_ since Java 9
+
+## 11/20 - 11/21/2022
+
+### Wrote a basic server that support user creation and login
+
+#### Description
+
+Implement the basic structure on the server side.
+The classes added are:
+
+* _ServerCore_ which handles the main server IO and is single threaded
+* _MessageSystem_ which is responsible for interpreting the packet send
+  by the client and uses UserProfile as its field. It also has a process
+  request method which basically abstract all the request besides login and register
+* _UserProfile_ which is responsible for user profile request
+
+#### Notes
+
+* For method processRequest specifically, I was thinking whether it would
+  be better to use a hashtable with method name in string as key and Reflection
+  Method as definition as it will produce cleaner code and faster access time than a switch or if statements.
+  However, based
+  on [this post](https://stackoverflow.com/questions/25388938/performance-of-calling-a-method-using-reflection),
+  Java Reflection has huge performance overhead that the time gained from O(1) access time from HashTable
+  is not worth the extra 50,000% (tested on my machine) time gain.
+* See experiment.TestReflection class for detail
