@@ -185,3 +185,4 @@ The Exception added are:
   Java Reflection has huge performance overhead that the time gained from O(1) access time from HashTable
   is not worth the extra 50,000% (tested on my machine) time gain.
 * See experiment.TestReflection class for detail
+* An alternative for this is AOP(aspect oriented programming). Though I haven't researched more into it yet
