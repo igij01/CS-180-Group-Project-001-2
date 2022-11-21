@@ -6,6 +6,14 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * MessageSystem
+ * <p>
+ * class responsible for interpreting the packet send by the client
+ *
+ * @author Yulin Lin, 001
+ * @version 11/21/2022
+ */
 public class MessageSystem {
     private FullUser user;
     private final UserProfile userProfile;
@@ -98,15 +106,15 @@ public class MessageSystem {
      * @param raw                the raw string to be split
      * @param paramCountExpected the number of parameters expected
      * @return the list of String containing all the parameters on success
-     * @throws IllegalCharacterInRequest when the number of parameters is less than expected
-     * @throws IllegalParameter          when the last parameter contains comma either due to more elements than expected or
-     *                                   the last parameter contains comma when it shouldn't
+     * @throws IllegalCharacter when the number of parameters is less than expected
+     * @throws IllegalParameter when the last parameter contains comma either due to more elements than expected or
+     *                          the last parameter contains comma when it shouldn't
      */
-    private static String[] splitParamNoComma(String raw, int paramCountExpected) throws IllegalCharacterInRequest,
+    private static String[] splitParamNoComma(String raw, int paramCountExpected) throws IllegalCharacter,
             IllegalParameter {
         String[] array = splitParam(raw, paramCountExpected);
         if (array[array.length - 1].contains(","))
-            throw new IllegalCharacterInRequest(Arrays.toString(array), ',');
+            throw new IllegalCharacter(Arrays.toString(array), ',');
         return array;
     }
 

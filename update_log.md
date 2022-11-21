@@ -157,6 +157,7 @@ asynchronously write to a client to achieve real time update
 #### Description
 
 Implement the basic structure on the server side.
+<br><br>
 The classes added are:
 
 * _ServerCore_ which handles the main server IO and is single threaded
@@ -164,6 +165,15 @@ The classes added are:
   by the client and uses UserProfile as its field. It also has a process
   request method which basically abstract all the request besides login and register
 * _UserProfile_ which is responsible for user profile request
+
+<br><br>
+The Exception added are:
+
+* _IllegalRequestFormat_ when the request format is wrong
+* _IllegalParameter_ extends _IllegalRequestFormat_ when the parameters
+  number don't match or the parameter content is different from expected
+* _IllegalCharacter_ extends _IllegalRequestFormat_ when the request contains
+  Illegal character like comma when it's not allowed
 
 #### Notes
 

@@ -4,6 +4,14 @@ import UserCore.FullUser;
 
 import java.nio.ByteBuffer;
 
+/**
+ * UserProfile
+ * <p>
+ * responsible for user profile change request
+ *
+ * @author Yulin Lin, 001
+ * @version 11/21/2022
+ */
 public class UserProfile {
 
     private FullUser user;

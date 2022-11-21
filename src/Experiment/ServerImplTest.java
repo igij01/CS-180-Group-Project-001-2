@@ -1,4 +1,4 @@
-package Server;
+package Experiment;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -8,30 +8,33 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-// all packets will be sent to the server from the client in the form of:
-//          methodToBeExecuted# param 1, param 2, etc
-// since , is used in conjunction to produce a delimiter, the username and the store will be limited to
-// alphabet, numbers and _ ONLY
-// message, password, etc that do not apply to such restriction MUST BE PLACE AS THE LAST PARAMETER!
-
-/**
- * ServerCore
- * <p>
- * handles the main server IO
- *
- * @author Yulin Lin, 001
- * @version 11/21/2022
- * @implNote This is inspired from <a href="https://stackoverflow.com/questions/43928247/java-socketchannel-selector-
- * combine-write-channel-with-blocking-queue">...</a>
- */
-public class ServerCore {
+public class ServerImplTest {
     public static void main(String... args) throws IOException {
         final Selector selector = Selector.open();
-        final HashMap<SocketChannel, MessageSystem> table = new HashMap<>();
+
+        //every 10 seconds this thread will go through all the connections and
+        //send "(x times) (date) to every client
+        new Thread(() -> {
+            for (int i = 0; selector.isOpen(); i++) {
+                for (SelectionKey key : selector.keys()) {
+                    if (key.channel() instanceof SocketChannel) {
+                        ((Queue<ByteBuffer>) key.attachment()).add(ByteBuffer.wrap((i + " - " + new Date() + "\n").getBytes()));
+                        key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE); //enable write flag
+                    }
+                }
+
+                selector.wakeup(); //wakeup so it can get to work and begin writing
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                }
+            }
+        }).start();
+
 
         //create server on port 5050
         ServerSocketChannel server = ServerSocketChannel.open();
@@ -40,7 +43,7 @@ public class ServerCore {
         server.register(selector, SelectionKey.OP_ACCEPT);
 
         //reusable buffer
-        final ByteBuffer readBuffer = ByteBuffer.allocate(1024);
+        final ByteBuffer readBuffer = ByteBuffer.allocate(0x1000);
 
         while (selector.isOpen()) {
             int selected = selector.select();
@@ -62,19 +65,7 @@ public class ServerCore {
                         if (read > 0) {
                             readBuffer.flip();
                             ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
-                            buffer = buffer.put(readBuffer);
-                            if (table.get(socket) == null) {
-                                try {
-                                    table.put(socket, new MessageSystem(buffer, read));
-                                } catch (Exception e) {
-                                    ((Queue<Buffer>) key.attachment())
-                                            .add(MessageSystem.sendException(e, "Constructor"));
-                                }
-                            } else {
-                                ((Queue<Buffer>) key.attachment()).add(table.get(socket).processRequest(buffer, read));
-                            }
-
-
+                            ((Queue<Buffer>) key.attachment()).add(buffer.put(readBuffer).flip()); //must do this before pass in to message system
                             key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ); //enable write flag
                         }
                     }
@@ -105,7 +96,6 @@ public class ServerCore {
 
                         //add a ArrayBlockingQueue<ByteBuffer> as an attachment for the socket
                         socket.register(selector, SelectionKey.OP_READ, new ArrayBlockingQueue<ByteBuffer>(1000));
-                        table.put(socket, null);
                     }
                 }
                 selector.selectedKeys().clear(); //must clear all when finished or loop will continue selecting nothing
