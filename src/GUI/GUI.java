@@ -16,6 +16,69 @@ public class GUI extends Thread implements ActionListener{
     JPasswordField passText;
     FullUser user;
 
+    public static void Menu() {
+        JFrame frame = new JFrame("Basically Facebook");
+        frame.setSize(750,500);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Menu");
+        menuBar.add(menu);
+        JMenuItem space = new JMenuItem("");
+
+        ImageIcon imageIcon = new ImageIcon("profile.png");
+        Image image = imageIcon.getImage();
+        Image img = image.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(img);
+        JMenuItem profile = new JMenuItem("profile",
+                imageIcon);
+        menuBar.add(profile);
+
+        ImageIcon imageIcon1 = new ImageIcon("search.png");
+        Image image1 = imageIcon1.getImage();
+        Image img1 = image1.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        imageIcon1 = new ImageIcon(img1);
+        JMenuItem search = new JMenuItem("search  ",
+                imageIcon1);
+        menuBar.add(search);
+
+        ImageIcon imageIcon2 = new ImageIcon("logout.png");
+        Image image2 = imageIcon2.getImage();
+        Image img2 = image2.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        imageIcon2 = new ImageIcon(img2);
+        JMenuItem logout = new JMenuItem("logout",
+                imageIcon2);
+        menuBar.add(logout);
+        menuBar.add(space);
+        frame.setJMenuBar(menuBar);
+
+        profile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.setVisible(false);
+                // set the profile window to visible
+            }
+        });
+
+        search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuBar.setVisible(false);
+                //Search(); to be implemented
+            }
+        });
+
+        logout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Login(); //return them to the login page
+            }
+        });
+
+
+    }
+
 
 
     ActionListener actionListener = new ActionListener() {
@@ -23,7 +86,7 @@ public class GUI extends Thread implements ActionListener{
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == login) {
                 if (isValidLogin()) {
-
+                    Menu();
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid Password or Username", "Try Again", JOptionPane.ERROR_MESSAGE);
                 }
@@ -75,7 +138,6 @@ public class GUI extends Thread implements ActionListener{
         createAcc.setBounds(175,80,125,25);
         panel.add(createAcc);
         loginFrame.setVisible(true);
-
     }
 
     public static void main(String[] args) {
