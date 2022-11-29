@@ -72,7 +72,7 @@ public class GUI extends Thread implements ActionListener{
         logout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Login(); //return them to the login page
+                //Login(); //return them to the login page
             }
         });
 
