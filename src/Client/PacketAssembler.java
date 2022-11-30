@@ -1,5 +1,8 @@
 package Client;
 
+import Protocol.DataPacket;
+import Protocol.Request;
+
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
