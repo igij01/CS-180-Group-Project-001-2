@@ -382,7 +382,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         StringBuilder sbd1 = new StringBuilder();
         for (int i = 0; i < listOfStores.size(); i++) {
             sbd1.append(i).append(". ");
-            sbd1.append(listOfStores.get(i).getStoreName()).append("\n");
+            sbd1.append(listOfStores.get(i).getStoreName()).append(":Store").append("\n");
         }
         if (sbd1.isEmpty())
             return null;

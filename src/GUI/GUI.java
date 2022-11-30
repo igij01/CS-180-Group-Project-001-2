@@ -8,28 +8,41 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+import static UserCore.PublicInformation.findBuyerBasedOnLetters;
+import static UserCore.PublicInformation.storeList;
 
 public class GUI extends Thread implements ActionListener{
     static JFrame frame;
+    static ArrayList<String> items = new ArrayList<>();
     static JMenuBar menuBar;
     static JMenuBar searchBar;
+    static ScrollPane scrollPane = new ScrollPane();
     JButton login;
     JButton createAcc;
     JTextField userText;
     JPasswordField passText;
     static FullUser user;
 
-    public static void Menu() {
+    public static void Setup() {
         frame = new JFrame("Basically Facebook");
         frame.setSize(750,500);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+        frame.add(scrollPane, BorderLayout.WEST);
+        //List(user.printConversationTitles()); a user needs to be created from logging in first
+    }
+
+
+    public static void Menu() {
+        Setup();
         menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
         JMenuItem space = new JMenuItem("");
-
         ImageIcon imageIcon = new ImageIcon("profile.png");
         Image image = imageIcon.getImage();
         Image img = image.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
@@ -109,38 +122,50 @@ public class GUI extends Thread implements ActionListener{
         SearchIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                if (user instanceof FullBuyer) {
-//                    //updates conversation list with available searches
-//                } else {
-//                    return case4((FullSeller) user);
-//                }
+                ClearList();
+                if (user instanceof FullBuyer) {
+                    List(PublicInformation.findSellerBasedOnLetters(searchText.getText(), (FullBuyer) user));
+                //List("woah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nboat");
+                    if (storeList((FullBuyer) user) == null) {
+                        System.out.println("There are no stores!");
+                    } else {
+                        List(Objects.requireNonNull(storeList((FullBuyer) user)));
+                    }
+                } else {
+                    List(findBuyerBasedOnLetters(searchText.getText(), (FullSeller) user));
+                }
             }
         });
     }
-    public void List(String elements) {
+    public static void ClearList() {items.clear();}
+    public static void List(String elements) {
+        if (elements == null) {
+            elements = "Nothing here to see";
+        }
         String[] added = elements.split("\n", -2);
-        ArrayList<String> items = new ArrayList<>(Arrays.asList(added));
-        JList list = new JList(items.toArray(new String[items.size()]));
-        ScrollPane scrollPane = new ScrollPane();
+        items.addAll(List.of(added));
+        System.out.println(items);
+        System.out.println(Arrays.asList(items));
+        JList list = new JList(items.toArray());
+        System.out.println(list);
         list.setLayoutOrientation(JList.VERTICAL);
-        scrollPane.setPreferredSize(new Dimension(200,200));
+        scrollPane.setPreferredSize(new Dimension(200,500));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
                 System.out.println(selectedItem);
-//                String[] part = selectedItem.split(":",2);
+                String[] part = selectedItem.split(":",2);
 //                if (part[1].equalsIgnoreCase("Seller")) {
-//
+//                    //show options for seller
 //                } else if (part[1].equalsIgnoreCase("buyer")) {
-//
+//                    //show options for buyers
 //                } else { //for the store option
-//
+//                    //show options for store
 //                }
             }
         };
         list.addMouseListener(mouseListener);
         scrollPane.add(list);
-        frame.add(scrollPane, BorderLayout.WEST);
 
     }
 
@@ -171,39 +196,39 @@ public class GUI extends Thread implements ActionListener{
         }
     }
     public void run() {
-            Menu();
-            List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
-//        JFrame loginFrame = new JFrame("Login");
-//        JPanel panel = new JPanel();
-//        loginFrame.setSize(350,200);
-//        loginFrame.setLocationRelativeTo(null);
-//        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        panel.setLayout(null);
-//        loginFrame.add(panel);
-//
-//        JLabel username = new JLabel("Username");
-//        username.setBounds(10,20,80,25);
-//        panel.add(username);
-//        userText = new JTextField();
-//        userText.setBounds(100,20,150,25);
-//        panel.add(userText);
-//
-//        JLabel password = new JLabel("Password");
-//        password.setBounds(10,50,150,25);
-//        panel.add(password);
-//        passText = new JPasswordField();
-//        passText.setBounds(100,50,150,25);
-//        panel.add(passText);
-//
-//        login = new JButton("Login");
-//        login.setBounds(100,80,80,25);
-//        login.addActionListener(actionListener);
-//        panel.add(login);
-//
-//        createAcc = new JButton("Create Account");
-//        createAcc.setBounds(175,80,125,25);
-//        panel.add(createAcc);
-//        loginFrame.setVisible(true);
+//          Menu();
+//          List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
+        JFrame loginFrame = new JFrame("Login");
+        JPanel panel = new JPanel();
+        loginFrame.setSize(350,200);
+        loginFrame.setLocationRelativeTo(null);
+        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        panel.setLayout(null);
+        loginFrame.add(panel);
+
+        JLabel username = new JLabel("Username");
+        username.setBounds(10,20,80,25);
+        panel.add(username);
+        userText = new JTextField();
+        userText.setBounds(100,20,150,25);
+        panel.add(userText);
+
+        JLabel password = new JLabel("Password");
+        password.setBounds(10,50,150,25);
+        panel.add(password);
+        passText = new JPasswordField();
+        passText.setBounds(100,50,150,25);
+        panel.add(passText);
+
+        login = new JButton("Login");
+        login.setBounds(100,80,80,25);
+        login.addActionListener(actionListener);
+        panel.add(login);
+
+        createAcc = new JButton("Create Account");
+        createAcc.setBounds(175,80,125,25);
+        panel.add(createAcc);
+        loginFrame.setVisible(true);
     }
 
     public static void main(String[] args) {
