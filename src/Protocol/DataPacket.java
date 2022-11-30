@@ -20,6 +20,7 @@ public class DataPacket implements Externalizable {
     }
 
     public DataPacket() {
+
     }
 
     @Override

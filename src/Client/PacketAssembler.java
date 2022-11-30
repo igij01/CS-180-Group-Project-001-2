@@ -17,7 +17,7 @@ public class PacketAssembler {
      * @param args        the params assoc. with that instructions
      * @return the ByteBuffer that's ready to be sent to the server
      */
-    private static ByteBuffer assemblePacket(Request instruction, String... args) {
+    public static ByteBuffer assemblePacket(Request instruction, String... args) {
         DataPacket packet = new DataPacket(instruction, args);
         return ByteBuffer.wrap(Objects.requireNonNull(DataPacket.serialize(packet)));
     }

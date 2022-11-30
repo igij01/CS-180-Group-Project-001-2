@@ -1,5 +1,7 @@
 package GUI;
 
+import Client.PacketAssembler;
+import Protocol.Request;
 import UserCore.*;
 import com.sun.source.tree.NewArrayTree;
 
@@ -46,6 +48,10 @@ public class GUI extends Thread {
     }
 
     public static void Profile() {
+        frame = new JFrame();
+        frame.setSize(500,600);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
 
     }
 
@@ -85,6 +91,7 @@ public class GUI extends Thread {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setVisible(false);
+                Profile();
 
                 // set the profile window to visible
             }
@@ -322,11 +329,13 @@ public class GUI extends Thread {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == login) {
-                if (isValidLogin()) {
+                PacketAssembler.assemblePacket(Request.LOGIN,userText.getText(),String.valueOf(passText.getPassword()));
+
+               /* if (isValidLogin()) {
                     Menu();
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid Password or Username", "Try Again", JOptionPane.ERROR_MESSAGE);
-                }
+                } */
             }
             if (e.getSource() == createAcc) {
 
