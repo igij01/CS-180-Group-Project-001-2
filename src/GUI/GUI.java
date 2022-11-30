@@ -14,16 +14,16 @@ import java.util.Objects;
 import static UserCore.PublicInformation.findBuyerBasedOnLetters;
 import static UserCore.PublicInformation.storeList;
 
-public class GUI extends Thread implements ActionListener{
+public class GUI extends Thread {
     static JFrame frame;
     static ArrayList<String> items = new ArrayList<>();
     static JMenuBar menuBar;
     static JMenuBar searchBar;
     static ScrollPane scrollPane = new ScrollPane();
-    JButton login;
-    JButton createAcc;
-    JTextField userText;
-    JPasswordField passText;
+    static JButton login;
+    static JButton createAcc;
+    static JTextField userText;
+    static JPasswordField passText;
     static FullUser user;
 
     public static void Setup() {
@@ -36,7 +36,9 @@ public class GUI extends Thread implements ActionListener{
         //List(user.printConversationTitles()); a user needs to be created from logging in first
     }
 
+    public static void Profile() {
 
+    }
     public static void Menu() {
         Setup();
         menuBar = new JMenuBar();
@@ -73,6 +75,7 @@ public class GUI extends Thread implements ActionListener{
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setVisible(false);
+
                 // set the profile window to visible
             }
         });
@@ -169,35 +172,9 @@ public class GUI extends Thread implements ActionListener{
 
     }
 
-
-    ActionListener actionListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == login) {
-                if (isValidLogin()) {
-                    Menu();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid Password or Username", "Try Again", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            if (e.getSource() == createAcc) {
-
-            }
-        }
-    };
-    private boolean isValidLogin() {
-        try {
-            String username = userText.getText();
-            String password = String.valueOf(passText.getPassword());
-            user = PublicInformation.login(username, password);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    public void run() {
-//          Menu();
-//          List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
+    public static void Login() {
+        Menu();
+        List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
         JFrame loginFrame = new JFrame("Login");
         JPanel panel = new JPanel();
         loginFrame.setSize(350,200);
@@ -230,14 +207,37 @@ public class GUI extends Thread implements ActionListener{
         panel.add(createAcc);
         loginFrame.setVisible(true);
     }
+    public void run() {
+        Login();
+    }
+
+    static ActionListener actionListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == login) {
+                if (isValidLogin()) {
+                    Menu();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid Password or Username", "Try Again", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            if (e.getSource() == createAcc) {
+
+            }
+        }
+    };
+    private static boolean isValidLogin() {
+        try {
+            String username = userText.getText();
+            String password = String.valueOf(passText.getPassword());
+            user = PublicInformation.login(username, password);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new GUI());
-    }
-
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
     }
 }
