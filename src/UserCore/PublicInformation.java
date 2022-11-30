@@ -509,7 +509,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         searchText = searchText.toLowerCase();
         for (FullBuyer fb : listOfBuyers) {
             if (fb.getUser().getUserName().toLowerCase().contains(searchText) && !fb.checkInvisible(seller.getUser())) {
-                str.append(fb.getUser().getUserName()).append('\n');
+                str.append(fb.getUser().getUserName()).append(":Buyer").append('\n');
             }
         }
         if (str.isEmpty())
@@ -530,7 +530,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         searchText = searchText.toLowerCase();
         for (FullSeller fb : listOfSellers) {
             if (fb.getUser().getUserName().toLowerCase().contains(searchText) && !fb.checkInvisible(buyer.getUser())) {
-                str.append(fb.getUser().getUserName()).append('\n');
+                str.append(fb.getUser().getUserName()).append(":Seller").append('\n');
             }
         }
         if (str.isEmpty())
