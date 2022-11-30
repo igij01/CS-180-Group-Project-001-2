@@ -212,6 +212,7 @@ public class GUI extends Thread {
     }
 
     static ActionListener actionListener = new ActionListener() {
+        //Change these to use Requests
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == login) {
