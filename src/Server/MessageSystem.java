@@ -1,7 +1,12 @@
 package Server;
 
+import Protocol.DataPacket;
+import Protocol.Request;
 import UserCore.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +31,22 @@ public class MessageSystem {
      */
     protected static ByteBuffer toByteBuffer(String str) {
         return ByteBuffer.wrap(str.getBytes());
+    }
+
+    /**
+     * deserialize serialized packet
+     * @param buffer the buffer that contains the serialized packet
+     * @return the deserialized packet
+     */
+    protected static DataPacket packetDeserialize(ByteBuffer buffer) {
+        byte[] packet = buffer.array();
+        try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
+             ObjectInputStream oin = new ObjectInputStream(in)) {
+            return (DataPacket) oin.readObject();
+        } catch (IOException|ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -132,16 +153,26 @@ public class MessageSystem {
      */
     public MessageSystem(ByteBuffer initMessage, int numRead) throws
             InvalidPasswordException, IllegalUserNameException, EmailFormatException, IllegalRequestFormat {
-        String message = toStringFromBuffer(initMessage, numRead);
-        String command = getCommand(message);
-        if (command.equalsIgnoreCase("login")) {
-            String[] info = splitParam(message.substring(message.indexOf('#') + 1), 2);
-            this.user = logIn(info[0], info[1]);
-        } else if (command.equalsIgnoreCase("register")) {
-            String[] info = splitParam(message.substring(message.indexOf('#') + 1), 4);
-            this.user = register(info[0], info[1], info[2], info[3]);
+//        String message = toStringFromBuffer(initMessage, numRead);
+//        String command = getCommand(message);
+//        if (command.equalsIgnoreCase("login")) {
+//            String[] info = splitParam(message.substring(message.indexOf('#') + 1), 2);
+//            this.user = logIn(info[0], info[1]);
+//        } else if (command.equalsIgnoreCase("register")) {
+//            String[] info = splitParam(message.substring(message.indexOf('#') + 1), 4);
+//            this.user = register(info[0], info[1], info[2], info[3]);
+//        } else
+//            throw new IllegalRequestFormat(message + "- is not a login or register request!");
+//        userProfile = new UserProfile(this.user);
+
+        DataPacket initPacket = packetDeserialize(initMessage);
+        if (initPacket != null && (initPacket.request == Request.LOGIN || initPacket.request == Request.REGISTER)) {
+            if (initPacket.request == Request.LOGIN)
+                this.user = logIn(initPacket.args[0], initPacket.args[1]);
+            else
+                this.user = register(initPacket.args[0], initPacket.args[1], initPacket.args[2], initPacket.args[3]);
         } else
-            throw new IllegalRequestFormat(message + "- is not a login or register request!");
+            throw new IllegalRequestFormat(initPacket.request.toString() + "- is not a login or register request!");
         userProfile = new UserProfile(this.user);
     }
 

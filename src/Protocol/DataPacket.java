@@ -3,10 +3,19 @@ package Protocol;
 import java.io.*;
 
 public class DataPacket implements Externalizable {
-    Request request;
-    String[] args;
-    public DataPacket(Request request, String... args) {
+    public Request request;
+    public String[] args;
+
+    /**
+     * create a data packet to send across nio channels
+     * @param request the type of the packet
+     * @param args the arguments
+     * @throws IllegalParameterCount when the arguments count is not the same as expected
+     */
+    public DataPacket(Request request, String... args) throws IllegalParameterCount {
         this.request = request;
+        if (args.length != request.paramCount)
+            throw new IllegalParameterCount(request);
         this.args = args;
     }
 
