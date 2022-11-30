@@ -207,6 +207,19 @@ public class GUI extends Thread {
         panel.add(createAcc);
         loginFrame.setVisible(true);
     }
+    
+    //allows users to upload files
+    public static void uploadFile() {
+        JFrame UFFrame = new JFrame("Upload Your File");
+        JPanel UFPanel = new JPanel();
+        UFFrame.setSize(250, 500);
+        UFFrame.setLocationRelativeTo(null);
+        UFFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        UFFrame.setVisible(true);
+        JButton upload = new JButton("Upload File");
+        UFPanel.add(upload);
+    }
+    
     public void run() {
         Login();
     }
