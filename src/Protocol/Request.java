@@ -6,8 +6,11 @@ public enum Request {
     DISPLAY_PROFILE (0),
     CHANGE_USERNAME(2);
 
-    public final int paramCount;
-    private Request(int paramCount) {
+    private final int paramCount;
+    Request(int paramCount) {
         this.paramCount = paramCount;
+    }
+    public int getParamCount() {
+        return this.paramCount;
     }
 }

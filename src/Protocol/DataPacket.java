@@ -14,7 +14,7 @@ public class DataPacket implements Externalizable {
      */
     public DataPacket(Request request, String... args) throws IllegalParameterCount {
         this.request = request;
-        if (args.length != request.paramCount)
+        if (args.length != request.getParamCount())
             throw new IllegalParameterCount(request);
         this.args = args;
     }
