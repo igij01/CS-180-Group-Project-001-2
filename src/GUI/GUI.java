@@ -290,14 +290,27 @@ public class GUI extends Thread {
 
     //allows users to upload files
     public static void uploadFile() {
-        JFrame UFFrame = new JFrame("Upload Your File");
+        try {
+            JFileChooser fileC = new JFileChooser();
+            fileC.showSaveDialog(null);
+        /*JFrame UFFrame = new JFrame("Upload Your File");
         JPanel UFPanel = new JPanel();
-        UFFrame.setSize(250, 500);
+        Container UFContent = UFFrame.getContentPane();
+        UFContent.setLayout(new BorderLayout());
+        UFFrame.setSize(600, 700);
         UFFrame.setLocationRelativeTo(null);
         UFFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        UFFrame.setVisible(true);
+        UFPanel.setLayout(null);
+        UFFrame.add(UFPanel);
         JButton upload = new JButton("Upload File");
+        //upload.setBounds(75,200,100,25);
         UFPanel.add(upload);
+        UFContent.add(UFPanel, BorderLayout.SOUTH);
+        UFFrame.setVisible(true);*/
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Invalid File!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void run() {
