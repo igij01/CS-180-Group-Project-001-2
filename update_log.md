@@ -159,8 +159,7 @@ asynchronously write to a client to achieve real time update
 #### Description
 
 Implement the basic structure on the server side.
-<br><br>
-The classes added are:
+##### The classes added are:
 
 * _ServerCore_ which handles the main server IO and is single threaded
 * _MessageSystem_ which is responsible for interpreting the packet send
@@ -188,3 +187,44 @@ The Exception added are:
   is not worth the extra 50,000% (tested on my machine) time gain.
 * See experiment.TestReflection class for detail
 * An alternative for this is AOP(aspect oriented programming). Though I haven't researched more into it yet
+
+## 12/1 - 12/3
+
+### Changed the method of network communication from string to serialized packet objects
+
+#### Description
+
+A whole new package - Protocol - was added which contains essential files that both the server and
+the client will have. It contains all the information needed to make and decode the content of the packet.
+<br>
+There are 3 kinds of packet - Data Packet, Response Packet, and Error packet. Data packet will be used for client to
+send request to the server; response packet is used to send normal output to the client, which will also include
+real-time update in the future; and the error packet is used by the server to send exceptions to the client(even though
+some exceptions, like InvalidEmailFormat, etc, should really be caught at the client side, the server will
+always assume the worst and try to catch every possible errors to not crash and either send the error info to the client
+or don't)
+
+##### The classes added are:
+
+* DataPacket
+* ErrorPacket
+* Response Packet
+  Exceptions added:
+* IllegalParameterCount(will be required to be caught at client)
+  Enums added:
+* ProtocolRequestType(include the necessary parameters count for each request)
+* ProtocolResponseType
+* ProtocolErrorType
+
+### Notes
+
+* Also, a simple framework of client is added and changes are made to the Message System, so
+  it uses data packet as method of transfer(RIP telnet tests :((( )
+* An experiment class was also added called testDataPacketSerialization to test
+  the speed of the data packet serialization using externalizable interface. Some stats are:
+  * data packet - around 1200 ms for 1,000,000 serialization
+  * response packet - around 800 ms for 1,000,000 serialization
+  * error packet - around 1000 ms for 1,000,000 serialization
+  * note: this test is done using a login packet, a simple response packet, and Invalid Password error packet
+    which are pretty simple for it might be worse in real-life. But 1,000,000 packet is not a realistic load either
+    so it should not impact the server performance :)
