@@ -3,9 +3,6 @@ package Server;
 import Protocol.*;
 import UserCore.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -31,24 +28,6 @@ public class MessageSystem {
     protected static ByteBuffer toByteBufferPacket(ProtocolResponseType protocolRequestType, String... params) {
         ResponsePacket packet = new ResponsePacket(protocolRequestType, params);
         return ByteBuffer.wrap(Objects.requireNonNull(DataPacket.serialize(packet)));
-    }
-
-
-    /**
-     * deserialize serialized packet
-     *
-     * @param buffer the buffer that contains the serialized packet
-     * @return the deserialized packet
-     */
-    public static DataPacket packetDeserialize(ByteBuffer buffer) {
-        byte[] packet = buffer.array();
-        try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
-             ObjectInputStream oin = new ObjectInputStream(in)) {
-            return (DataPacket) oin.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**
@@ -104,7 +83,7 @@ public class MessageSystem {
      */
     public MessageSystem(ByteBuffer initMessage, int numRead) throws
             InvalidPasswordException, IllegalUserNameException, EmailFormatException, IllegalRequestFormat {
-        DataPacket initPacket = packetDeserialize(initMessage);
+        DataPacket initPacket = DataPacket.packetDeserialize(initMessage);
         if (initPacket != null) {
             if (initPacket.protocolRequestType == ProtocolRequestType.LOGIN)
                 this.user = logIn(initPacket.args[0], initPacket.args[1]);
@@ -161,7 +140,7 @@ public class MessageSystem {
      * @return the ByteBuffer as a response
      */
     public ByteBuffer processRequest(ByteBuffer buffer) {
-        DataPacket packet = packetDeserialize(buffer);
+        DataPacket packet = DataPacket.packetDeserialize(buffer);
         try {
             return switch (Objects.requireNonNull(packet).protocolRequestType) {
                 case DISPLAY_PROFILE -> userProfile.displayUserProfile();

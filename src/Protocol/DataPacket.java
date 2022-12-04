@@ -1,6 +1,7 @@
 package Protocol;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 
 public class DataPacket implements Externalizable {
     public ProtocolRequestType protocolRequestType;
@@ -57,6 +58,23 @@ public class DataPacket implements Externalizable {
             oos.writeObject(packet);
             return out.toByteArray();
         } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * deserialize serialized data packet
+     *
+     * @param buffer the buffer that contains the serialized packet
+     * @return the deserialized packet
+     */
+    public static DataPacket packetDeserialize(ByteBuffer buffer) {
+        byte[] packet = buffer.array();
+        try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
+             ObjectInputStream oin = new ObjectInputStream(in)) {
+            return (DataPacket) oin.readObject();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
         }

@@ -1,5 +1,7 @@
 package Server;
 
+import Protocol.ProtocolResponseType;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.Buffer;
@@ -67,7 +69,8 @@ public class ServerCore {
                                 try {
                                     table.put(socket, new MessageSystem(buffer, read));
                                     ((Queue<Buffer>) key.attachment()).
-                                            add(ByteBuffer.wrap(("Successful\n").getBytes()));
+                                            add(MessageSystem.toByteBufferPacket(
+                                                    ProtocolResponseType.LOGIN_SUCCESS, "login success!"));
                                 } catch (Exception e) {
                                     ((Queue<Buffer>) key.attachment())
                                             .add(MessageSystem.sendException(e));

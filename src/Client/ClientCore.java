@@ -1,8 +1,7 @@
 package Client;
 
-import Protocol.DataPacket;
 import Protocol.ProtocolRequestType;
-import Server.MessageSystem;
+import Protocol.ResponsePacket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -44,6 +43,7 @@ public class ClientCore extends Thread {
                 if (select > 0) {
                     for (SelectionKey key : selector.selectedKeys()) {
                         if (key.isValid() && key.isReadable()) {
+                            System.out.println("Readable: " + key.channel());
                             SocketChannel socket = ((SocketChannel) key.channel());
                             readBuffer.clear();
                             int read = socket.read(readBuffer);
@@ -53,12 +53,11 @@ public class ClientCore extends Thread {
                                 continue; //socket is closed. continue loop
                             }
 
-                            //we will add what the client sent to the queue to echo it back
                             if (read > 0) {
                                 readBuffer.flip();
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
-                                DataPacket packet = MessageSystem.packetDeserialize(buffer);
+                                ResponsePacket packet = ResponsePacket.packetDeserialize(buffer);
                                 if (packet != null) {
                                     System.out.println(packet.args[0]);
                                 }
