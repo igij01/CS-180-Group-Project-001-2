@@ -1,5 +1,10 @@
 package Client;
 
+import Protocol.DataPacket;
+import Protocol.Request;
+import Server.MessageSystem;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -33,7 +38,7 @@ public class ClientCore extends Thread {
         try {
             this.channel = SocketChannel.open(address);
             this.channel.configureBlocking(false);
-            this.channel.register(selector, SelectionKey.OP_READ);
+            this.channel.register(selector, SelectionKey.OP_WRITE);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,6 +62,10 @@ public class ClientCore extends Thread {
                                 readBuffer.flip();
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
+                                DataPacket packet = MessageSystem.packetDeserialize(buffer);
+                                if (packet != null) {
+                                    System.out.println(packet.args[0]);
+                                }
                                 //readQueue.add(buffer);
                             }
                             key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ); //enable write flag
@@ -66,21 +75,19 @@ public class ClientCore extends Thread {
                             System.out.println("Writable: " + key.channel());
                             SocketChannel socket = (SocketChannel) key.channel();
 
-                            //retrieve attachment(ArrayBlockingQueue<ByteBuffer>)
-                            Queue<Buffer> dataToWrite = (Queue<Buffer>) key.attachment();
-
                             //only remove from queue once we have completely written
                             //this is why we call peek first, and only remove once (buffer.remaining() == 0)
-                            for (ByteBuffer buffer; (buffer = (ByteBuffer) dataToWrite.peek()) != null; ) {
+                            for (ByteBuffer buffer; (buffer = (ByteBuffer) this.writeQueue.peek()) != null; ) {
                                 socket.write(buffer);
-                                if (buffer.remaining() == 0) dataToWrite.remove();
+                                if (buffer.remaining() == 0) this.writeQueue.remove();
                                 else break; //can not write anymore. Wait for next write event
                             }
 
                             //once queue is empty we need to stop watching for write events
-                            if (dataToWrite.isEmpty()) key.interestOps(SelectionKey.OP_READ);
+                            if (this.writeQueue.isEmpty()) key.interestOps(SelectionKey.OP_READ);
                         }
                     }
+                    selector.selectedKeys().clear();
                 }
             }
         } catch (IOException e) {
@@ -98,7 +105,13 @@ public class ClientCore extends Thread {
         selector.wakeup();
     }
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException, InterruptedException {
+        ClientCore client = new ClientCore(new InetSocketAddress("localhost", 5050));
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(Request.REGISTER, "buyer", "buyer",
+                "mail@mail.com", "12345"));
+        client.start();
+        Thread.sleep(1000);
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(Request.DISPLAY_PROFILE));
+        client.join();
     }
 }

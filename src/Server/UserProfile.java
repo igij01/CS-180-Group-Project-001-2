@@ -1,5 +1,6 @@
 package Server;
 
+import Protocol.Request;
 import UserCore.FullUser;
 
 import java.nio.ByteBuffer;
@@ -26,7 +27,7 @@ public class UserProfile {
      * @return the user profile in ByteBuffer
      */
     protected ByteBuffer displayUserProfile() {
-        return MessageSystem.toByteBuffer(this.user.toString());
+        return MessageSystem.toByteBufferPacket(Request.PROFILE, this.user.toString());
     }
 
     protected void changeUsername(String[] params) {

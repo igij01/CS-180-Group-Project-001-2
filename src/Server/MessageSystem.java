@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * MessageSystem
@@ -26,7 +27,7 @@ public class MessageSystem {
     /**
      * convert string to ByteBuffer
      *
-     * @param str the string to be converted
+     * @param str the string to be written
      * @return ByteBuffer equivalent of the string
      */
     protected static ByteBuffer toByteBuffer(String str) {
@@ -34,11 +35,25 @@ public class MessageSystem {
     }
 
     /**
+     * convert string to ByteBuffer
+     *
+     * @param request the request type
+     * @param params the parameters
+     * @return ByteBuffer equivalent of the string
+     */
+    protected static ByteBuffer toByteBufferPacket(Request request, String... params) {
+        DataPacket packet = new DataPacket(request, params);
+        return ByteBuffer.wrap(Objects.requireNonNull(DataPacket.serialize(packet)));
+        //return ByteBuffer.wrap(str.getBytes());
+    }
+
+
+    /**
      * deserialize serialized packet
      * @param buffer the buffer that contains the serialized packet
      * @return the deserialized packet
      */
-    protected static DataPacket packetDeserialize(ByteBuffer buffer) {
+    public static DataPacket packetDeserialize(ByteBuffer buffer) {
         byte[] packet = buffer.array();
         try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
              ObjectInputStream oin = new ObjectInputStream(in)) {
@@ -213,10 +228,9 @@ public class MessageSystem {
     }
 
     public ByteBuffer processRequest(ByteBuffer buffer, int numRead) {
-        String message = toStringFromBuffer(buffer, numRead);
-        String command = message.substring(0, message.indexOf('#'));
-        switch (command) {
-            case "displayUserProfile":
+        DataPacket packet = packetDeserialize(buffer);
+        switch (Objects.requireNonNull(packet).request) {
+            case DISPLAY_PROFILE:
                 return userProfile.displayUserProfile();
             default:
                 return toByteBuffer("!");
