@@ -17,6 +17,7 @@ public enum ProtocolRequestType {
     CHANGE_CENSOR_PATTERN(1),
     TURN_ON_CENSOR_MODE(0),
     TURN_OFF_CENSOR_MODE(0),
+    CREATE_STORE(1),
     DELETE_ACCOUNT(1),
     RECOVER_ACCOUNT(0),
     LOGOUT(0),

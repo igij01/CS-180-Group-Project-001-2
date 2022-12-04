@@ -33,6 +33,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class ServerCore {
     public static void main(String... args) throws IOException {
         final Selector selector = Selector.open();
+        MessageSystem.setSelector(selector);
         final HashMap<SocketChannel, MessageSystem> table = new HashMap<>();
 
         //create server on port 5050
@@ -67,7 +68,7 @@ public class ServerCore {
                             buffer = buffer.put(readBuffer);
                             if (table.get(socket) == null) {
                                 try {
-                                    table.put(socket, new MessageSystem(buffer, read));
+                                    table.put(socket, new MessageSystem(buffer, read, key));
                                     ((Queue<Buffer>) key.attachment()).
                                             add(MessageSystem.toByteBufferPacket(
                                                     ProtocolResponseType.LOGIN_SUCCESS, "login success!"));

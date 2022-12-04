@@ -10,8 +10,26 @@ public class NotificationFactory {
     private NotificationFactory() {
     }
 
+    /**
+     * creates a thread and start it to notify the target
+     *
+     * @param selector     the selector
+     * @param target       the target of the message
+     * @param updatePacket the update packet
+     */
     public static void runNotificationThread(Selector selector, SelectionKey target, ByteBuffer updatePacket) {
         Notification notification = new Notification(selector, target, updatePacket);
+        notification.start();
+    }
+
+    /**
+     * creates a thread and start it to notify everyone of a packet to write
+     *
+     * @param selector     the selector
+     * @param updatePacket the update packet
+     */
+    public static void runNotificationThread(Selector selector, ByteBuffer updatePacket) {
+        Notification notification = new Notification(selector, updatePacket);
         notification.start();
     }
 

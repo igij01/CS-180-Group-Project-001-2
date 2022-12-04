@@ -9,10 +9,7 @@ import UserCore.PublicInformation;
 import java.nio.ByteBuffer;
 
 public class PublicInfo {
-    private FullUser user;
-
-    public PublicInfo(FullUser user) {
-        this.user = user;
+    private PublicInfo() {
     }
 
     /**
@@ -28,9 +25,10 @@ public class PublicInfo {
     /**
      * return lists of stores and sellers for buyers, and list of buyers for sellers
      *
+     * @param user the user requesting this action
      * @return lists of stores and sellers for buyers, and list of buyers for sellers
      */
-    public ByteBuffer sendPublicInfo() {
+    public static ByteBuffer sendPublicInfo(FullUser user) {
         String[] infos = new String[2];
         if (user instanceof FullBuyer) {
             infos[0] = PublicInformation.storeList((FullBuyer) user);
@@ -45,5 +43,30 @@ public class PublicInfo {
                 infos[0] = "There are no buyers!";
         }
         return MessageSystem.toByteBufferPacket(ProtocolResponseType.PUBLIC_INFO, infos);
+    }
+
+    /**
+     * return the dashboard assoc. with that user
+     *
+     * @param user   the user requesting this action
+     * @param params the parameter list <b>({@code Boolean} increasing?)</b>
+     * @return the dashboard
+     */
+    public static ByteBuffer sendDashBoard(FullUser user, String[] params) {
+        boolean increasing;
+        if (params[0].equalsIgnoreCase("true") || params[0].equalsIgnoreCase("t"))
+            increasing = true;
+        else if (params[0].equalsIgnoreCase("false") || params[0].equalsIgnoreCase("f"))
+            increasing = false;
+        else
+            throw new InvalidActionException(params[0] + " is not a proper boolean flag!");
+        if (user instanceof FullBuyer)
+            return MessageSystem.toByteBufferPacket(ProtocolResponseType.DASHBOARD,
+                    ((FullBuyer) user).viewDashboard(increasing));
+        else {
+            assert user instanceof FullSeller;
+            return MessageSystem.toByteBufferPacket(ProtocolResponseType.DASHBOARD,
+                    ((FullSeller) user).viewDashboard(increasing));
+        }
     }
 }

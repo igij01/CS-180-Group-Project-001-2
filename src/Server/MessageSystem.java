@@ -4,6 +4,10 @@ import Protocol.*;
 import UserCore.*;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -15,9 +19,19 @@ import java.util.Objects;
  * @version 11/21/2022
  */
 public class MessageSystem {
+    private static Selector selector = null;
+    protected static Hashtable<FullUser, SelectionKey> userToKey = new Hashtable<>();
     private FullUser user;
     private final UserProfile userProfile;
-    private final PublicInfo publicInfo;
+
+    /**
+     * set the selector static var used to call Notification Factory
+     *
+     * @param selector the global selector
+     */
+    protected static void setSelector(Selector selector) {
+        MessageSystem.selector = selector;
+    }
 
     /**
      * form a response DataPacket and
@@ -82,21 +96,29 @@ public class MessageSystem {
      *                                  from expected
      * @throws IllegalRequestFormat     when the command passed in is not a login or register or not the right format
      */
-    public MessageSystem(ByteBuffer initMessage, int numRead) throws
+    public MessageSystem(ByteBuffer initMessage, int numRead, SelectionKey key) throws
             InvalidPasswordException, IllegalUserNameException, EmailFormatException, IllegalRequestFormat {
         DataPacket initPacket = (DataPacket) DataPacket.packetDeserialize(initMessage);
         if (initPacket != null) {
-            if (initPacket.protocolRequestType == ProtocolRequestType.LOGIN)
+            if (initPacket.protocolRequestType == ProtocolRequestType.LOGIN) {
                 this.user = logIn(initPacket.args[0], initPacket.args[1]);
-            else if (initPacket.protocolRequestType == ProtocolRequestType.REGISTER)
+                userToKey.put(this.user, key);
+            } else if (initPacket.protocolRequestType == ProtocolRequestType.REGISTER) {
                 this.user = register(initPacket.args[0], initPacket.args[1], initPacket.args[2], initPacket.args[3]);
-            else
+                userToKey.put(this.user, key);
+                NotificationFactory.runNotificationThread(selector, PublicInfo.sendAllUsernames());
+                for (Map.Entry<FullUser, SelectionKey> entry : userToKey.entrySet()) {
+                    if (this.user instanceof FullBuyer ^ entry.getKey() instanceof FullBuyer) {
+                        NotificationFactory.runNotificationThread(selector, entry.getValue(),
+                                PublicInfo.sendPublicInfo(entry.getKey()));
+                    }
+                }
+            } else
                 throw new IllegalRequestFormat((initPacket.protocolRequestType.toString()) +
                         " - is not a login or register request!");
         } else
             throw new IllegalRequestFormat("blank request!");
         userProfile = new UserProfile(this.user);
-        publicInfo = new PublicInfo(this.user);
     }
 
     /**
@@ -145,6 +167,8 @@ public class MessageSystem {
         DataPacket packet = (DataPacket) DataPacket.packetDeserialize(buffer);
         assert packet != null;
         try {
+            if (!this.user.loginStatus())
+                throw new IllegalUserLoginStatus("The user is not logged in!"); //should never happen
             return switch (Objects.requireNonNull(packet).protocolRequestType) {
                 case DISPLAY_PROFILE -> userProfile.displayUserProfile();
                 case CHANGE_USERNAME -> userProfile.changeUsername(packet.args);
@@ -161,13 +185,14 @@ public class MessageSystem {
                 case CHANGE_CENSOR_PATTERN -> userProfile.replaceFilterPattern(packet.args);
                 case TURN_ON_CENSOR_MODE -> userProfile.toggleFilterMode(false);
                 case TURN_OFF_CENSOR_MODE -> userProfile.toggleFilterMode(true);
+                case CREATE_STORE -> userProfile.createStore(packet.args);
                 case DELETE_ACCOUNT -> userProfile.deleteAccount(packet.args);
                 case RECOVER_ACCOUNT -> userProfile.recoverAccount();
                 case LOGOUT -> userProfile.logout();
                 case FORCE_LOGOUT -> userProfile.confirmLogOut();
 
-                case REQUEST_PUBLIC_INFO -> publicInfo.sendPublicInfo();
-                case REQUEST_DASHBOARD -> null;
+                case REQUEST_PUBLIC_INFO -> PublicInfo.sendPublicInfo(this.user);
+                case REQUEST_DASHBOARD -> PublicInfo.sendDashBoard(this.user, packet.args);
 
                 case SEND_MESSAGE_BUYER -> null;
                 case SEND_MESSAGE_SELLER -> null;

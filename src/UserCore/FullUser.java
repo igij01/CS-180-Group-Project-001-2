@@ -342,11 +342,14 @@ public class FullUser implements Serializable {
      * @return true if specified password matches user's password
      */
     public boolean passwordCheck(String pwd) {
-        if (this.user.getPwd().equals(pwd)) {
-            this.user.setLoginStatus(true);
-            return true;
-        }
-        return false;
+        return this.user.getPwd().equals(pwd);
+    }
+
+    /**
+     * set the user login status to true
+     */
+    protected void setUserLogin() {
+        this.user.setLoginStatus(true);
     }
 
     /**

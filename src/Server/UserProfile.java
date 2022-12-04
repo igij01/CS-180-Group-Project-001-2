@@ -199,6 +199,22 @@ public class UserProfile {
     }
 
     /**
+     * create a store (FullSeller ONLY!)
+     *
+     * @param params the raw parameter list <b>(store_name)</b>
+     * @return the user profile after the change
+     * @throws IllegalStoreNameException when the store name is already taken
+     * @throws InvalidActionException    when the requesting user is a buyer
+     */
+    protected ByteBuffer createStore(String[] params) throws IllegalStoreNameException, InvalidActionException {
+        if (this.user instanceof FullSeller) {
+            ((FullSeller) this.user).createStore(params[0]);
+            return displayUserProfile();
+        }
+        throw new InvalidActionException("The user is not a seller!");
+    }
+
+    /**
      * delete the account
      *
      * @param params the raw parameter list <b>(pwd)</b>
@@ -245,6 +261,7 @@ public class UserProfile {
      */
     protected ByteBuffer confirmLogOut() {
         PublicInformation.logout(this.user);
+        MessageSystem.userToKey.remove(this.user);
         return MessageSystem.toByteBufferPacket(
                 ProtocolResponseType.LOGOUT_SUCCESS, "logout success!");
     }

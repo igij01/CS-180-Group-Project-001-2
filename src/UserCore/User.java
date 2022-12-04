@@ -55,7 +55,7 @@ public class User implements Serializable {
         this.email = email;
         this.pwd = pwd;
         this.role = role;
-        loginStatus = false;
+        loginStatus = true;
         waitingToBeDeleted = false;
         PublicInformation.addListOfUsersNames(userName);
     }

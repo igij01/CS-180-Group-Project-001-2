@@ -166,12 +166,16 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * @return The FullBuyer if they logged in to a FullBuyer, or a FullSeller if they logged into a FullSeller
      * @throws InvalidPasswordException when the username matches but the password is incorrect
      * @throws IllegalUserNameException when there is no username that matches
+     * @throws IllegalUserLoginStatus   when the user is already logged in
      */
     public static FullUser login(String user, String password) throws InvalidPasswordException,
-            IllegalUserNameException {
+            IllegalUserNameException, IllegalUserLoginStatus {
         for (FullBuyer fb : listOfBuyers) {
             if (fb.getUser().getUserName().equals(user)) {
                 if (fb.passwordCheck(password)) {
+                    if (fb.getUser().isLoginStatus())
+                        throw new IllegalUserLoginStatus();
+                    fb.setUserLogin();
                     return fb;
                 } else {
                     throw new InvalidPasswordException();
@@ -181,6 +185,9 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         for (FullSeller fs : listOfSellers) {
             if (fs.getUser().getUserName().equals(user)) {
                 if (fs.passwordCheck(password)) {
+                    if (fs.getUser().isLoginStatus())
+                        throw new IllegalUserLoginStatus();
+                    fs.setUserLogin();
                     return fs;
                 } else {
                     throw new InvalidPasswordException();
@@ -379,14 +386,13 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static String storeList(FullBuyer buyer) {
         StringBuilder sbd1 = new StringBuilder();
-        sbd1.append('[');
         for (int i = 0; i < listOfStores.size(); i++) {
             //sbd1.append(i).append(". ");
             sbd1.append(listOfStores.get(i).getStoreName()).append(",");
         }
         if (sbd1.isEmpty())
             return null;
-        return sbd1.deleteCharAt(sbd1.length() - 1).append(']').toString(); //delete the last new line
+        return sbd1.insert(0, '[').deleteCharAt(sbd1.length() - 1).append(']').toString(); //delete the last new line
     }
 
     /**
@@ -398,7 +404,6 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static String sellerList(FullBuyer buyer) {
         StringBuilder sbd2 = new StringBuilder();
-        sbd2.append('[');
         int index = 0;
         for (FullSeller seller : listOfSellers) {
             if (seller.checkInvisible(buyer.getUser()))
@@ -409,7 +414,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
         if (sbd2.isEmpty())
             return null;
-        return sbd2.deleteCharAt(sbd2.length() - 1).append(']').toString(); //delete the last new line
+        return sbd2.insert(0, '[').deleteCharAt(sbd2.length() - 1).append(']').toString(); //delete the last new line
     }
 
     /**
@@ -422,7 +427,6 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static String buyerList(FullSeller seller) {
         StringBuilder sbd3 = new StringBuilder();
-        sbd3.append('[');
         int index = 0;
         for (FullBuyer buyer : listOfBuyers) {
             if (buyer.checkInvisible(seller.getUser()))
@@ -432,7 +436,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
         }
         if (sbd3.isEmpty())
             return null;
-        return sbd3.deleteCharAt(sbd3.length() - 1).append(']').toString(); //delete the last new line
+        return sbd3.insert(0, '[').deleteCharAt(sbd3.length() - 1).append(']').toString(); //delete the last new line
     }
 
     /**

@@ -124,6 +124,10 @@ public class ClientCore extends Thread {
         client.start();
         Thread.sleep(1000);
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_PROFILE));
+        Thread.sleep(500);
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.LOGOUT));
+        Thread.sleep(500);
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_PROFILE));
         client.join();
     }
 }

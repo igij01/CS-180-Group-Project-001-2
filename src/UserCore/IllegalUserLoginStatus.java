@@ -14,6 +14,6 @@ public class IllegalUserLoginStatus extends IllegalStateException {
     }
 
     public IllegalUserLoginStatus() {
-        this("The user is not logged in!");
+        this("The user is already logged in!");
     }
 }
