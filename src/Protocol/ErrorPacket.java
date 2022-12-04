@@ -1,7 +1,9 @@
 package Protocol;
 
-import java.io.*;
-import java.nio.ByteBuffer;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 /**
  * ErrorPacket
@@ -12,9 +14,9 @@ import java.nio.ByteBuffer;
  * @version 12/3/2022
  */
 public class ErrorPacket implements Externalizable {
-    private ProtocolErrorType errorType;
-    private ProtocolRequestType requestType;
-    private String errorMessage;
+    public ProtocolErrorType errorType;
+    public ProtocolRequestType requestType;
+    public String errorMessage;
 
     public ErrorPacket() {
 
@@ -53,22 +55,5 @@ public class ErrorPacket implements Externalizable {
         this.errorType = (ProtocolErrorType) objectInput.readObject();
         this.requestType = (ProtocolRequestType) objectInput.readObject();
         this.errorMessage = objectInput.readUTF();
-    }
-
-    /**
-     * deserialize serialized error packet
-     *
-     * @param buffer the buffer that contains the serialized packet
-     * @return the deserialized packet
-     */
-    public static ErrorPacket packetDeserialize(ByteBuffer buffer) {
-        byte[] packet = buffer.array();
-        try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
-             ObjectInputStream oin = new ObjectInputStream(in)) {
-            return (ErrorPacket) oin.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

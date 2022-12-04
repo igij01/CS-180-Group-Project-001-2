@@ -1,5 +1,7 @@
 package Client;
 
+import Protocol.DataPacket;
+import Protocol.ErrorPacket;
 import Protocol.ProtocolRequestType;
 import Protocol.ResponsePacket;
 
@@ -41,7 +43,7 @@ public class ClientCore extends Thread {
                 readBuffer.flip();
                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                 buffer = buffer.put(readBuffer);
-                ResponsePacket packet = ResponsePacket.packetDeserialize(buffer);
+                ResponsePacket packet = (ResponsePacket) DataPacket.packetDeserialize(buffer);
                 if (packet != null) {
                     System.out.println(packet.args[0]);
                 }
@@ -71,10 +73,11 @@ public class ClientCore extends Thread {
                                 readBuffer.flip();
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
-                                ResponsePacket packet = ResponsePacket.packetDeserialize(buffer);
-                                if (packet != null) {
-                                    System.out.println(packet.args[0]);
-                                }
+                                Object packet = DataPacket.packetDeserialize(buffer);
+                                if (packet instanceof ResponsePacket)
+                                    System.out.println(((ResponsePacket) packet).args[0]);
+                                else if (packet instanceof ErrorPacket)
+                                    System.out.println(((ErrorPacket) packet).errorMessage);
                                 //readQueue.add(buffer);
                             }
                             key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ); //enable write flag

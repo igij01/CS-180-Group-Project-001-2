@@ -64,16 +64,16 @@ public class DataPacket implements Externalizable {
     }
 
     /**
-     * deserialize serialized data packet
+     * deserialize serialized packet
      *
      * @param buffer the buffer that contains the serialized packet
-     * @return the deserialized packet
+     * @return the deserialized packet as {@code Object}
      */
-    public static DataPacket packetDeserialize(ByteBuffer buffer) {
+    public static Object packetDeserialize(ByteBuffer buffer) {
         byte[] packet = buffer.array();
         try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
              ObjectInputStream oin = new ObjectInputStream(in)) {
-            return (DataPacket) oin.readObject();
+            return oin.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;

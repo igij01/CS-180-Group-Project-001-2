@@ -84,7 +84,7 @@ public class MessageSystem {
      */
     public MessageSystem(ByteBuffer initMessage, int numRead) throws
             InvalidPasswordException, IllegalUserNameException, EmailFormatException, IllegalRequestFormat {
-        DataPacket initPacket = DataPacket.packetDeserialize(initMessage);
+        DataPacket initPacket = (DataPacket) DataPacket.packetDeserialize(initMessage);
         if (initPacket != null) {
             if (initPacket.protocolRequestType == ProtocolRequestType.LOGIN)
                 this.user = logIn(initPacket.args[0], initPacket.args[1]);
@@ -92,7 +92,7 @@ public class MessageSystem {
                 this.user = register(initPacket.args[0], initPacket.args[1], initPacket.args[2], initPacket.args[3]);
             else
                 throw new IllegalRequestFormat((initPacket.protocolRequestType.toString()) +
-                        "- is not a login or register request!");
+                        " - is not a login or register request!");
         } else
             throw new IllegalRequestFormat("blank request!");
         userProfile = new UserProfile(this.user);
@@ -142,7 +142,7 @@ public class MessageSystem {
      * @return the ByteBuffer as a response
      */
     public ByteBuffer processRequest(ByteBuffer buffer) {
-        DataPacket packet = DataPacket.packetDeserialize(buffer);
+        DataPacket packet = (DataPacket) DataPacket.packetDeserialize(buffer);
         assert packet != null;
         try {
             return switch (Objects.requireNonNull(packet).protocolRequestType) {

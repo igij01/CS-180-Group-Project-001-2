@@ -1,7 +1,9 @@
 package Protocol;
 
-import java.io.*;
-import java.nio.ByteBuffer;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 public class ResponsePacket implements Externalizable {
     public ProtocolResponseType protocolResponseType;
@@ -40,23 +42,6 @@ public class ResponsePacket implements Externalizable {
         this.args = new String[length];
         for (int i = 0; i < length; i++) {
             this.args[i] = in.readUTF();
-        }
-    }
-
-    /**
-     * deserialize serialized response packet
-     *
-     * @param buffer the buffer that contains the serialized packet
-     * @return the deserialized packet
-     */
-    public static ResponsePacket packetDeserialize(ByteBuffer buffer) {
-        byte[] packet = buffer.array();
-        try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
-             ObjectInputStream oin = new ObjectInputStream(in)) {
-            return (ResponsePacket) oin.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 }
