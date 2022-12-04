@@ -17,6 +17,7 @@ import java.util.Objects;
 public class MessageSystem {
     private FullUser user;
     private final UserProfile userProfile;
+    private final PublicInfo publicInfo;
 
     /**
      * form a response DataPacket and
@@ -95,6 +96,7 @@ public class MessageSystem {
         } else
             throw new IllegalRequestFormat("blank request!");
         userProfile = new UserProfile(this.user);
+        publicInfo = new PublicInfo(this.user);
     }
 
     /**
@@ -141,6 +143,7 @@ public class MessageSystem {
      */
     public ByteBuffer processRequest(ByteBuffer buffer) {
         DataPacket packet = DataPacket.packetDeserialize(buffer);
+        assert packet != null;
         try {
             return switch (Objects.requireNonNull(packet).protocolRequestType) {
                 case DISPLAY_PROFILE -> userProfile.displayUserProfile();
@@ -148,6 +151,33 @@ public class MessageSystem {
                 //case ""
                 case LOGIN, REGISTER ->
                         throw new IllegalRequestFormat(packet.protocolRequestType + "- is not allowed here!");
+                case CHANGE_EMAIL -> userProfile.changeEmail(packet.args);
+                case BLOCK_USER -> userProfile.blockUser(packet.args);
+                case UNBLOCK_USER -> userProfile.unblockUser(packet.args);
+                case INVIS_USER -> userProfile.invisUser(packet.args);
+                case UNINVIS_USER -> userProfile.uninvisUser(packet.args);
+                case FILTER_WORD -> userProfile.addFilterWord(packet.args);
+                case UNFILTER_WORD -> userProfile.removeAFilteredWord(packet.args);
+                case CHANGE_CENSOR_PATTERN -> userProfile.replaceFilterPattern(packet.args);
+                case TURN_ON_CENSOR_MODE -> userProfile.toggleFilterMode(false);
+                case TURN_OFF_CENSOR_MODE -> userProfile.toggleFilterMode(true);
+                case DELETE_ACCOUNT -> userProfile.deleteAccount(packet.args);
+                case RECOVER_ACCOUNT -> userProfile.recoverAccount();
+                case LOGOUT -> userProfile.logout();
+                case FORCE_LOGOUT -> userProfile.confirmLogOut();
+
+                case REQUEST_PUBLIC_INFO -> publicInfo.sendPublicInfo();
+                case REQUEST_DASHBOARD -> null;
+
+                case SEND_MESSAGE_BUYER -> null;
+                case SEND_MESSAGE_SELLER -> null;
+                case SEND_MESSAGE_STORE -> null;
+                case EDIT_MESSAGE -> null;
+                case DELETE_MESSAGE -> null;
+                case DISPLAY_CONVERSATION_TITLES -> null;
+                case DISPLAY_CONVERSATION -> null;
+                case EXPORT_CONVERSATION -> null;
+                case EXPORT_ALL_CONVERSATION -> null;
             };
         } catch (Exception e) {
             return sendException(e, packet.protocolRequestType);

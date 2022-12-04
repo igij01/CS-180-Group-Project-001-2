@@ -375,18 +375,18 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * if the owner of a store made himself invisible to the buyer, it will not show up here
      *
      * @param buyer the buyer requesting this action
-     * @return list of stores in a string
+     * @return list of stores in a string, null if the array is empty
      */
-    @SuppressWarnings("unused")
     public static String storeList(FullBuyer buyer) {
         StringBuilder sbd1 = new StringBuilder();
+        sbd1.append('[');
         for (int i = 0; i < listOfStores.size(); i++) {
-            sbd1.append(i).append(". ");
-            sbd1.append(listOfStores.get(i).getStoreName()).append(":Store").append("\n");
+            //sbd1.append(i).append(". ");
+            sbd1.append(listOfStores.get(i).getStoreName()).append(",");
         }
         if (sbd1.isEmpty())
             return null;
-        return sbd1.deleteCharAt(sbd1.length() - 1).toString(); //delete the last new line
+        return sbd1.deleteCharAt(sbd1.length() - 1).append(']').toString(); //delete the last new line
     }
 
     /**
@@ -394,21 +394,22 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * if a seller made himself invisible to the buyer, it will not show up here
      *
      * @param buyer the buyer requesting this action
-     * @return list of sellers organized in a string
+     * @return list of sellers organized in a string, null if the array is empty
      */
     public static String sellerList(FullBuyer buyer) {
         StringBuilder sbd2 = new StringBuilder();
+        sbd2.append('[');
         int index = 0;
-        for (FullSeller listOfSeller : listOfSellers) {
-            if (listOfSeller.checkInvisible(buyer.getUser()))
+        for (FullSeller seller : listOfSellers) {
+            if (seller.checkInvisible(buyer.getUser()))
                 continue;
             //this is to check if the owner of the store made himself invisible to this buyer
-            sbd2.append(index++).append(". ");
-            sbd2.append(listOfSeller.getUser().getUserName()).append("\n");
+            //sbd2.append(index++).append(". ");
+            sbd2.append(seller.getUser().getUserName()).append(",");
         }
         if (sbd2.isEmpty())
             return null;
-        return sbd2.deleteCharAt(sbd2.length() - 1).toString(); //delete the last new line
+        return sbd2.deleteCharAt(sbd2.length() - 1).append(']').toString(); //delete the last new line
     }
 
     /**
@@ -417,20 +418,21 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      * print in the form of "index: username"
      *
      * @param seller the buyer requesting to see the list
-     * @return list of sellers organized in a string
+     * @return list of sellers organized in a string, null if the array is empty
      */
     public static String buyerList(FullSeller seller) {
         StringBuilder sbd3 = new StringBuilder();
+        sbd3.append('[');
         int index = 0;
-        for (FullBuyer listOfBuyer : listOfBuyers) {
-            if (listOfBuyer.checkInvisible(seller.getUser()))
+        for (FullBuyer buyer : listOfBuyers) {
+            if (buyer.checkInvisible(seller.getUser()))
                 continue;
-            sbd3.append(index++).append(". ");
-            sbd3.append(listOfBuyer.getUser().getUserName()).append("\n");
+            //sbd3.append(index++).append(". ");
+            sbd3.append(buyer.getUser().getUserName()).append(",");
         }
         if (sbd3.isEmpty())
             return null;
-        return sbd3.deleteCharAt(sbd3.length() - 1).toString(); //delete the last new line
+        return sbd3.deleteCharAt(sbd3.length() - 1).append(']').toString(); //delete the last new line
     }
 
     /**

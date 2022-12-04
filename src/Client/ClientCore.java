@@ -32,6 +32,20 @@ public class ClientCore extends Thread {
         final ByteBuffer readBuffer = ByteBuffer.allocate(0x1000);
         try {
             this.channel = SocketChannel.open(address);
+            readBuffer.clear();
+            int read = channel.read(readBuffer);
+            if (read == -1) {
+                System.out.println("Socket Closed ");
+                channel.close();
+            } else if (read > 0) {
+                readBuffer.flip();
+                ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
+                buffer = buffer.put(readBuffer);
+                ResponsePacket packet = ResponsePacket.packetDeserialize(buffer);
+                if (packet != null) {
+                    System.out.println(packet.args[0]);
+                }
+            }
             this.channel.configureBlocking(false);
             this.channel.register(selector, SelectionKey.OP_WRITE);
         } catch (IOException e) {

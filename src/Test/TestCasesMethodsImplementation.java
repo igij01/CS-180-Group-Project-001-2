@@ -262,8 +262,8 @@ public class TestCasesMethodsImplementation {
 
     @Test(timeout = 1000)
     public void testFilterMessages() {
-        buyer1.messageSeller(seller1, "message blockEd_word");
-        seller1.addFilterWord("blocked_word");
+        buyer1.messageSeller(seller1, "message blockEd word");
+        seller1.addFilterWord("blocked word");
         String out = seller1.printConversation(0);
         String contentExcludingTimeStamp = out.substring(0, out.lastIndexOf('\n'));
         TestCase.assertEquals("0\t*Buyer: message ************", contentExcludingTimeStamp);

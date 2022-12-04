@@ -106,6 +106,10 @@ public class ServerCore {
                     if (key.isValid() && key.isAcceptable()) {
                         System.out.println("Acceptable: " + key.channel());
                         SocketChannel socket = ((ServerSocketChannel) key.channel()).accept();
+
+                        //send the list of usernames for start
+                        socket.write(PublicInfo.sendAllUsernames()); //ERROR PRONE!
+
                         socket.configureBlocking(false);
 
                         //add a ArrayBlockingQueue<ByteBuffer> as an attachment for the socket
