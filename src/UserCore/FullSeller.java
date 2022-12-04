@@ -38,7 +38,7 @@ public class FullSeller extends FullUser implements Serializable {
     @Serial
     private static final long serialVersionUID = 2L;
 
-    private final ArrayList<Store> stores;
+    private ArrayList<Store> stores;
 
     /**
      * create a FullSeller instance
@@ -53,6 +53,19 @@ public class FullSeller extends FullUser implements Serializable {
         super(new Seller(username, email, pwd));
         PublicInformation.addListOfSellers(this);
         stores = new ArrayList<>();
+    }
+
+    /**
+     * recreate a Full Seller instance after server shutdown
+     *
+     * @param userName the name of the original user
+     * @param email    the email address
+     * @param pwd      the pwd
+     * @param stores   the array stores of stores
+     */
+    protected FullSeller(String userName, String email, String pwd, ArrayList<Store> stores) {
+        super(new Buyer(userName, email, pwd));
+        this.stores = stores;
     }
 
     /**

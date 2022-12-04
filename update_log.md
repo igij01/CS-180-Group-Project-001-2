@@ -121,7 +121,7 @@ asynchronously write to a client to achieve real time update
   contains the information to be written, you have to implement a way for the server to know which client it's talking
   to
 * Non-blocking mode(NOT enabled by default) greatly speeds up the server by freeing them from waiting for the data to
-  be processed, so it can process other request and send the data once they are ready
+  be processed, so it can process other protocolRequestType and send the data once they are ready
 * Scalable since there's only a few threads(the main selection loop and a few thread used to notify the update to users)
   so it won't overwhelm the OS scheduler
 * In order to achieve those functionalities, however, the only medium available are primitive type buffers, and
@@ -165,16 +165,16 @@ The classes added are:
 * _ServerCore_ which handles the main server IO and is single threaded
 * _MessageSystem_ which is responsible for interpreting the packet send
   by the client and uses UserProfile as its field. It also has a process
-  request method which basically abstract all the request besides login and register
-* _UserProfile_ which is responsible for user profile request
+  protocolRequestType method which basically abstract all the protocolRequestType besides login and register
+* _UserProfile_ which is responsible for user profile protocolRequestType
 
 <br><br>
 The Exception added are:
 
-* _IllegalRequestFormat_ when the request format is wrong
+* _IllegalRequestFormat_ when the protocolRequestType format is wrong
 * _IllegalParameter_ extends _IllegalRequestFormat_ when the parameters
   number don't match or the parameter content is different from expected
-* _IllegalCharacter_ extends _IllegalRequestFormat_ when the request contains
+* _IllegalCharacter_ extends _IllegalRequestFormat_ when the protocolRequestType contains
   Illegal character like comma when it's not allowed
 
 #### Notes

@@ -1,15 +1,12 @@
 package Server;
 
-import Protocol.DataPacket;
-import Protocol.Request;
+import Protocol.*;
 import UserCore.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -25,31 +22,21 @@ public class MessageSystem {
     private final UserProfile userProfile;
 
     /**
-     * convert string to ByteBuffer
+     * form a response DataPacket and
      *
-     * @param str the string to be written
+     * @param protocolRequestType the request type
+     * @param params              the parameters
      * @return ByteBuffer equivalent of the string
      */
-    protected static ByteBuffer toByteBuffer(String str) {
-        return ByteBuffer.wrap(str.getBytes());
-    }
-
-    /**
-     * convert string to ByteBuffer
-     *
-     * @param request the request type
-     * @param params the parameters
-     * @return ByteBuffer equivalent of the string
-     */
-    protected static ByteBuffer toByteBufferPacket(Request request, String... params) {
-        DataPacket packet = new DataPacket(request, params);
+    protected static ByteBuffer toByteBufferPacket(ProtocolResponseType protocolRequestType, String... params) {
+        ResponsePacket packet = new ResponsePacket(protocolRequestType, params);
         return ByteBuffer.wrap(Objects.requireNonNull(DataPacket.serialize(packet)));
-        //return ByteBuffer.wrap(str.getBytes());
     }
 
 
     /**
      * deserialize serialized packet
+     *
      * @param buffer the buffer that contains the serialized packet
      * @return the deserialized packet
      */
@@ -58,7 +45,7 @@ public class MessageSystem {
         try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
              ObjectInputStream oin = new ObjectInputStream(in)) {
             return (DataPacket) oin.readObject();
-        } catch (IOException|ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
         }
@@ -81,77 +68,26 @@ public class MessageSystem {
     }
 
     /**
-     * generate an exception message tagged with ! to be sent to the client
+     * generate an exception packet to be sent to the client
+     *
+     * @param e           the exception
+     * @param requestType the request that caused the exception
+     * @return a ByteBuffer contains the serialized form of the exception packet to be sent
+     */
+    protected static ByteBuffer sendException(Exception e, ProtocolRequestType requestType) {
+        ErrorPacket packet = new ErrorPacket(requestType, e);
+        return ByteBuffer.wrap(Objects.requireNonNull(DataPacket.serialize(packet)));
+    }
+
+    /**
+     * generate an exception packet to be sent to the client
      *
      * @param e the exception
-     * @return a ByteBuffer contains the message to be sent
+     * @return a ByteBuffer contains the serialized form of the exception packet to be sent
      */
-    protected static ByteBuffer sendException(Exception e, String requestType) {
-        String str = '!' + e.getClass().getName() + '#' + requestType + '#' + '\"' + e.getMessage() + '\"';
-        return toByteBuffer(str);
-    }
-
-    /**
-     * get the command of the request
-     *
-     * @param raw the raw request in String
-     * @return the command in String
-     * @throws IllegalRequestFormat when the request does not have a # specifier
-     */
-    protected static String getCommand(String raw) throws IllegalRequestFormat {
-        if (!raw.contains("#"))
-            throw new IllegalRequestFormat(raw);
-        return raw.substring(0, raw.indexOf('#'));
-    }
-
-    /**
-     * split the parameter lists into a java String array
-     * <br>
-     * Note: This method only checks for situation which the number of parameters is <b>less</b>
-     * than the number expected. Since the last parameter is allowed to contain comma by default, it's impossible
-     * to check whether the parameters are more than expected. If the last parameter is not allowed to have comma,
-     * use splitParamNoComma
-     *
-     * @param raw                the parameters waiting to be split
-     * @param paramCountExpected the # of parameters expected
-     * @return the list of String containing all the parameters on success
-     * @throws IllegalParameter when the number of parameters is less than expected
-     * @see MessageSystem#splitParamNoComma(String, int)
-     */
-    private static String[] splitParam(String raw, int paramCountExpected) throws IllegalParameter {
-        if (paramCountExpected < 1)
-            return new String[]{raw};
-        ArrayList<String> array = new ArrayList<>();
-        for (int i = 1; i < paramCountExpected; i++) {
-            if (!raw.contains(","))
-                throw new IllegalParameter(paramCountExpected, i);
-            String toBeAdded = raw.substring(0, raw.indexOf(','));
-            if (toBeAdded.isBlank()) {
-                throw new IllegalParameter();
-            }
-            array.add(toBeAdded);
-            raw = raw.substring(raw.indexOf(',') + 1);
-        }
-        array.add(raw);
-        return array.toArray(new String[0]);
-    }
-
-    /**
-     * split the parameter lists into a java String array and the last parameter is not allowed to contain comma
-     *
-     * @param raw                the raw string to be split
-     * @param paramCountExpected the number of parameters expected
-     * @return the list of String containing all the parameters on success
-     * @throws IllegalCharacter when the number of parameters is less than expected
-     * @throws IllegalParameter when the last parameter contains comma either due to more elements than expected or
-     *                          the last parameter contains comma when it shouldn't
-     */
-    private static String[] splitParamNoComma(String raw, int paramCountExpected) throws IllegalCharacter,
-            IllegalParameter {
-        String[] array = splitParam(raw, paramCountExpected);
-        if (array[array.length - 1].contains(","))
-            throw new IllegalCharacter(Arrays.toString(array), ',');
-        return array;
+    protected static ByteBuffer sendException(Exception e) {
+        ErrorPacket packet = new ErrorPacket(e);
+        return ByteBuffer.wrap(Objects.requireNonNull(DataPacket.serialize(packet)));
     }
 
     /**
@@ -168,26 +104,17 @@ public class MessageSystem {
      */
     public MessageSystem(ByteBuffer initMessage, int numRead) throws
             InvalidPasswordException, IllegalUserNameException, EmailFormatException, IllegalRequestFormat {
-//        String message = toStringFromBuffer(initMessage, numRead);
-//        String command = getCommand(message);
-//        if (command.equalsIgnoreCase("login")) {
-//            String[] info = splitParam(message.substring(message.indexOf('#') + 1), 2);
-//            this.user = logIn(info[0], info[1]);
-//        } else if (command.equalsIgnoreCase("register")) {
-//            String[] info = splitParam(message.substring(message.indexOf('#') + 1), 4);
-//            this.user = register(info[0], info[1], info[2], info[3]);
-//        } else
-//            throw new IllegalRequestFormat(message + "- is not a login or register request!");
-//        userProfile = new UserProfile(this.user);
-
         DataPacket initPacket = packetDeserialize(initMessage);
-        if (initPacket != null && (initPacket.request == Request.LOGIN || initPacket.request == Request.REGISTER)) {
-            if (initPacket.request == Request.LOGIN)
+        if (initPacket != null) {
+            if (initPacket.protocolRequestType == ProtocolRequestType.LOGIN)
                 this.user = logIn(initPacket.args[0], initPacket.args[1]);
-            else
+            else if (initPacket.protocolRequestType == ProtocolRequestType.REGISTER)
                 this.user = register(initPacket.args[0], initPacket.args[1], initPacket.args[2], initPacket.args[3]);
+            else
+                throw new IllegalRequestFormat((initPacket.protocolRequestType.toString()) +
+                        "- is not a login or register request!");
         } else
-            throw new IllegalRequestFormat(initPacket.request.toString() + "- is not a login or register request!");
+            throw new IllegalRequestFormat("blank request!");
         userProfile = new UserProfile(this.user);
     }
 
@@ -227,13 +154,24 @@ public class MessageSystem {
         }
     }
 
-    public ByteBuffer processRequest(ByteBuffer buffer, int numRead) {
+    /**
+     * main method responsible for processing the request
+     *
+     * @param buffer the input buffer
+     * @return the ByteBuffer as a response
+     */
+    public ByteBuffer processRequest(ByteBuffer buffer) {
         DataPacket packet = packetDeserialize(buffer);
-        switch (Objects.requireNonNull(packet).request) {
-            case DISPLAY_PROFILE:
-                return userProfile.displayUserProfile();
-            default:
-                return toByteBuffer("!");
+        try {
+            return switch (Objects.requireNonNull(packet).protocolRequestType) {
+                case DISPLAY_PROFILE -> userProfile.displayUserProfile();
+                case CHANGE_USERNAME -> userProfile.changeUsername(packet.args);
+                //case ""
+                case LOGIN, REGISTER ->
+                        throw new IllegalRequestFormat(packet.protocolRequestType + "- is not allowed here!");
+            };
+        } catch (Exception e) {
+            return sendException(e, packet.protocolRequestType);
         }
     }
 }

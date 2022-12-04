@@ -3,19 +3,20 @@ package Protocol;
 import java.io.*;
 
 public class DataPacket implements Externalizable {
-    public Request request;
+    public ProtocolRequestType protocolRequestType;
     public String[] args;
 
     /**
-     * create a data packet to send across nio channels
-     * @param request the type of the packet
-     * @param args the arguments
+     * create a data packet to send to the server
+     *
+     * @param protocolRequestType the type of the request
+     * @param args                the arguments
      * @throws IllegalParameterCount when the arguments count is not the same as expected
      */
-    public DataPacket(Request request, String... args) throws IllegalParameterCount {
-        this.request = request;
-        if (args.length != request.getParamCount())
-            throw new IllegalParameterCount(request);
+    public DataPacket(ProtocolRequestType protocolRequestType, String... args) throws IllegalParameterCount {
+        this.protocolRequestType = protocolRequestType;
+        if (args.length != protocolRequestType.getParamCount())
+            throw new IllegalParameterCount(protocolRequestType);
         this.args = args;
     }
 
@@ -25,7 +26,7 @@ public class DataPacket implements Externalizable {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(request);
+        out.writeObject(protocolRequestType);
         out.writeInt(args.length);
         if (args.length > 0) {
             for (String s : args) {
@@ -36,7 +37,7 @@ public class DataPacket implements Externalizable {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        this.request = (Request) in.readObject();
+        this.protocolRequestType = (ProtocolRequestType) in.readObject();
         int length = in.readInt();
         this.args = new String[length];
         for (int i = 0; i < length; i++) {
@@ -44,9 +45,15 @@ public class DataPacket implements Externalizable {
         }
     }
 
-    public static byte[] serialize(DataPacket packet) {
-        try(ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(out)) {
+    /**
+     * Utility method that convert Object to its serialized form
+     *
+     * @param packet the packet to be serialized
+     * @return a byte array
+     */
+    public static byte[] serialize(Object packet) {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             ObjectOutputStream oos = new ObjectOutputStream(out)) {
             oos.writeObject(packet);
             return out.toByteArray();
         } catch (IOException e) {

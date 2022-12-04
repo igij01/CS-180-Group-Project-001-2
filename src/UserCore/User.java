@@ -31,8 +31,8 @@ public class User implements Serializable {
     private String email;
     private String pwd;
     private Role role;
-    private boolean loginStatus;
-    private boolean waitingToBeDeleted;
+    private volatile boolean loginStatus;
+    private volatile boolean waitingToBeDeleted; //TODO do we need to RE-DELETE account once a server shutdown occurred?
 
     /**
      * create an instance of user. Note that users can't have the same name

@@ -1,7 +1,7 @@
 package Protocol;
 
 public class IllegalParameterCount extends IllegalArgumentException {
-    public IllegalParameterCount(Request request) {
-        super(request.toString() + " requires " + request.getParamCount());
+    public IllegalParameterCount(ProtocolRequestType protocolRequestType) {
+        super(protocolRequestType.toString() + " requires " + protocolRequestType.getParamCount());
     }
 }

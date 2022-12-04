@@ -56,6 +56,10 @@ public class FullUser implements Serializable {
         return conversations;
     }
 
+    public String getUsername() {
+        return this.user.getUserName();
+    }
+
     /**
      * creates a new message to the conversation between user and receiver
      * If there's no existing conversation between user and the receiver, it will be created

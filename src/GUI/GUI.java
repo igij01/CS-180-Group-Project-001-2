@@ -1,9 +1,11 @@
 package GUI;
 
 import Client.PacketAssembler;
-import Protocol.Request;
-import UserCore.*;
-import com.sun.source.tree.NewArrayTree;
+import Protocol.ProtocolRequestType;
+import UserCore.FullBuyer;
+import UserCore.FullSeller;
+import UserCore.FullUser;
+import UserCore.PublicInformation;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -273,7 +275,7 @@ public class GUI extends Thread {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == login) {
-                PacketAssembler.assemblePacket(Request.LOGIN,userText.getText(),String.valueOf(passText.getPassword()));
+                PacketAssembler.assemblePacket(ProtocolRequestType.LOGIN, userText.getText(), String.valueOf(passText.getPassword()));
 
                /* if (isValidLogin()) {
                     Menu();

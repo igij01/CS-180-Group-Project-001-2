@@ -66,12 +66,14 @@ public class ServerCore {
                             if (table.get(socket) == null) {
                                 try {
                                     table.put(socket, new MessageSystem(buffer, read));
+                                    ((Queue<Buffer>) key.attachment()).
+                                            add(ByteBuffer.wrap(("Successful\n").getBytes()));
                                 } catch (Exception e) {
                                     ((Queue<Buffer>) key.attachment())
-                                            .add(MessageSystem.sendException(e, "Constructor"));
+                                            .add(MessageSystem.sendException(e));
                                 }
                             } else {
-                                ((Queue<Buffer>) key.attachment()).add(table.get(socket).processRequest(buffer, read));
+                                ((Queue<Buffer>) key.attachment()).add(table.get(socket).processRequest(buffer));
                             }
 
 

@@ -1,20 +1,16 @@
 package Client;
 
 import Protocol.DataPacket;
-import Protocol.Request;
+import Protocol.ProtocolRequestType;
 import Server.MessageSystem;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.Date;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class ClientCore extends Thread {
@@ -107,11 +103,11 @@ public class ClientCore extends Thread {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ClientCore client = new ClientCore(new InetSocketAddress("localhost", 5050));
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(Request.REGISTER, "buyer", "buyer",
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REGISTER, "buyer", "buyer",
                 "mail@mail.com", "12345"));
         client.start();
         Thread.sleep(1000);
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(Request.DISPLAY_PROFILE));
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_PROFILE));
         client.join();
     }
 }

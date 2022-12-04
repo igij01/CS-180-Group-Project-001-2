@@ -25,8 +25,8 @@ public class FullBuyer extends FullUser implements Serializable {
     @Serial
     private static final long serialVersionUID = 2L;
 
-    private final ArrayList<Store> storesMessaged = new ArrayList<>();
-    private final ArrayList<Integer> timesStoresMessaged = new ArrayList<>();
+    private ArrayList<Store> storesMessaged = new ArrayList<>();
+    private ArrayList<Integer> timesStoresMessaged = new ArrayList<>();
 
     /**
      * Creates a new Full Buyer instance
@@ -40,6 +40,22 @@ public class FullBuyer extends FullUser implements Serializable {
     public FullBuyer(String userName, String email, String pwd) throws IllegalUserNameException, EmailFormatException {
         super(new Buyer(userName, email, pwd));
         PublicInformation.addListOfBuyers(this);
+    }
+
+    /**
+     * recreate a Full Buyer instance after server shutdown
+     *
+     * @param userName            the name of the original user
+     * @param email               the email address
+     * @param pwd                 the pwd
+     * @param storesMessaged      the array stores messaged
+     * @param timesStoresMessaged the array times stores messaged
+     */
+    public FullBuyer(String userName, String email, String pwd, ArrayList<Store> storesMessaged,
+                     ArrayList<Integer> timesStoresMessaged) {
+        super(new Buyer(userName, email, pwd));
+        this.storesMessaged = storesMessaged;
+        this.timesStoresMessaged = timesStoresMessaged;
     }
 
     /**
