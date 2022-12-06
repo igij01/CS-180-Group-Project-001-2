@@ -1,5 +1,6 @@
 package Server;
 
+import Protocol.DataPacket;
 import Protocol.ProtocolResponseType;
 
 import java.io.IOException;
@@ -72,6 +73,7 @@ public class ServerCore {
                                     ((Queue<Buffer>) key.attachment()).
                                             add(MessageSystem.toByteBufferPacket(
                                                     ProtocolResponseType.LOGIN_SUCCESS, "login success!"));
+                                    System.out.println("login success");
                                 } catch (Exception e) {
                                     ((Queue<Buffer>) key.attachment())
                                             .add(MessageSystem.sendException(e));
@@ -96,6 +98,9 @@ public class ServerCore {
                         //this is why we call peek first, and only remove once (buffer.remaining() == 0)
                         for (ByteBuffer buffer; (buffer = (ByteBuffer) dataToWrite.peek()) != null; ) {
                             socket.write(buffer);
+                            Object packet = DataPacket.packetDeserialize(buffer);
+                            assert packet != null;
+                            System.out.println(packet.toString());
                             if (buffer.remaining() == 0) dataToWrite.remove();
                             else break; //can not write anymore. Wait for next write event
                         }

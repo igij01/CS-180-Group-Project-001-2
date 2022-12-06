@@ -4,6 +4,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Arrays;
 
 public class ResponsePacket implements Externalizable {
     public ProtocolResponseType protocolResponseType;
@@ -43,5 +44,13 @@ public class ResponsePacket implements Externalizable {
         for (int i = 0; i < length; i++) {
             this.args[i] = in.readUTF();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ResponsePacket{" +
+                "protocolResponseType=" + protocolResponseType +
+                ", args=" + Arrays.toString(args) +
+                '}';
     }
 }
