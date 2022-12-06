@@ -70,6 +70,10 @@ public class GUI extends Thread {
         panel.add(censorLabel);
         JComboBox censorList = new JComboBox(sampleList.toArray());
         panel.add(censorList);
+        JTextField addCensoredWord = new JTextField(10);
+        panel.add(addCensoredWord);
+        JButton addCensorship = new JButton("Add Censored Word");
+        panel.add(addCensorship);
 
         JButton changeUsername = new JButton("Change Username");
         panel.add(changeUsername);
@@ -93,9 +97,30 @@ public class GUI extends Thread {
             public void menuCanceled(MenuEvent e) {
             }
         });
+        addCensorship.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+            }
+        });
+        changeUsername.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
     }
 
+    /**
+     * passwordCheck
+     *
+     * will prompt user to enter password to verify they can change an email or username. Verification method
+     *
+     * @return true if the password they entered is correct, false otherwise
+     */
+    public static void passwordCheck() {
+
+    }
     public static void Menu() {
         Setup();
         JMenu menu = new JMenu("Menu");
