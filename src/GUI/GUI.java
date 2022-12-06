@@ -58,9 +58,19 @@ public class GUI extends Thread {
 
         JLabel usernameLabel = new JLabel("Username:");
         panel.add(usernameLabel);
-        JTextField username = new JTextField("Ericoco", 10);
+        JTextField username = new JTextField("Ericoco", 12);
         username.setEditable(false);
         panel.add(username);
+        JLabel passwordLabel = new JLabel("Password:");
+        panel.add(passwordLabel);
+        JPasswordField password = new JPasswordField(15);
+        password.setText("passwordtesting");
+        password.setEchoChar('*');
+        password.setEditable(false);
+        final Boolean[] passwordVisible = {false};
+        panel.add(password);
+        JButton showPass = new JButton("Show");
+        panel.add(showPass);
         JLabel emailLabel = new JLabel("Email:");
         panel.add(emailLabel);
         JTextField email = new JTextField("sampleemail@gmail.com", 20);
@@ -74,13 +84,14 @@ public class GUI extends Thread {
         panel.add(addCensoredWord);
         JButton addCensorship = new JButton("Add Censored Word");
         panel.add(addCensorship);
-
+        JTextField usernameToChange = new JTextField(10);
+        panel.add(usernameToChange);
         JButton changeUsername = new JButton("Change Username");
         panel.add(changeUsername);
+        JTextField emailToChange = new JTextField(10);
+        panel.add(emailToChange);
         JButton changeEmail = new JButton("Change Email");
         panel.add(changeEmail);
-        //JTextField censoredWord = new JTextField(10);
-        //panel.add(censoredWord);
 
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
@@ -107,6 +118,18 @@ public class GUI extends Thread {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+            }
+        });
+        showPass.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!passwordVisible[0]) {
+                    password.setEchoChar((char) 0);
+                    passwordVisible[0] = true;
+                } else {
+                    password.setEchoChar('*');
+                    passwordVisible[0] = false;
+                }
             }
         });
     }
