@@ -12,6 +12,7 @@ import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GUI extends Thread {
@@ -38,6 +39,7 @@ public class GUI extends Thread {
         frame.setVisible(true);
         frame.add(scrollPane, BorderLayout.WEST);
         frame.add(scrollMessage, BorderLayout.EAST);
+        menuBar = new JMenuBar();
         //List();
         //List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
         //List(user.printConversationTitles()); a user needs to be created from logging in first
@@ -45,17 +47,36 @@ public class GUI extends Thread {
 
     public static void Profile() {
         frame = new JFrame();
-        frame.setSize(500,600);
+        frame.setSize(600, 450);
         frame.setLocationRelativeTo(null);
         menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        frame.add(panel);
+        ArrayList<String> sampleList = new ArrayList<>(Arrays.asList("bad","disgust","Stop it", "wtf"));
 
-        JPanel panel = new JPanel();
-        JLabel email = new JLabel("Email: user.getUser().getUserName()");
-        JLabel password = new JLabel("Password: *******");
+        JLabel usernameLabel = new JLabel("Username:");
+        panel.add(usernameLabel);
+        JTextField username = new JTextField("Ericoco", 10);
+        username.setEditable(false);
+        panel.add(username);
+        JLabel emailLabel = new JLabel("Email:");
+        panel.add(emailLabel);
+        JTextField email = new JTextField("sampleemail@gmail.com", 20);
+        email.setEditable(false);
         panel.add(email);
-        panel.add(password);
+        JLabel censorLabel = new JLabel("Censored Words:");
+        panel.add(censorLabel);
+        JComboBox censorList = new JComboBox(sampleList.toArray());
+        panel.add(censorList);
+
+        JButton changeUsername = new JButton("Change Username");
+        panel.add(changeUsername);
+        JButton changeEmail = new JButton("Change Email");
+        panel.add(changeEmail);
+        //JTextField censoredWord = new JTextField(10);
+        //panel.add(censoredWord);
 
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
@@ -66,12 +87,15 @@ public class GUI extends Thread {
                 Menu();
             }
             @Override
-            public void menuDeselected(MenuEvent e) {}
+            public void menuDeselected(MenuEvent e) {
+            }
             @Override
-            public void menuCanceled(MenuEvent e) {}
+            public void menuCanceled(MenuEvent e) {
+            }
         });
 
     }
+
     public static void Menu() {
         Setup();
         JMenu menu = new JMenu("Menu");
@@ -79,7 +103,7 @@ public class GUI extends Thread {
         JMenuItem space = new JMenuItem("");
         ImageIcon imageIcon = new ImageIcon("profile.png");
         Image image = imageIcon.getImage();
-        Image img = image.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img = image.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(img);
         JMenuItem profile = new JMenuItem("profile",
                 imageIcon);
@@ -87,7 +111,7 @@ public class GUI extends Thread {
 
         ImageIcon imageIcon1 = new ImageIcon("search.png");
         Image image1 = imageIcon1.getImage();
-        Image img1 = image1.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img1 = image1.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         imageIcon1 = new ImageIcon(img1);
         JMenuItem search = new JMenuItem("search",
                 imageIcon1);
@@ -95,7 +119,7 @@ public class GUI extends Thread {
 
         ImageIcon imageIcon2 = new ImageIcon("logout.png");
         Image image2 = imageIcon2.getImage();
-        Image img2 = image2.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img2 = image2.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         imageIcon2 = new ImageIcon(img2);
         JMenuItem logout = new JMenuItem("logout",
                 imageIcon2);
@@ -127,6 +151,7 @@ public class GUI extends Thread {
             }
         });
     }
+
     public static void Messages(String username) {
         buttonPanel.setVisible(false);
         String elements = "Arthur1: This is a message to a person." +
@@ -160,7 +185,7 @@ public class GUI extends Thread {
         buttonPanel = new JPanel();
         buttonPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setPreferredSize(new Dimension(100,25));
+        buttonPanel.setPreferredSize(new Dimension(100, 25));
         JLabel name = new JLabel(username);
         JButton newMessage = new JButton("New Message");
         JButton editMessage = new JButton("Edit Message");
@@ -235,7 +260,7 @@ public class GUI extends Thread {
                 backImage);
         ImageIcon clear = new ImageIcon("clear.png");
         Image image2 = clear.getImage();
-        Image img2 = image2.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img2 = image2.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         ImageIcon clearImage = new ImageIcon(img2);
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
@@ -279,10 +304,10 @@ public class GUI extends Thread {
         JPanel textPanel = new JPanel();
         textPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
-        textPanel.setPreferredSize(new Dimension(100,50));
+        textPanel.setPreferredSize(new Dimension(100, 50));
         JTextArea textArea = new JTextArea();
         JScrollPane textPane = new JScrollPane(textArea);
-        textPane.setPreferredSize(new Dimension(600,40));
+        textPane.setPreferredSize(new Dimension(600, 40));
         JButton name = new JButton("Send to " + username + "  ");
         ImageIcon back = new ImageIcon("back.png");
         Image backImg = back.getImage();
@@ -333,7 +358,7 @@ public class GUI extends Thread {
         menuBar.setVisible(false);
         ImageIcon searchImage = new ImageIcon("search.png");
         Image image1 = searchImage.getImage();
-        Image img1 = image1.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img1 = image1.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         ImageIcon image = new ImageIcon(img1);
         JMenuItem SearchIcon = new JMenuItem("Search",
                 image);
@@ -342,7 +367,7 @@ public class GUI extends Thread {
         searchBar.add(searchText);
         ImageIcon clear = new ImageIcon("clear.png");
         Image image2 = clear.getImage();
-        Image img2 = image2.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img2 = image2.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         ImageIcon clearImage = new ImageIcon(img2);
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
@@ -382,7 +407,11 @@ public class GUI extends Thread {
             }
         });
     }
-    public static void ClearList() {items.clear();}
+
+    public static void ClearList() {
+        items.clear();
+    }
+
     public static void List(String elements) {
         if (elements == null) {
             elements = "Nothing to see here";
@@ -479,31 +508,26 @@ public class GUI extends Thread {
             if (e.getSource() == login) {
                 PacketAssembler.assemblePacket(ProtocolRequestType.LOGIN, userText.getText(), String.valueOf(passText.getPassword()));
 
-               /* if (isValidLogin()) {
-                    Menu();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid Password or Username", "Try Again", JOptionPane.ERROR_MESSAGE);
-                } */
             }
             if (e.getSource() == createAcc) {
 
             }
         }
+
     };
 
-    private static boolean isValidLogin() {
-        try {
-            String username = userText.getText();
-            String password = String.valueOf(passText.getPassword());
-            user = PublicInformation.login(username, password);
-            return true;
-        } catch (Exception e) {
-            return false;
+        private static boolean isValidLogin() {
+            try {
+                String username = userText.getText();
+                String password = String.valueOf(passText.getPassword());
+                user = PublicInformation.login(username, password);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        public static void main(String[] args) {
+            SwingUtilities.invokeLater(new GUI());
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new GUI());
-
-    }
-}
