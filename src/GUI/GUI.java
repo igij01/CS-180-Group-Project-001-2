@@ -23,7 +23,6 @@ public class GUI extends Thread {
     static JMenuBar searchBar = new JMenuBar();
     static ScrollPane scrollPane = new ScrollPane();
     static ScrollPane scrollMessage = new ScrollPane();
-    static JMenuBar messageBar = new JMenuBar();
     static JButton login;
     static JButton createAcc;
     static JTextField userText;
@@ -157,6 +156,8 @@ public class GUI extends Thread {
                 "\nThe One True Arthur: You have fulfilled my wishes and reached the bottom. I will now release you from your burdens and set you free. Goodbye.";
         String[] added = elements.split("\n", -2);
         messages.addAll(List.of(added));
+
+
         buttonPanel = new JPanel();
         buttonPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -185,11 +186,69 @@ public class GUI extends Thread {
         messagesList.addMouseListener(mouseListener);
         scrollMessage.add(messagesList);
 
+        newMessage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                NewMessage(username);
+            }
+        });
+    }
 
+    public static void NewMessage(String username) {
+        buttonPanel.setVisible(false);
+        menuBar.setVisible(false);
+        JPanel textPanel = new JPanel();
+        textPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
+        textPanel.setPreferredSize(new Dimension(100,50));
+        JTextArea textArea = new JTextArea();
+        JScrollPane textPane = new JScrollPane(textArea);
+        textPane.setPreferredSize(new Dimension(600,40));
+        JButton name = new JButton("Send to " + username + "  ");
+        ImageIcon back = new ImageIcon("back.png");
+        Image backImg = back.getImage();
+        Image backScale = backImg.getScaledInstance(30, 20, java.awt.Image.SCALE_SMOOTH);
+        ImageIcon backImage = new ImageIcon(backScale);
+        JMenuItem backIcon = new JMenuItem("",
+                backImage);
+        ImageIcon clear = new ImageIcon("clear.png");
+        Image image2 = clear.getImage();
+        Image img2 = image2.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        ImageIcon clearImage = new ImageIcon(img2);
+        JMenuItem clearIcon = new JMenuItem("",
+                clearImage);
+        textPanel.add(name);
+        textPanel.add(textPane);
+        textPanel.add(clearIcon);
+        textPanel.add(backIcon);
+        frame.add(textPanel, BorderLayout.NORTH);
+
+//        name.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if () // needs to find out if the selected user is a buyer seller or store. Still need to understand formate the list is coming in from.
+//                    // this will be used when the selected user type is determined
+//                    PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_BUYER, userText.getText(), String.valueOf(passText.getPassword()));
+//            }
+//        });
+
+        clearIcon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText("");
+            }
+        });
+        backIcon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                menuBar.setVisible(true);
+                frame.remove(textPanel);
+                Messages(username);
+            }
+        });
 
 
     }
-
 
     public static void Search() {
         menuBar.setVisible(false);
