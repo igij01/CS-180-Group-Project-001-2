@@ -220,13 +220,12 @@ public class MessageSystem {
                     case REQUEST_PUBLIC_INFO -> PublicInfo.sendPublicInfo(this.user);
                     case REQUEST_DASHBOARD -> PublicInfo.sendDashBoard(this.user, packet.args);
 
-                    case SEND_MESSAGE_BUYER -> null;
-                    case SEND_MESSAGE_SELLER -> null;
-                    case SEND_MESSAGE_STORE -> null;
+                    case SEND_MESSAGE_USER -> message.sendMessageUser(packet.args);
+                    case SEND_MESSAGE_STORE -> message.sendMessageStore(packet.args);
                     case EDIT_MESSAGE -> null;
                     case DELETE_MESSAGE -> null;
                     case DISPLAY_CONVERSATION_TITLES -> message.displayConversationTitles();
-                    case DISPLAY_CONVERSATION -> null;
+                    case DISPLAY_CONVERSATION -> message.displayConversation(packet.args);
                     case EXPORT_CONVERSATION -> null;
                     case EXPORT_ALL_CONVERSATION -> null;
                 });

@@ -95,9 +95,11 @@ public class FullBuyer extends FullUser implements Serializable {
      *
      * @param store   the store you want to message
      * @param content the content of the message
+     * @return if the message is not blocked
      */
-    public void messageStore(Store store, String content) {
-        super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)), content);
+    public boolean messageStore(Store store, String content) {
+        boolean blocked = super.createMessage(Objects.requireNonNull(PublicInformation.findFullSellerFromStore(store)),
+                content);
         store.incrementCounter(this);
 
 
@@ -109,6 +111,7 @@ public class FullBuyer extends FullUser implements Serializable {
             int index = storesMessaged.indexOf(store);
             timesStoresMessaged.set(index, timesStoresMessaged.get(index) + 1);
         }
+        return blocked;
     }
 
     /**

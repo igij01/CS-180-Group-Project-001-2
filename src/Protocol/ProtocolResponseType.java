@@ -36,6 +36,15 @@ public enum ProtocolResponseType {
 
      */
     CONVERSATION_TITLES,
+    /*
+    String[]
+    target_username
+    username: message
+    timestamp, edited flag
+    username1: message
+    timestamp, edited flag
+    ...
+     */
     CONVERSATION,
     CSV_EXPORT,
     LOGOUT_SUCCESS,

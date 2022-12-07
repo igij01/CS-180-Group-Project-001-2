@@ -6,6 +6,7 @@ import UserCore.User;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -233,6 +234,33 @@ public class Conversation implements Serializable {
         } else {
             throw new IllegalUserAccessException();
         }
+    }
+
+    /**
+     * Print out the conversation with each message labeled username: message '\n' timestamp
+     *
+     * @param requestingUser the user requesting this action
+     * @return the conversation in the format of "sender: content \n time"
+     * @throws IllegalUserAccessException if the user is not a participant
+     */
+    public ArrayList<String> toStringArrayConversation(User requestingUser) {
+        ArrayList<String> arr = new ArrayList<>();
+        if (requestingUser.equals(this.buyer) || requestingUser.equals(this.seller)) {
+            int index = 0;
+            for (Message m : conversation) {
+                ArrayList<String> out;
+                if ((out = m.toStringArr(requestingUser)) == null)
+                    continue;
+                arr.addAll(out);
+            }
+            if (requestingUser.equals(this.buyer))
+                this.newMessageBuyer = false;
+            else if (requestingUser.equals(this.seller))
+                this.newMessageSeller = false;
+        } else {
+            throw new IllegalUserAccessException();
+        }
+        return arr;
     }
 
     /**

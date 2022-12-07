@@ -305,6 +305,33 @@ public class FullUser implements Serializable {
     }
 
     /**
+     * print the content of the conversation by index the user select in the form of:
+     * <p>
+     * title,
+     * user1: message
+     * timestamp'\t'(edited)
+     * ...
+     *
+     * @param title the title of the conversation
+     * @return the conversation content
+     * @throws IllegalUserNameException is thrown when the such title cannot be found
+     */
+    public String[] printConversation(String title) throws IllegalUserNameException {
+        title = title.replace("\n", "");
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversations.get(i).getOtherUser(this.user).getUserName().equalsIgnoreCase(title)) {
+                ArrayList<String> arr = conversations.get(i).toStringArrayConversation(this.user);
+                for (int j = 0; j < arr.size(); j += 2) {
+                    arr.set(j, filter(arr.get(j)));
+                }
+                arr.add(0, title);
+                return arr.toArray(new String[0]);
+            }
+        }
+        throw new IllegalUserNameException();
+    }
+
+    /**
      * print the content of the conversation by index the user select
      *
      * @param index index

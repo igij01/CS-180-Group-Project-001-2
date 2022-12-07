@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * Message
@@ -31,6 +32,7 @@ public class Message implements Serializable {
     private String message;
 
     private boolean readByTarget;
+    private boolean edited = false;
     private boolean visibilitySender;
     private boolean visibilityReceiver;
     private LocalDateTime time;
@@ -77,7 +79,7 @@ public class Message implements Serializable {
     public void editMessage(User requestUser, String newMessage) throws IllegalUserAccessException {
         if (!isSender(requestUser))
             throw new IllegalUserAccessException("User is not a sender therefore cannot edit the message");
-        this.message = newMessage + "\n\t  (edited)";
+        this.edited = true;
         readByTarget = false;
         setTimeToNow();
     }
@@ -189,13 +191,13 @@ public class Message implements Serializable {
 
     /**
      * @param requestingUser the user requesting this action
-     * @return the conversation in the format of "*sender: content \n time" if there is a new message
+     * @return the conversation in the format of "*sender: content \n time (edited)" if there is a new message
      * null if the request user cannot see the message
      * @throws IllegalUserAccessException if the user is not a participant of the message
      */
     public String toStringUser(User requestingUser) {
-        String toString = String.format("%c%s: %s\n %s", ((readByTarget || isSender(requestingUser)) ? ' ' : '*'),
-                User.userName(sender), message, dtf.format(time));
+        String toString = String.format("%c%s: %s\n %s\t%s", ((readByTarget || isSender(requestingUser)) ? ' ' : '*'),
+                User.userName(sender), message, dtf.format(time), (edited? "(edited)" : ""));
         if (!isParticipant(requestingUser))
             throw new IllegalUserAccessException();
         if (!isSender(requestingUser))
@@ -203,5 +205,25 @@ public class Message implements Serializable {
         if ((isSender(requestingUser) && !visibilitySender) || (!isSender(requestingUser) && !visibilityReceiver))
             return null;
         return toString;
+    }
+
+    /**
+     * @param requestingUser the user requesting this action
+     * @return the conversation in the format of "*sender: content", "time (edited)" if there is a new message
+     * null if the request user cannot see the message
+     * @throws IllegalUserAccessException if the user is not a participant of the message
+     */
+    public ArrayList<String> toStringArr(User requestingUser) {
+        ArrayList<String> result = new ArrayList<>(2);
+        result.set(0, String.format("%c%s: %s", ((readByTarget || isSender(requestingUser)) ? ' ' : '*'),
+                User.userName(sender), message));
+        result.set(1, String.format("%s\t%s", dtf.format(time), (edited? "(edited)" : "")));
+        if (!isParticipant(requestingUser))
+            throw new IllegalUserAccessException();
+        if (!isSender(requestingUser))
+            readByTarget = true;
+        if ((isSender(requestingUser) && !visibilitySender) || (!isSender(requestingUser) && !visibilityReceiver))
+            return null;
+        return result;
     }
 }

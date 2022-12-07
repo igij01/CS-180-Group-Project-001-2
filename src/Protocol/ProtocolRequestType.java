@@ -28,8 +28,7 @@ public enum ProtocolRequestType {
     REQUEST_DASHBOARD(1), //increasing order?
 
     //MESSAGE
-    SEND_MESSAGE_BUYER(2),
-    SEND_MESSAGE_SELLER(2),
+    SEND_MESSAGE_USER(2),
     SEND_MESSAGE_STORE(2),
     EDIT_MESSAGE(3), //conversation NAME, message index, new message
     DELETE_MESSAGE(3),
