@@ -2,6 +2,7 @@ package Protocol;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class DataPacket implements Externalizable {
     public ProtocolRequestType protocolRequestType;
@@ -78,5 +79,13 @@ public class DataPacket implements Externalizable {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "DataPacket{" +
+                "protocolRequestType=" + protocolRequestType +
+                ", args=" + Arrays.toString(args) +
+                '}';
     }
 }

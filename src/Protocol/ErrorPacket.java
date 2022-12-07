@@ -56,4 +56,13 @@ public class ErrorPacket implements Externalizable {
         this.requestType = (ProtocolRequestType) objectInput.readObject();
         this.errorMessage = objectInput.readUTF();
     }
+
+    @Override
+    public String toString() {
+        return "ErrorPacket{" +
+                "errorType=" + errorType +
+                ", requestType=" + requestType +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
+    }
 }

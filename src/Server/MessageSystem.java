@@ -19,10 +19,11 @@ import java.util.Objects;
  * @version 11/21/2022
  */
 public class MessageSystem {
-    private static Selector selector = null;
+    protected static Selector selector = null;
     protected static Hashtable<FullUser, SelectionKey> userToKey = new Hashtable<>();
     private FullUser user;
     private final UserProfile userProfile;
+    private final MessageFunctionality message;
 
     /**
      * set the selector static var used to call Notification Factory
@@ -119,6 +120,7 @@ public class MessageSystem {
         } else
             throw new IllegalRequestFormat("blank request!");
         userProfile = new UserProfile(this.user);
+        message = new MessageFunctionality(this.user);
     }
 
     /**
@@ -155,6 +157,13 @@ public class MessageSystem {
         } else {
             throw new IllegalParameter("buyer/seller", role);
         }
+    }
+
+    /**
+     * Forcibly log the user out when the user disconnect
+     */
+    protected void userLogOut() {
+        PublicInformation.logout(this.user);
     }
 
     /**
@@ -199,12 +208,13 @@ public class MessageSystem {
                 case SEND_MESSAGE_STORE -> null;
                 case EDIT_MESSAGE -> null;
                 case DELETE_MESSAGE -> null;
-                case DISPLAY_CONVERSATION_TITLES -> null;
+                case DISPLAY_CONVERSATION_TITLES -> message.displayConversationTitles();
                 case DISPLAY_CONVERSATION -> null;
                 case EXPORT_CONVERSATION -> null;
                 case EXPORT_ALL_CONVERSATION -> null;
             };
         } catch (Exception e) {
+            e.printStackTrace();
             return sendException(e, packet.protocolRequestType);
         }
     }

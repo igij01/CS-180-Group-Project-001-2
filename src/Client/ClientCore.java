@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class ClientCore extends Thread {
@@ -19,18 +20,21 @@ public class ClientCore extends Thread {
     private SocketChannel channel;
     private SocketAddress address;
     private ArrayBlockingQueue<ByteBuffer> writeQueue;
-    private ArrayBlockingQueue<ByteBuffer> readQueue;
+    private ArrayBlockingQueue<Object> readQueue;
     private Selector selector = Selector.open();
 
-    public ClientCore(SocketAddress server) throws IOException {
-        this.address = server;
+    public ClientCore(SocketChannel channel) throws IOException {
+        this.channel = channel;
+        this.channel.register(selector, SelectionKey.OP_WRITE);
         this.writeQueue = new ArrayBlockingQueue<>(1000);
         this.readQueue = new ArrayBlockingQueue<>(1000);
 
     }
 
-    @Override
-    public void run() {
+    public ClientCore(SocketAddress server) throws IOException {
+        this.address = server;
+        this.writeQueue = new ArrayBlockingQueue<>(1000);
+        this.readQueue = new ArrayBlockingQueue<>(1000);
         final ByteBuffer readBuffer = ByteBuffer.allocate(0x1000);
         try {
             this.channel = SocketChannel.open(address);
@@ -53,6 +57,11 @@ public class ClientCore extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void run() {
+        final ByteBuffer readBuffer = ByteBuffer.allocate(0x1000);
         try {
             while (selector.isOpen()) {
                 int select = selector.select();
@@ -74,10 +83,12 @@ public class ClientCore extends Thread {
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
                                 Object packet = DataPacket.packetDeserialize(buffer);
-                                if (packet instanceof ResponsePacket)
+                                readQueue.add(packet);
+                                if (packet instanceof ResponsePacket) {
                                     System.out.println(((ResponsePacket) packet).args[0]);
-                                else if (packet instanceof ErrorPacket)
+                                } else if (packet instanceof ErrorPacket) {
                                     System.out.println(((ErrorPacket) packet).errorMessage);
+                                }
                                 //readQueue.add(buffer);
                             }
                             key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ); //enable write flag
@@ -115,6 +126,23 @@ public class ClientCore extends Thread {
             }
         }
         selector.wakeup();
+    }
+
+    public Iterator<Object> getReadQueueIterator() {
+        return this.readQueue.iterator();
+    }
+
+    public Object readFromQueue() {
+        return readQueue.peek();
+    }
+
+    public Object popFromQueue() {
+        return readQueue.poll();
+    }
+
+    public boolean removeFromQueue(Object o) {
+        System.out.println(Thread.currentThread().getStackTrace()[0]);
+        return readQueue.remove(o);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {

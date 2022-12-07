@@ -263,6 +263,36 @@ public class FullUser implements Serializable {
     }
 
     /**
+     * Print the list of conversations by titles in array
+     *
+     * @return String[] of conversations to be printed, null if there are no conversations
+     * @see #printConversationTitles()
+     */
+    public String[] printConversationTitlesArray() {
+        ArrayList<Conversation> newConversations = new ArrayList<>();
+        for (Conversation c : conversations) {
+            if (c.newMessageStatus(this.user)) {
+                newConversations.add(c);
+            }
+        }
+        for (Conversation c : newConversations) // remove the new conversation from conversation,
+            // has to be done this way since you can't remove elements of a list that's currently looping
+            conversations.remove(c);
+        conversations.addAll(0, newConversations);
+        ArrayList<String> conversationTitles = new ArrayList<>();
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversations.get(i).newMessageStatus(this.user)) {
+                conversationTitles.add(filter(conversations.get(i).getOtherUser(this.user).getUserName()) + '\n');
+            } else {
+                conversationTitles.add(filter(conversations.get(i).getOtherUser(this.user).getUserName()));
+            }
+        }
+        if (conversationTitles.isEmpty())
+            return null;
+        return conversationTitles.toArray(new String[0]);
+    }
+
+    /**
      * print the content of the conversation by index the user select
      *
      * @param index index
