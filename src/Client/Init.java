@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.UnresolvedAddressException;
 import java.nio.channels.UnsupportedAddressTypeException;
+import java.util.Objects;
 
 public class Init extends JFrame {
     private JPanel contentPane;
@@ -129,7 +130,8 @@ public class Init extends JFrame {
                 readBuffer.flip();
                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                 buffer = buffer.put(readBuffer);
-                packet = (ResponsePacket) DataPacket.packetDeserialize(buffer);
+                packet = (ResponsePacket) Objects.requireNonNull
+                        (DataPacket.packetDeserialize(buffer)).get(0);
                 if (packet != null) {
                     System.out.println(packet.args[0]);
                 }

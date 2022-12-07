@@ -105,10 +105,8 @@ public class ServerCore {
                                             .add(MessageSystem.sendException(e));
                                 }
                             } else {
-                                ((Queue<Buffer>) key.attachment()).add(table.get(socket).processRequest(buffer));
+                                ((Queue<Buffer>) key.attachment()).addAll(table.get(socket).processRequest(buffer));
                             }
-
-
                             key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ); //enable write flag
                         }
                     }

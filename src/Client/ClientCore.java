@@ -12,7 +12,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class ClientCore extends Thread {
@@ -47,7 +49,8 @@ public class ClientCore extends Thread {
                 readBuffer.flip();
                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                 buffer = buffer.put(readBuffer);
-                ResponsePacket packet = (ResponsePacket) DataPacket.packetDeserialize(buffer);
+                ResponsePacket packet = (ResponsePacket) Objects.requireNonNull
+                        (DataPacket.packetDeserialize(buffer)).get(0);
                 if (packet != null) {
                     System.out.println(packet.args[0]);
                 }
@@ -82,12 +85,15 @@ public class ClientCore extends Thread {
                                 readBuffer.flip();
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
-                                Object packet = DataPacket.packetDeserialize(buffer);
-                                readQueue.add(packet);
-                                if (packet instanceof ResponsePacket) {
-                                    System.out.println(((ResponsePacket) packet).args[0]);
-                                } else if (packet instanceof ErrorPacket) {
-                                    System.out.println(((ErrorPacket) packet).errorMessage);
+                                ArrayList<Object> packets = DataPacket.packetDeserialize(buffer);
+                                assert packets != null;
+                                readQueue.addAll(packets);
+                                for (Object packet : packets) {
+                                    if (packet instanceof ResponsePacket) {
+                                        System.out.println(((ResponsePacket) packet).args[0]);
+                                    } else if (packet instanceof ErrorPacket) {
+                                        System.out.println(((ErrorPacket) packet).errorMessage);
+                                    }
                                 }
                                 //readQueue.add(buffer);
                             }
@@ -100,8 +106,9 @@ public class ClientCore extends Thread {
 
                             //only remove from queue once we have completely written
                             //this is why we call peek first, and only remove once (buffer.remaining() == 0)
-                            for (ByteBuffer buffer; (buffer = (ByteBuffer) this.writeQueue.peek()) != null; ) {
+                            for (ByteBuffer buffer; (buffer = this.writeQueue.peek()) != null; ) {
                                 socket.write(buffer);
+                                System.out.println("send");
                                 if (buffer.remaining() == 0) this.writeQueue.remove();
                                 else break; //can not write anymore. Wait for next write event
                             }
@@ -120,6 +127,7 @@ public class ClientCore extends Thread {
 
     public void addByteBufferToWrite(ByteBuffer bfr) {
         writeQueue.add(bfr);
+        System.out.println("added");
         for (SelectionKey key : selector.keys()) {
             if (key.channel() instanceof SocketChannel) {
                 key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE); //enable write flag

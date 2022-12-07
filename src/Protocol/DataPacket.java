@@ -2,11 +2,13 @@ package Protocol;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DataPacket implements Externalizable {
     public ProtocolRequestType protocolRequestType;
     public String[] args;
+    public static byte[] remainingBytes = new byte[0];
 
     /**
      * create a data packet to send to the server
@@ -70,11 +72,27 @@ public class DataPacket implements Externalizable {
      * @param buffer the buffer that contains the serialized packet
      * @return the deserialized packet as {@code Object}
      */
-    public static Object packetDeserialize(ByteBuffer buffer) {
+    public static ArrayList<Object> packetDeserialize(ByteBuffer buffer) {
+        ArrayList<Object> objects = new ArrayList<>();
         byte[] packet = buffer.array();
+        if (remainingBytes.length > 0) {
+            System.arraycopy(remainingBytes, 0, packet, 0, remainingBytes.length);
+        }
         try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
-             ObjectInputStream oin = new ObjectInputStream(in)) {
-            return oin.readObject();
+             BufferedInputStream bin = new BufferedInputStream(in);
+             ObjectInputStream oin = new ObjectInputStream(bin)) {
+            while (true) {
+                bin.mark(0xFFFFF);
+                remainingBytes = oin.readAllBytes();
+                bin.reset();
+                objects.add(oin.readObject());
+            }
+        } catch (EOFException e) {
+            remainingBytes = new byte[0];
+            return objects;
+        } catch (StreamCorruptedException e) {
+            System.out.println("incomplete");
+            return objects;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;

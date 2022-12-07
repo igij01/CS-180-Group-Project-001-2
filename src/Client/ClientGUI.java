@@ -1,5 +1,6 @@
 package Client;
 
+import Protocol.ErrorPacket;
 import Protocol.ProtocolRequestType;
 import Protocol.ResponsePacket;
 
@@ -131,6 +132,8 @@ public class ClientGUI extends JFrame {
                     case PUBLIC_INFO:
 
                 }
+            } else if (packet instanceof ErrorPacket) {
+
             }
             AsyncListener asyncListener = new AsyncListener();
             asyncListener.execute();
