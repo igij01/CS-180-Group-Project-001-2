@@ -32,6 +32,9 @@ public class GUI extends Thread {
     static JPasswordField passText;
     static FullUser user;
 
+    public static void thankYouMessage() {
+        JOptionPane.showMessageDialog(null, "Thanks for using our buying and selling platform! We hope to see you again!", "Thank You!", JOptionPane.PLAIN_MESSAGE);
+    }
 
     public static void Setup() {
         frame = new JFrame("Basically Facebook");
@@ -42,6 +45,11 @@ public class GUI extends Thread {
         frame.add(scrollPane, BorderLayout.WEST);
         frame.add(scrollMessage, BorderLayout.EAST);
         menuBar = new JMenuBar();
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                thankYouMessage();
+            }
+        });
         //List();
         //List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
         //List(user.printConversationTitles()); a user needs to be created from logging in first
@@ -525,6 +533,12 @@ public class GUI extends Thread {
         createAcc.setBounds(175, 80, 125, 25);
         panel.add(createAcc);
         loginFrame.setVisible(true);
+
+        loginFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                thankYouMessage();
+            }
+        });
     }
 
     //allows users to upload files
@@ -532,6 +546,7 @@ public class GUI extends Thread {
         try {
             JFileChooser fileC = new JFileChooser();
             fileC.showSaveDialog(null);
+            //return file;
         /*JFrame UFFrame = new JFrame("Upload Your File");
         JPanel UFPanel = new JPanel();
         Container UFContent = UFFrame.getContentPane();
@@ -551,11 +566,11 @@ public class GUI extends Thread {
             JOptionPane.showMessageDialog(null, "Invalid File!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     public static void welcomeMessage() {
         JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
     }
-    
+
     public void run() {
         Login();
         welcomeMessage();
