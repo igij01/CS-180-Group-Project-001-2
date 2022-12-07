@@ -172,14 +172,28 @@ public class MessageSystem {
      * main method responsible for processing the request
      *
      * @param buffer the input buffer
-     * @return the ByteBuffer as a response
+     * @return the ArrayList<ByteBuffer> as a response
      */
     public ArrayList<ByteBuffer> processRequest(ByteBuffer buffer) {
+        ArrayList<DataPacket> packets = new ArrayList<>();
         ArrayList<ByteBuffer> response = new ArrayList<>();
-        ArrayList<Object> requests = DataPacket.packetDeserialize(buffer);
-        assert requests != null;
-        for (Object request : requests) {
-            DataPacket packet = (DataPacket) request;
+        boolean repeat = true;
+        DataPacket dataPacket = DataPacket.packetDeserialize(buffer);
+        if (dataPacket != null)
+            packets.add(dataPacket);
+        else
+            repeat = false;
+
+        while(repeat) {
+            dataPacket = DataPacket.packetDeserialize(null);
+            if (dataPacket != null)
+                packets.add(dataPacket);
+            else
+                repeat = false;
+        }
+
+        assert packets.size() > 0;
+        for (DataPacket packet : packets) {
             try {
                 if (!this.user.loginStatus())
                     throw new IllegalUserLoginStatus("The user is not logged in!"); //should never happen

@@ -49,8 +49,7 @@ public class ClientCore extends Thread {
                 readBuffer.flip();
                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                 buffer = buffer.put(readBuffer);
-                ResponsePacket packet = (ResponsePacket) Objects.requireNonNull
-                        (DataPacket.packetDeserialize(buffer)).get(0);
+                ResponsePacket packet = (ResponsePacket) ResponsePacket.packetDeserialize(buffer);
                 if (packet != null) {
                     System.out.println(packet.args[0]);
                 }
@@ -85,15 +84,12 @@ public class ClientCore extends Thread {
                                 readBuffer.flip();
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
-                                ArrayList<Object> packets = DataPacket.packetDeserialize(buffer);
-                                assert packets != null;
-                                readQueue.addAll(packets);
-                                for (Object packet : packets) {
-                                    if (packet instanceof ResponsePacket) {
-                                        System.out.println(((ResponsePacket) packet).args[0]);
-                                    } else if (packet instanceof ErrorPacket) {
-                                        System.out.println(((ErrorPacket) packet).errorMessage);
-                                    }
+                                Object packet = ResponsePacket.packetDeserialize(buffer);
+                                readQueue.add(packet);
+                                if (packet instanceof ResponsePacket) {
+                                    System.out.println(((ResponsePacket) packet).args[0]);
+                                } else if (packet instanceof ErrorPacket) {
+                                    System.out.println(((ErrorPacket) packet).errorMessage);
                                 }
                                 //readQueue.add(buffer);
                             }

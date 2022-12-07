@@ -17,6 +17,10 @@ import java.util.List;
 
 public class GUI extends Thread {
     static JPanel buttonPanel = new JPanel();
+    static boolean isNewMessage = false;
+    static JPanel textPanel = new JPanel();
+    static String hashColor = "#f2f6ff";
+    static int selectedIndex;
     static String selectedMessage;
     static JFrame frame;
     static ArrayList<String> items = new ArrayList<>();
@@ -31,6 +35,10 @@ public class GUI extends Thread {
     static JPasswordField passText;
     static FullUser user;
 
+    public static void thankYouMessage() {
+        JOptionPane.showMessageDialog(null, "Thanks for using our buying and selling platform! We hope to see you again!", "Thank You!", JOptionPane.PLAIN_MESSAGE);
+    }
+
     public static void Setup() {
         frame = new JFrame("Basically Facebook");
         frame.setSize(750, 500);
@@ -40,6 +48,11 @@ public class GUI extends Thread {
         frame.add(scrollPane, BorderLayout.WEST);
         frame.add(scrollMessage, BorderLayout.EAST);
         menuBar = new JMenuBar();
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                thankYouMessage();
+            }
+        });
         //List();
         //List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
         //List(user.printConversationTitles()); a user needs to be created from logging in first
@@ -94,6 +107,9 @@ public class GUI extends Thread {
         panel.add(emailToChange);
         JButton changeEmail = new JButton("Change Email");
         panel.add(changeEmail);
+        JButton delete = new JButton("Delete Account");
+        panel.add(delete);
+        delete.setBounds(750, 400,50,50);
 
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
@@ -157,6 +173,7 @@ public class GUI extends Thread {
         imageIcon = new ImageIcon(img);
         JMenuItem profile = new JMenuItem("profile",
                 imageIcon);
+        profile.setBackground(Color.decode(hashColor));
         menuBar.add(profile);
 
         ImageIcon imageIcon1 = new ImageIcon("search.png");
@@ -165,6 +182,7 @@ public class GUI extends Thread {
         imageIcon1 = new ImageIcon(img1);
         JMenuItem search = new JMenuItem("search",
                 imageIcon1);
+        search.setBackground(Color.decode(hashColor));
         menuBar.add(search);
 
         ImageIcon imageIcon2 = new ImageIcon("logout.png");
@@ -173,7 +191,9 @@ public class GUI extends Thread {
         imageIcon2 = new ImageIcon(img2);
         JMenuItem logout = new JMenuItem("logout",
                 imageIcon2);
+        logout.setBackground(Color.decode(hashColor));
         menuBar.add(logout);
+        space.setBackground(Color.decode(hashColor));
         menuBar.add(space);
         frame.setJMenuBar(menuBar);
 
@@ -231,9 +251,12 @@ public class GUI extends Thread {
                 "\nArthur1: What happens after I have finished? What happens when I reach the end?" +
                 "\nThe One True Arthur: You have fulfilled my wishes and reached the bottom. I will now release you from your burdens and set you free. Goodbye.";
         String[] added = elements.split("\n", -2);
-        messages.addAll(List.of(added));
+        //messages.addAll(List.of(added));
         buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        buttonPanel.setBackground(Color.decode(hashColor));
+        menuBar.setBackground(Color.decode(hashColor));
+        searchBar.setBackground(Color.decode(hashColor));
+
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setPreferredSize(new Dimension(100, 25));
         JLabel name = new JLabel(username);
@@ -247,13 +270,28 @@ public class GUI extends Thread {
         buttonPanel.add(editMessage);
         buttonPanel.add(deleteMessage);
         frame.add(buttonPanel, BorderLayout.NORTH);
-
+        // I will change this to match the user instead of every other one once I get the input formatting right.
+        for (int i = 0; i < added.length; i++) {
+            if (i%2 == 0) {
+                messages.add("<html><FONT style=\"BACKGROUND-COLOR: #f06969\">" + added[i] + "</FONT></html>");
+            } else {
+                messages.add("<html><FONT style=\"BACKGROUND-COLOR: #81ed7e\">" + added[i] + "</FONT></html>");
+            }
+        }
         JList messagesList = new JList(messages.toArray());
+        messagesList.setBackground(Color.decode(hashColor));
         messagesList.setLayoutOrientation(JList.VERTICAL);
         scrollMessage.setPreferredSize(new Dimension(535, 400));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 selectedMessage = (String) messagesList.getSelectedValue();
+                for (int i = 0; i < messages.size(); i++) {
+                    if (messages.get(i).equals(selectedMessage)) {
+                        selectedIndex = i;
+                        selectedMessage = added[i];
+                        break;
+                    }
+                }
                 System.out.println(selectedMessage);
             }
         };
@@ -269,11 +307,11 @@ public class GUI extends Thread {
         editMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    if (selectedMessage != null) {
-                        EditMessage(username, selectedMessage);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Please select the message you want to edit.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                if (selectedMessage != null) {
+                    EditMessage(username, selectedMessage);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select the message you want to edit.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         deleteMessage.addActionListener(new ActionListener() {
@@ -323,7 +361,7 @@ public class GUI extends Thread {
         finalize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              //  PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE, )
+                //  PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE, )
             }
         });
         clearIcon.addActionListener(new ActionListener() {
@@ -349,9 +387,11 @@ public class GUI extends Thread {
     }
 
     public static void NewMessage(String username) {
+        textPanel.setVisible(false);
         buttonPanel.setVisible(false);
         menuBar.setVisible(false);
-        JPanel textPanel = new JPanel();
+        isNewMessage = true;
+        textPanel = new JPanel();
         textPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
         textPanel.setPreferredSize(new Dimension(100, 50));
@@ -398,6 +438,7 @@ public class GUI extends Thread {
                 menuBar.setVisible(true);
                 frame.remove(textPanel);
                 Messages(username);
+                isNewMessage = false;
             }
         });
 
@@ -471,11 +512,16 @@ public class GUI extends Thread {
         Messages(items.get(0));
         JList list = new JList(items.toArray());
         list.setLayoutOrientation(JList.VERTICAL);
+        scrollPane.setBackground(Color.decode(hashColor));
+        list.setBackground(Color.decode(hashColor));
         scrollPane.setPreferredSize(new Dimension(200, 750));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
                 Messages(selectedItem);
+                if (isNewMessage) {
+                    NewMessage(selectedItem);
+                }
                 System.out.println(selectedItem);
                 String[] part = selectedItem.split(":", 2);
             }
@@ -520,6 +566,12 @@ public class GUI extends Thread {
         createAcc.setBounds(175, 80, 125, 25);
         panel.add(createAcc);
         loginFrame.setVisible(true);
+
+        loginFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                thankYouMessage();
+            }
+        });
     }
 
     //allows users to upload files
@@ -527,6 +579,7 @@ public class GUI extends Thread {
         try {
             JFileChooser fileC = new JFileChooser();
             fileC.showSaveDialog(null);
+            //return file;
         /*JFrame UFFrame = new JFrame("Upload Your File");
         JPanel UFPanel = new JPanel();
         Container UFContent = UFFrame.getContentPane();
@@ -547,8 +600,13 @@ public class GUI extends Thread {
         }
     }
 
+    public static void welcomeMessage() {
+        JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
+    }
+
     public void run() {
         Login();
+        welcomeMessage();
     }
 
     static ActionListener actionListener = new ActionListener() {
@@ -566,18 +624,18 @@ public class GUI extends Thread {
 
     };
 
-        private static boolean isValidLogin() {
-            try {
-                String username = userText.getText();
-                String password = String.valueOf(passText.getPassword());
-                user = PublicInformation.login(username, password);
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-
-        public static void main(String[] args) {
-            SwingUtilities.invokeLater(new GUI());
+    private static boolean isValidLogin() {
+        try {
+            String username = userText.getText();
+            String password = String.valueOf(passText.getPassword());
+            user = PublicInformation.login(username, password);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new GUI());
+    }
+}

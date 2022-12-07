@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class DataPacket implements Externalizable {
     public ProtocolRequestType protocolRequestType;
     public String[] args;
-    public static byte[] remainingBytes = new byte[0];
+    private static byte[] bytesLeft = new byte[0];
 
     /**
      * create a data packet to send to the server
@@ -72,29 +72,25 @@ public class DataPacket implements Externalizable {
      * @param buffer the buffer that contains the serialized packet
      * @return the deserialized packet as {@code Object}
      */
-    public static ArrayList<Object> packetDeserialize(ByteBuffer buffer) {
-        ArrayList<Object> objects = new ArrayList<>();
-        byte[] packet = buffer.array();
-        if (remainingBytes.length > 0) {
-            System.arraycopy(remainingBytes, 0, packet, 0, remainingBytes.length);
+    public static DataPacket packetDeserialize(ByteBuffer buffer) {
+        byte[] packet;
+        if (buffer == null)
+            packet = new byte[bytesLeft.length];
+        else {
+            byte[] dataPacket = buffer.array();
+            packet = new byte[dataPacket.length + bytesLeft.length];
+            System.arraycopy(dataPacket, 0, packet, 0, dataPacket.length);
+        }
+        if (bytesLeft.length > 0) {
+            System.arraycopy(bytesLeft, 0, packet, 0, bytesLeft.length);
         }
         try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
-             BufferedInputStream bin = new BufferedInputStream(in);
-             ObjectInputStream oin = new ObjectInputStream(bin)) {
-            while (true) {
-                bin.mark(0xFFFFF);
-                remainingBytes = oin.readAllBytes();
-                bin.reset();
-                objects.add(oin.readObject());
-            }
-        } catch (EOFException e) {
-            remainingBytes = new byte[0];
-            return objects;
-        } catch (StreamCorruptedException e) {
-            System.out.println("incomplete");
-            return objects;
+             ObjectInputStream oin = new ObjectInputStream(in)) {
+            DataPacket o = (DataPacket) oin.readObject();
+            bytesLeft = in.readAllBytes();
+            System.out.println("Bytes left: " + Arrays.toString(bytesLeft));
+            return o;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
             return null;
         }
     }

@@ -228,3 +228,86 @@ or don't)
   * note: this test is done using a login packet, a simple response packet, and Invalid Password error packet
     which are pretty simple for it might be worse in real-life. But 1,000,000 packet is not a realistic load either
     so it should not impact the server performance :)
+
+
+## 12/7/2022
+
+### solved the issue that when multiple packets being sent at the same time, only one will be read
+
+#### Description
+Since SocketChannel and selectors are non-blocking in nature, the writing and reading operation are effectively
+independent of each other. That's one of the intention behind using SocketChannel. However, the nature of such
+independence results in aggregation of multiple input being read at the same time. Therefore, when the original 
+deserialization method is invoked, which defaults to only reading 1 packet, the rest will be discarded, resulting in
+packet loss. 
+<br>
+A obvious fix for such case is to read array of packets; however, since Server run in non-blocking mode, there's no
+guarantee that it will read a whole packet before continuing(plus the fact that read buffer size is 1024...so if
+the packet gets too large, it will only read part of it). Therefore, a temporary placeholder for remaining bytes is used
+
+#### Affected code
+* `DataPacket` and `ResponsePacket`
+  * since the placeholder is static, you don't want to share the server placeholder with the client one
+    * In reality, this is not going to be an issue since the server and client will have their own Protocol class,
+but in developing phase when they share the same classes it matters
+```java
+/**
+     * deserialize serialized packet
+     *
+     * @param buffer the buffer that contains the serialized packet
+     * @return the deserialized packet as {@code Object}
+     */
+    public static Object packetDeserialize(ByteBuffer buffer) {
+        byte[] packet;
+        if (buffer == null)
+            packet = new byte[bytesLeft.length];
+        else {
+            byte[] dataPacket = buffer.array();
+            packet = new byte[dataPacket.length + bytesLeft.length];
+            System.arraycopy(dataPacket, 0, packet, 0, dataPacket.length);
+        }
+        if (bytesLeft.length > 0) {
+            System.arraycopy(bytesLeft, 0, packet, 0, bytesLeft.length);
+        }
+        try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
+             ObjectInputStream oin = new ObjectInputStream(in)) {
+            Object o = oin.readObject();
+            bytesLeft = in.readAllBytes();
+            System.out.println("Bytes left: " + Arrays.toString(bytesLeft));
+            return o;
+        } catch (IOException | ClassNotFoundException e) {
+            return null;
+        }
+    }
+```
+
+* `MessageSystem` data process method
+  * a loop is used to get the most packet out of the method:
+```java
+    /**
+    * main method responsible for processing the request
+    *
+    * @param buffer the input buffer
+    * @return the ArrayList<ByteBuffer> as a response
+    */
+    public ArrayList<ByteBuffer> processRequest(ByteBuffer buffer) {
+        ArrayList<DataPacket> packets = new ArrayList<>();
+        ArrayList<ByteBuffer> response = new ArrayList<>();
+        boolean repeat = true;
+        DataPacket dataPacket = DataPacket.packetDeserialize(buffer);
+        if (dataPacket != null)
+            packets.add(dataPacket);
+        else
+            repeat = false;
+
+        while(repeat) {
+            dataPacket = DataPacket.packetDeserialize(null);
+            if (dataPacket != null)
+                packets.add(dataPacket);
+            else
+                repeat = false;
+        }
+
+        assert packets.size() > 0;
+        for (DataPacket packet : packets)...
+```
