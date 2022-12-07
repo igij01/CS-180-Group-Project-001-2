@@ -13,6 +13,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -84,12 +85,31 @@ public class ClientCore extends Thread {
                                 readBuffer.flip();
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
-                                Object packet = ResponsePacket.packetDeserialize(buffer);
-                                readQueue.add(packet);
-                                if (packet instanceof ResponsePacket) {
-                                    System.out.println(((ResponsePacket) packet).args[0]);
-                                } else if (packet instanceof ErrorPacket) {
-                                    System.out.println(((ErrorPacket) packet).errorMessage);
+                                boolean repeat = true;
+                                Object responsePacket = ResponsePacket.packetDeserialize(buffer);
+                                if (responsePacket != null) {
+                                    readQueue.add(responsePacket);
+                                    if (responsePacket instanceof ResponsePacket) {
+                                        System.out.println(Arrays.toString(((ResponsePacket) responsePacket).args));
+                                    } else if (responsePacket instanceof ErrorPacket) {
+                                        System.out.println(((ErrorPacket) responsePacket).errorMessage);
+                                    }
+                                }
+                                else
+                                    repeat = false;
+
+                                while(repeat) {
+                                    responsePacket = ResponsePacket.packetDeserialize(null);
+                                    if (responsePacket != null) {
+                                        readQueue.add(responsePacket);
+                                        if (responsePacket instanceof ResponsePacket) {
+                                            System.out.println(Arrays.toString(((ResponsePacket) responsePacket).args));
+                                        } else if (responsePacket instanceof ErrorPacket) {
+                                            System.out.println(((ErrorPacket) responsePacket).errorMessage);
+                                        }
+                                    }
+                                    else
+                                        repeat = false;
                                 }
                                 //readQueue.add(buffer);
                             }

@@ -35,6 +35,6 @@ public class PacketAssembler {
         s = s.replace("]", "");
         if (s.isBlank())
             return new String[0];
-        return s.split(",");
+        return s.split(", ");
     }
 }

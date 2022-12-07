@@ -31,11 +31,11 @@ public enum ProtocolRequestType {
     SEND_MESSAGE_BUYER(2),
     SEND_MESSAGE_SELLER(2),
     SEND_MESSAGE_STORE(2),
-    EDIT_MESSAGE(3), //conversation index, message index, new message
+    EDIT_MESSAGE(3), //conversation NAME, message index, new message
     DELETE_MESSAGE(3),
     DISPLAY_CONVERSATION_TITLES(0),
-    DISPLAY_CONVERSATION(1), //conversation index
-    EXPORT_CONVERSATION(1), //conversation indexes, can be an array
+    DISPLAY_CONVERSATION(1), //conversation NAME
+    EXPORT_CONVERSATION(1), //conversation NAME, can be an array
     EXPORT_ALL_CONVERSATION(0);
 
 

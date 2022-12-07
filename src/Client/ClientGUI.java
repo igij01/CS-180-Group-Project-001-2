@@ -55,13 +55,10 @@ public class ClientGUI extends JFrame {
 
                 super.getListCellRendererComponent(list, value, index,
                         isSelected, cellHasFocus);
-                DefaultListModel<String> model = new DefaultListModel<>();
 
                 String username = (String) value;
 
                 if (username.contains("\n")) {
-                    list.setModel(model);
-                    model.set(index, username.replace("\n", ""));
                     setBackground(new Color(34, 202, 215));
                 } else {
                     setBackground(new Color(255, 255, 255));
@@ -126,6 +123,7 @@ public class ClientGUI extends JFrame {
                             noConversation = true;
                         else
                             noConversation = false;
+                        System.out.println(conversationTitles.length);
                         list.setListData(conversationTitles);
                         break;
                     case PUBLIC_INFO:

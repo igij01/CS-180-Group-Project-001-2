@@ -25,9 +25,16 @@ public enum ProtocolResponseType {
      */
     PROFILE,
     /*
-
+    String[2] - buyer
+    1. array of store - [store1, store2...]
+    2. array of seller(for searching purpose ONLY) - [seller1, seller2...]
+    String[1] - seller
+    1. array of buyer(for searching purpose ONLY) - [buyer1, buyer2...]
      */
     PUBLIC_INFO,
+    /*
+
+     */
     CONVERSATION_TITLES,
     CONVERSATION,
     CSV_EXPORT,
