@@ -86,6 +86,12 @@ public class MessageSystem {
         return ByteBuffer.wrap(Objects.requireNonNull(DataPacket.serialize(packet)));
     }
 
+    protected static void runNotificationThread(SelectionKey key, ByteBuffer... packets) {
+        for (ByteBuffer buffer : packets) {
+            NotificationFactory.runNotificationThread(selector, key, buffer);
+        }
+    }
+
     /**
      * initialize the message system with the initMessage
      *

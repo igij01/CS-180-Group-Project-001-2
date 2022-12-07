@@ -5,14 +5,17 @@ import Protocol.ProtocolResponseType;
 import UserCore.*;
 
 import java.nio.ByteBuffer;
+import java.util.Hashtable;
 import java.util.Objects;
 
 public class MessageFunctionality {
+    private static Hashtable<FullUser, MessageFunctionality> userToMessageFunc = new Hashtable<>();
     private FullUser user;
     private String currentConversation = null;
 
     public MessageFunctionality(FullUser user) {
         this.user = user;
+        userToMessageFunc.put(this.user, this);
     }
 
     /**
@@ -41,7 +44,29 @@ public class MessageFunctionality {
         boolean blocked = user.createMessage(target, params[1]);
         if (!blocked)
             throw new InvalidActionException("The target user blocked you!");
+        if (userToMessageFunc.get(target) != null) {
+            ByteBuffer[] response = userToMessageFunc.get(target).updateMessage(this.user.getUsername());
+            MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user), response);
+        }
         return displayConversationTitles();
+    }
+
+    /**
+     * call this method to update the target client
+     * @param username the username of the invoker
+     * @return bytebuffer(s) to add to the target client write queue
+     */
+    private ByteBuffer[] updateMessage(String username) {
+        ByteBuffer[] response;
+        if (this.currentConversation.equalsIgnoreCase(username)) {
+            response = new ByteBuffer[2];
+            response[0] = displayConversationTitles();
+            response[1] = displayConversation(new String[]{this.currentConversation});
+        } else {
+            response = new ByteBuffer[1];
+            response[0] = displayConversationTitles();
+        }
+        return response;
     }
 
     /**
@@ -67,7 +92,7 @@ public class MessageFunctionality {
      * @throws IllegalUserNameException is thrown when the such title cannot be found
      */
     protected ByteBuffer displayConversation(String[] params) throws IllegalUserNameException {
-        this.currentConversation = params[0];
+        this.currentConversation = params[0].replace("\n", "");
         return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION, user.printConversation(params[0]));
     }
 
