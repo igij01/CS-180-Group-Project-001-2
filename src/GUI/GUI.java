@@ -1,5 +1,6 @@
 package GUI;
 
+import Client.ClientCore;
 import Client.PacketAssembler;
 import Protocol.ProtocolRequestType;
 import UserCore.FullBuyer;
@@ -30,6 +31,7 @@ public class GUI extends Thread {
     static JTextField userText;
     static JPasswordField passText;
     static FullUser user;
+
 
     public static void Setup() {
         frame = new JFrame("Basically Facebook");
@@ -94,6 +96,9 @@ public class GUI extends Thread {
         panel.add(emailToChange);
         JButton changeEmail = new JButton("Change Email");
         panel.add(changeEmail);
+        JButton delete = new JButton("Delete Account");
+        panel.add(delete);
+        delete.setBounds(750, 400,50,50);
 
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
