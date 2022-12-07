@@ -47,7 +47,7 @@ public class GUI extends Thread {
 
     public static void Profile() {
         frame = new JFrame();
-        frame.setSize(600, 450);
+        frame.setSize(900, 450);
         frame.setLocationRelativeTo(null);
         menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
@@ -80,15 +80,17 @@ public class GUI extends Thread {
         panel.add(censorLabel);
         JComboBox censorList = new JComboBox(sampleList.toArray());
         panel.add(censorList);
-        JTextField addCensoredWord = new JTextField(10);
+        JButton removeCensoredWord = new JButton("Remove Word");
+        panel.add(removeCensoredWord);
+        JTextField addCensoredWord = new JTextField(15);
         panel.add(addCensoredWord);
         JButton addCensorship = new JButton("Add Censored Word");
         panel.add(addCensorship);
-        JTextField usernameToChange = new JTextField(10);
+        JTextField usernameToChange = new JTextField(15);
         panel.add(usernameToChange);
         JButton changeUsername = new JButton("Change Username");
         panel.add(changeUsername);
-        JTextField emailToChange = new JTextField(10);
+        JTextField emailToChange = new JTextField(15);
         panel.add(emailToChange);
         JButton changeEmail = new JButton("Change Email");
         panel.add(changeEmail);
