@@ -1,5 +1,6 @@
-package GUI;
+package Client;
 
+import Client.ClientCore;
 import Client.PacketAssembler;
 import Protocol.ProtocolRequestType;
 import UserCore.FullBuyer;
@@ -20,32 +21,47 @@ import java.util.Objects;
 import static UserCore.PublicInformation.findBuyerBasedOnLetters;
 import static UserCore.PublicInformation.storeList;
 
-public class GUI extends Thread {
-    static JFrame frame;
-    static ArrayList<String> items = new ArrayList<>();
-    static JMenuBar menuBar;
-    static JMenuBar searchBar;
-    static ScrollPane scrollPane = new ScrollPane();
-    static JButton login;
-    static JButton createAcc;
-    static JTextField userText;
-    static JPasswordField passText;
-    static FullUser user;
+public class GUI extends JFrame {
+    private ArrayList<String> items = new ArrayList<>();
+    private JMenuBar menuBar;
+    private JMenuBar searchBar;
+    private ScrollPane scrollPane = new ScrollPane();
+    private JButton login;
+    private JButton createAcc;
+    private JTextField userText;
+    private JPasswordField passText;
 
-    public static void Setup() {
-        frame = new JFrame("Basically Facebook");
-        frame.setSize(750,500);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        frame.add(scrollPane, BorderLayout.WEST);
+    private String[] conversationTitles = {"Loading"};
+    private String[] listOfUsernames;
+    private String[] listOfStores = {"Loading"};
+    private String[] listOfBuyers = {"Loading"};
+    private String[] listOfSellers;
+    private ClientCore client;
+    private String[] userProfile;
+    private boolean buyer;
+    private boolean noConversation = true;
+    private boolean noBuyer = true;
+    private boolean noSeller = true;
+    private boolean noStore = true;
+
+    public GUI(ClientCore client, String[] listOfUsernames, String[] userProfile, boolean buyer) {
+        this.listOfUsernames = listOfUsernames;
+        this.client = client;
+        this.userProfile = userProfile;
+        this.buyer = buyer;
+        setTitle("Basically Facebook");
+        setSize(750,500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+        add(scrollPane, BorderLayout.WEST);
         //List(user.printConversationTitles()); a user needs to be created from logging in first
+        Menu();
     }
 
-    public static void Profile() {
-        frame = new JFrame();
-        frame.setSize(500,600);
-        frame.setLocationRelativeTo(null);
+    public void Profile() {
+        setSize(500,600);
+        setLocationRelativeTo(null);
         menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
@@ -56,12 +72,12 @@ public class GUI extends Thread {
         panel.add(email);
         panel.add(password);
 
-        frame.setJMenuBar(menuBar);
-        frame.setVisible(true);
+        setJMenuBar(menuBar);
+        setVisible(true);
         menu.addMenuListener(new MenuListener() {
             @Override
             public void menuSelected(MenuEvent e) {
-                frame.setVisible(false);
+                setVisible(false);
                 Menu();
             }
             @Override
@@ -71,8 +87,7 @@ public class GUI extends Thread {
         });
 
     }
-    public static void Menu() {
-        Setup();
+    public void Menu() {
         menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
@@ -101,12 +116,12 @@ public class GUI extends Thread {
                 imageIcon2);
         menuBar.add(logout);
         menuBar.add(space);
-        frame.setJMenuBar(menuBar);
+        setJMenuBar(menuBar);
 
         profile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.setVisible(false);
+                setVisible(false);
                 Profile();
 
                 // set the profile window to visible
@@ -128,7 +143,7 @@ public class GUI extends Thread {
         });
     }
 
-    public static void Search() {
+    public void Search() {
         menuBar.setVisible(false);
         searchBar = new JMenuBar();
         ImageIcon searchImage = new ImageIcon("search.png");
@@ -147,7 +162,7 @@ public class GUI extends Thread {
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
         searchBar.add(clearIcon);
-        frame.setJMenuBar(searchBar);
+        setJMenuBar(searchBar);
 
         clearIcon.addActionListener(new ActionListener() {
             @Override
@@ -158,23 +173,23 @@ public class GUI extends Thread {
         SearchIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ClearList();
-                if (user instanceof FullBuyer) {
-                    List(PublicInformation.findSellerBasedOnLetters(searchText.getText(), (FullBuyer) user));
-                //List("woah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nboat");
-                    if (storeList((FullBuyer) user) == null) {
-                        System.out.println("There are no stores!");
-                    } else {
-                        List(Objects.requireNonNull(storeList((FullBuyer) user)));
-                    }
-                } else {
-                    List(findBuyerBasedOnLetters(searchText.getText(), (FullSeller) user));
-                }
+//                ClearList();
+//                if (user instanceof FullBuyer) {
+//                    List(PublicInformation.findSellerBasedOnLetters(searchText.getText(), (FullBuyer) user));
+//                //List("woah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nboat");
+//                    if (storeList((FullBuyer) user) == null) {
+//                        System.out.println("There are no stores!");
+//                    } else {
+//                        List(Objects.requireNonNull(storeList((FullBuyer) user)));
+//                    }
+//                } else {
+//                    List(findBuyerBasedOnLetters(searchText.getText(), (FullSeller) user));
+//                }
             }
         });
     }
-    public static void ClearList() {items.clear();}
-    public static void List(String elements) {
+    public void ClearList() {items.clear();}
+    public void List(String elements) {
         if (elements == null) {
             elements = "Nothing here to see";
         }
@@ -205,44 +220,9 @@ public class GUI extends Thread {
 
     }
 
-    public static void Login() {
-        Menu();
-        List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
-        JFrame loginFrame = new JFrame("Login");
-        JPanel panel = new JPanel();
-        loginFrame.setSize(350,200);
-        loginFrame.setLocationRelativeTo(null);
-        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        panel.setLayout(null);
-        loginFrame.add(panel);
-
-        JLabel username = new JLabel("Username");
-        username.setBounds(10,20,80,25);
-        panel.add(username);
-        userText = new JTextField();
-        userText.setBounds(100,20,150,25);
-        panel.add(userText);
-
-        JLabel password = new JLabel("Password");
-        password.setBounds(10,50,150,25);
-        panel.add(password);
-        passText = new JPasswordField();
-        passText.setBounds(100,50,150,25);
-        panel.add(passText);
-
-        login = new JButton("Login");
-        login.setBounds(100,80,80,25);
-        login.addActionListener(actionListener);
-        panel.add(login);
-
-        createAcc = new JButton("Create Account");
-        createAcc.setBounds(175,80,125,25);
-        panel.add(createAcc);
-        loginFrame.setVisible(true);
-    }
     
     //allows users to upload files
-    public static void uploadFile() {
+    public void uploadFile() {
         try {
             JFileChooser fileC = new JFileChooser();
             fileC.showSaveDialog(null);
@@ -265,12 +245,8 @@ public class GUI extends Thread {
             JOptionPane.showMessageDialog(null, "Invalid File!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    public void run() {
-        Login();
-    }
 
-    static ActionListener actionListener = new ActionListener() {
+    public ActionListener actionListener = new ActionListener() {
         //Change these to use Requests
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -288,18 +264,14 @@ public class GUI extends Thread {
             }
         }
     };
-    private static boolean isValidLogin() {
+    private boolean isValidLogin() {
         try {
             String username = userText.getText();
             String password = String.valueOf(passText.getPassword());
-            user = PublicInformation.login(username, password);
+//            user = PublicInformation.login(username, password);
             return true;
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new GUI());
     }
 }

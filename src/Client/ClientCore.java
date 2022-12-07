@@ -136,6 +136,10 @@ public class ClientCore extends Thread {
         return readQueue.peek();
     }
 
+    public Object popFromQueue() {
+        return readQueue.poll();
+    }
+
     public boolean removeFromQueue(Object o) {
         System.out.println(Thread.currentThread().getStackTrace()[0]);
         return readQueue.remove(o);

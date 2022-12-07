@@ -23,6 +23,15 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     private static boolean deserialized = false;
 
+//    private static final File serialzedFile;
+//    static {
+//        if (System.getProperty("os.name").contains("Windows")) {
+//            serialzedFile = new File()
+//        } else {
+//            serialzedFile = new File("src/UserCore/serialized_File")
+//        }
+//    }
+
     /**
      * initialize the lists from serialized files. Can only be called once per runtime
      * multiples calls will be ignored
@@ -30,7 +39,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
     public static void init() {
         if (!deserialized) {
             try (ObjectInputStream oin = new ObjectInputStream
-                         (new FileInputStream("src/UserCore/serialized_File"))) {
+                         (new FileInputStream("src/UserCore/serialized_file"))) {
                 readFromSerializedFile(oin);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();

@@ -2,6 +2,7 @@ package Server;
 
 import Protocol.DataPacket;
 import Protocol.ProtocolResponseType;
+import UserCore.PublicInformation;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,15 +12,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
-
-// all packets will be sent to the server from the client in the form of:
-//          methodToBeExecuted# param 1, param 2, etc
-// since , is used in conjunction to produce a delimiter, the username and the store will be limited to
-// alphabet, numbers and _ ONLY
-// message, password, etc that do not apply to such restriction MUST BE PLACE AS THE LAST PARAMETER!
 
 /**
  * ServerCore
@@ -34,8 +28,29 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class ServerCore {
     public static void main(String... args) throws IOException {
         final Selector selector = Selector.open();
-        MessageSystem.setSelector(selector);
         final HashMap<SocketChannel, MessageSystem> table = new HashMap<>();
+        PublicInformation.init();
+
+        new Thread(() -> {
+            while (true) {
+                Scanner scanner = new Scanner(System.in);
+                String command = scanner.nextLine();
+                if (command.equalsIgnoreCase("shutdown")) {
+                    try {
+                        selector.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    for (Map.Entry<SocketChannel, MessageSystem> entry: table.entrySet()) {
+                        entry.getValue().userLogOut();
+                    }
+                    PublicInformation.serialize();
+                    return;
+                }
+            }
+        }).start();
+
+        MessageSystem.setSelector(selector);
 
         //create server on port 5050
         ServerSocketChannel server = ServerSocketChannel.open();
@@ -55,10 +70,21 @@ public class ServerCore {
                         System.out.println("Readable: " + key.channel());
                         SocketChannel socket = ((SocketChannel) key.channel());
                         readBuffer.clear();
-                        int read = socket.read(readBuffer);
+                        int read;
+                        try {
+                            read = socket.read(readBuffer);
+                        } catch (Exception e) {
+                            System.out.println("Socket Closed " + key.channel());
+                            socket.close();
+                            table.get(socket).userLogOut();
+                            table.remove(socket);
+                            continue; //socket is closed. continue loop
+                        }
                         if (read == -1) {
                             System.out.println("Socket Closed " + key.channel());
                             socket.close();
+                            table.get(socket).userLogOut();
+                            table.remove(socket);
                             continue; //socket is closed. continue loop
                         }
 
