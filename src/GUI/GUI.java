@@ -16,27 +16,33 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class GUI extends Thread {
-    static JPanel buttonPanel = new JPanel();
-    static String selectedMessage;
-    static JFrame frame;
-    static ArrayList<String> items = new ArrayList<>();
-    static ArrayList<String> messages = new ArrayList<>();
-    static JMenuBar menuBar = new JMenuBar();
-    static JMenuBar searchBar = new JMenuBar();
-    static ScrollPane scrollPane = new ScrollPane();
-    static ScrollPane scrollMessage = new ScrollPane();
-    static JButton login;
-    static JButton createAcc;
-    static JTextField userText;
-    static JPasswordField passText;
-    static FullUser user;
+public class GUI extends JFrame {
+
+    private String[] listOfUsernames;
+    private ClientCore client;
+    private String[] userProfile;
+    private boolean buyer;
+    JPanel buttonPanel = new JPanel();
+    String selectedMessage;
+    JFrame frame;
+    ArrayList<String> items = new ArrayList<>();
+    ArrayList<String> messages = new ArrayList<>();
+    JMenuBar menuBar = new JMenuBar();
+    JMenuBar searchBar = new JMenuBar();
+    ScrollPane scrollPane = new ScrollPane();
+    ScrollPane scrollMessage = new ScrollPane();
+    JButton login;
+    JButton createAcc;
+    JTextField userText;
+    JPasswordField passText;
+    FullUser user;
 
     public static void thankYouMessage() {
         JOptionPane.showMessageDialog(null, "Thanks for using our buying and selling platform! We hope to see you again!", "Thank You!", JOptionPane.PLAIN_MESSAGE);
     }
 
-    public static void Setup() {
+
+    public void Setup() {
         frame = new JFrame("Basically Facebook");
         frame.setSize(750, 500);
         frame.setLocationRelativeTo(null);
@@ -55,7 +61,7 @@ public class GUI extends Thread {
         //List(user.printConversationTitles()); a user needs to be created from logging in first
     }
 
-    public static void Profile() {
+    public void Profile() {
         frame = new JFrame();
         frame.setSize(900, 450);
         frame.setLocationRelativeTo(null);
@@ -159,7 +165,7 @@ public class GUI extends Thread {
     public static void passwordCheck() {
 
     }
-    public static void Menu() {
+    public void Menu() {
         Setup();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
@@ -214,8 +220,7 @@ public class GUI extends Thread {
             }
         });
     }
-
-    public static void Messages(String username) {
+    public void Messages(String username) {
         buttonPanel.setVisible(false);
         String elements = "Arthur1: This is a message to a person." +
                 "\nArthur2: I am indeed a person and recognize that as a message" +
@@ -304,7 +309,7 @@ public class GUI extends Thread {
             }
         });
     }
-    public static void EditMessage(String username, String message) {
+    public void EditMessage(String username, String message) {
         menuBar.setVisible(false);
         buttonPanel.setVisible(false);
         JPanel textPanel = new JPanel();
@@ -361,7 +366,7 @@ public class GUI extends Thread {
 
     }
 
-    public static void NewMessage(String username) {
+    public void NewMessage(String username) {
         buttonPanel.setVisible(false);
         menuBar.setVisible(false);
         JPanel textPanel = new JPanel();
@@ -417,7 +422,7 @@ public class GUI extends Thread {
 
     }
 
-    public static void Search() {
+    public void Search() {
         menuBar.setVisible(false);
         ImageIcon searchImage = new ImageIcon("search.png");
         Image image1 = searchImage.getImage();
@@ -470,12 +475,8 @@ public class GUI extends Thread {
             }
         });
     }
-
-    public static void ClearList() {
-        items.clear();
-    }
-
-    public static void List(String elements) {
+    public void ClearList() {items.clear();}
+    public void List(String elements) {
         if (elements == null) {
             elements = "Nothing to see here";
         }
@@ -499,7 +500,7 @@ public class GUI extends Thread {
 
     }
 
-    public static void Login() {
+    public void Login() {
         Menu();
         List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
         JFrame loginFrame = new JFrame("Login");
@@ -542,7 +543,7 @@ public class GUI extends Thread {
     }
 
     //allows users to upload files
-    public static void uploadFile() {
+    public void uploadFile() {
         try {
             JFileChooser fileC = new JFileChooser();
             fileC.showSaveDialog(null);
@@ -567,16 +568,21 @@ public class GUI extends Thread {
         }
     }
 
-    public static void welcomeMessage() {
+    public void welcomeMessage() {
         JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
     }
 
-    public void run() {
+    public void GUI(/*ClientCore client, String[] listOfUsernames, String[] userProfile, boolean buyer*/) {
+        this.listOfUsernames = listOfUsernames;
+        this.client = client;
+        this.userProfile = userProfile;
+        this.buyer = buyer;
+        // not done changing this stuff just switching to adding buttons and making the GUI look better.
         Login();
         welcomeMessage();
     }
 
-    static ActionListener actionListener = new ActionListener() {
+    ActionListener actionListener = new ActionListener() {
         //Change these to use Requests
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -591,7 +597,7 @@ public class GUI extends Thread {
 
     };
 
-        private static boolean isValidLogin() {
+        private boolean isValidLogin() {
             try {
                 String username = userText.getText();
                 String password = String.valueOf(passText.getPassword());
@@ -602,7 +608,7 @@ public class GUI extends Thread {
             }
         }
 
-        public static void main(String[] args) {
-            SwingUtilities.invokeLater(new GUI());
+        public void main(String[] args) {
+            GUI();
         }
     }
