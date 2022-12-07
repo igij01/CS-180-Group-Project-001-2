@@ -1,6 +1,5 @@
 package GUI;
 
-import Client.ClientCore;
 import Client.PacketAssembler;
 import Protocol.ProtocolRequestType;
 import UserCore.FullBuyer;
@@ -18,7 +17,17 @@ import java.util.List;
 
 public class GUI extends Thread {
     static JPanel buttonPanel = new JPanel();
+    static boolean isNewMessage = false;
+    static JPanel textPanel = new JPanel();
+    static JPanel themesPanel = new JPanel();
+    static String theme = "Christmas Theme";
+    static String hashColor = "#f2f6ff";
+    static String hashText1 = "#f06969";
+    static String hashText2 = "#81ed7e";
+    static String hashTextB = "#f2f6ff";
+    static int selectedIndex;
     static String selectedMessage;
+
     static JFrame frame;
     static ArrayList<String> items = new ArrayList<>();
     static ArrayList<String> messages = new ArrayList<>();
@@ -246,24 +255,37 @@ public class GUI extends Thread {
                 "\nArthur1: What happens after I have finished? What happens when I reach the end?" +
                 "\nThe One True Arthur: You have fulfilled my wishes and reached the bottom. I will now release you from your burdens and set you free. Goodbye.";
         String[] added = elements.split("\n", -2);
-        messages.addAll(List.of(added));
+        messages = new ArrayList<>();
         buttonPanel = new JPanel();
         buttonPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setPreferredSize(new Dimension(100, 25));
         JLabel name = new JLabel(username);
+        JLabel currentTheme = new JLabel(theme + "    ");
+        currentTheme.setBackground(Color.decode(hashColor));
         JButton newMessage = new JButton("New Message");
         JButton editMessage = new JButton("Edit Message");
         JButton deleteMessage = new JButton("Delete Message");
+        JButton themes = new JButton("Themes");
         JSeparator separator = new JSeparator();
         buttonPanel.add(name);
         buttonPanel.add(separator);
+        buttonPanel.add(currentTheme);
         buttonPanel.add(newMessage);
         buttonPanel.add(editMessage);
         buttonPanel.add(deleteMessage);
+        buttonPanel.add(themes);
         frame.add(buttonPanel, BorderLayout.NORTH);
-
+        // I will change this to match the user instead of every other one once I get the input formatting right.
+        for (int i = 0; i < added.length; i++) {
+            if (i%2 == 0) {
+                messages.add("<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + added[i] + "</FONT></html>");
+            } else {
+                messages.add("<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + added[i] + "</FONT></html>");
+            }
+        }
         JList messagesList = new JList(messages.toArray());
+        messagesList.setBackground(Color.decode(hashTextB));
         messagesList.setLayoutOrientation(JList.VERTICAL);
         scrollMessage.setPreferredSize(new Dimension(535, 400));
         MouseListener mouseListener = new MouseAdapter() {
@@ -274,7 +296,12 @@ public class GUI extends Thread {
         };
         messagesList.addMouseListener(mouseListener);
         scrollMessage.add(messagesList);
-
+        themes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                themes(username);
+            }
+        });
         newMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -363,6 +390,104 @@ public class GUI extends Thread {
 
     }
 
+    public static void themes(String username) {
+        buttonPanel.setVisible(false);
+        themesPanel = new JPanel();
+        JButton christmas = new JButton("Christmas");
+        JButton plants = new JButton("Nature");
+        JButton ocean = new JButton("Ocean");
+        JButton reef = new JButton("Coastal Reef");
+        JButton blood = new JButton("Blood");
+        JButton lavender = new JButton("Lavender Haze");
+        JButton sunshine = new JButton("Sunshine");
+        themesPanel.add(christmas);
+        christmas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#f06969";
+                hashText2 = "#81ed7e";
+                hashTextB = "#f2f6ff";
+                theme = "Christmas Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(plants);
+        plants.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#78e856";
+                hashText2 = "#528045";
+                hashTextB = "#abf794";
+                theme = "Nature Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(ocean);
+        ocean.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#6f81f2";
+                hashText2 = "#426bc9";
+                hashTextB = "#a3b6e3";
+                theme = "Ocean Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(reef);
+        reef.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#9fd2fc";
+                hashText2 = "#53f5e5";
+                hashTextB = "#dcfcfa";
+                theme = "Coastal Reef Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(blood);
+        blood.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#91272e";
+                hashText2 = "#e34d57";
+                hashTextB = "#1f0204";
+                theme = "Blood Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(lavender);
+        lavender.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#ee82fa";
+                hashText2 = "#ae67b5";
+                hashTextB = "#f8d4fc";
+                theme = "Lavender Haze Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(sunshine);
+        sunshine.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#fafc5b";
+                hashText2 = "#edd445";
+                hashTextB = "#f9fab4";
+                theme = "Sunshine Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        frame.add(themesPanel, BorderLayout.NORTH);
+
+    }
+
     public static void NewMessage(String username) {
         buttonPanel.setVisible(false);
         menuBar.setVisible(false);
@@ -413,6 +538,7 @@ public class GUI extends Thread {
                 menuBar.setVisible(true);
                 frame.remove(textPanel);
                 Messages(username);
+                isNewMessage = false;
             }
         });
 
@@ -486,11 +612,16 @@ public class GUI extends Thread {
         Messages(items.get(0));
         JList list = new JList(items.toArray());
         list.setLayoutOrientation(JList.VERTICAL);
+        scrollPane.setBackground(Color.decode(hashColor));
+        list.setBackground(Color.decode(hashColor));
         scrollPane.setPreferredSize(new Dimension(200, 750));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
                 Messages(selectedItem);
+                if (isNewMessage) {
+                    NewMessage(selectedItem);
+                }
                 System.out.println(selectedItem);
                 String[] part = selectedItem.split(":", 2);
             }
@@ -573,15 +704,6 @@ public class GUI extends Thread {
         JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
     }
 
-    public static boolean deleteAccountMessage() {
-        Icon warningIcon = UIManager.getIcon("OptionPane.warningIcon");
-        if(JOptionPane.showConfirmDialog(null, "Warning: You are about to delete your account! Are you sure?", "Warning!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, warningIcon) == JOptionPane.YES_OPTION) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public void run() {
         Login();
         welcomeMessage();
@@ -597,10 +719,6 @@ public class GUI extends Thread {
             }
             if (e.getSource() == createAcc) {
 
-            }
-
-            if (e.getSource() == delete) {
-                deleteAccountMessage();
             }
         }
 
