@@ -551,9 +551,14 @@ public class GUI extends Thread {
             JOptionPane.showMessageDialog(null, "Invalid File!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
+    public static void welcomeMessage() {
+        JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
+    }
+    
     public void run() {
         Login();
+        welcomeMessage();
     }
 
     static ActionListener actionListener = new ActionListener() {
