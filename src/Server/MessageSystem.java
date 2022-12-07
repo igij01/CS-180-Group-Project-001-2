@@ -100,7 +100,8 @@ public class MessageSystem {
      */
     public MessageSystem(ByteBuffer initMessage, int numRead, SelectionKey key) throws
             InvalidPasswordException, IllegalUserNameException, EmailFormatException, IllegalRequestFormat {
-        DataPacket initPacket = (DataPacket) DataPacket.packetDeserialize(initMessage);
+        DataPacket initPacket = (DataPacket) Objects.requireNonNull
+                (DataPacket.packetDeserialize(initMessage)).get(0);
         if (initPacket != null) {
             if (initPacket.protocolRequestType == ProtocolRequestType.LOGIN) {
                 this.user = logIn(initPacket.args[0], initPacket.args[1]);

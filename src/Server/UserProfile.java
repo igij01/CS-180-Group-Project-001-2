@@ -25,6 +25,10 @@ public class UserProfile {
 
     /**
      * print the user profile
+     * <p>
+     * 1. true/false (is buyer)
+     * 2. account info
+     * 3.
      *
      * @return the user profile in ByteBuffer
      */

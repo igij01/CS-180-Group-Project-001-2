@@ -29,8 +29,9 @@ public class PublicInfo {
      * @return lists of stores and sellers for buyers, and list of buyers for sellers
      */
     public static ByteBuffer sendPublicInfo(FullUser user) {
-        String[] infos = new String[2];
+        String[] infos = null;
         if (user instanceof FullBuyer) {
+            infos = new String[2];
             infos[0] = PublicInformation.storeList((FullBuyer) user);
             if (infos[0] == null)
                 infos[0] = "There are no stores!";
@@ -38,10 +39,12 @@ public class PublicInfo {
             if (infos[1] == null)
                 infos[1] = "There are no sellers!";
         } else if (user instanceof FullSeller) {
+            infos = new String[1];
             infos[0] = PublicInformation.buyerList((FullSeller) user);
             if (infos[0] == null)
                 infos[0] = "There are no buyers!";
         }
+        assert infos != null;
         return MessageSystem.toByteBufferPacket(ProtocolResponseType.PUBLIC_INFO, infos);
     }
 

@@ -107,8 +107,6 @@ public class ServerCore {
                             } else {
                                 ((Queue<Buffer>) key.attachment()).addAll(table.get(socket).processRequest(buffer));
                             }
-
-
                             key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ); //enable write flag
                         }
                     }

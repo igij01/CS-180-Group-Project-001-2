@@ -12,7 +12,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class ClientCore extends Thread {
@@ -100,8 +102,9 @@ public class ClientCore extends Thread {
 
                             //only remove from queue once we have completely written
                             //this is why we call peek first, and only remove once (buffer.remaining() == 0)
-                            for (ByteBuffer buffer; (buffer = (ByteBuffer) this.writeQueue.peek()) != null; ) {
+                            for (ByteBuffer buffer; (buffer = this.writeQueue.peek()) != null; ) {
                                 socket.write(buffer);
+                                System.out.println("send");
                                 if (buffer.remaining() == 0) this.writeQueue.remove();
                                 else break; //can not write anymore. Wait for next write event
                             }
@@ -120,6 +123,7 @@ public class ClientCore extends Thread {
 
     public void addByteBufferToWrite(ByteBuffer bfr) {
         writeQueue.add(bfr);
+        System.out.println("added");
         for (SelectionKey key : selector.keys()) {
             if (key.channel() instanceof SocketChannel) {
                 key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE); //enable write flag

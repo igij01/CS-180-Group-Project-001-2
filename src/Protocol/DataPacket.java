@@ -2,6 +2,7 @@ package Protocol;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DataPacket implements Externalizable {
