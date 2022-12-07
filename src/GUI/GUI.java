@@ -1,6 +1,5 @@
 package GUI;
 
-import Client.ClientCore;
 import Client.PacketAssembler;
 import Protocol.ProtocolRequestType;
 import UserCore.FullBuyer;
@@ -16,33 +15,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class GUI extends JFrame {
-
-    private String[] listOfUsernames;
-    private ClientCore client;
-    private String[] userProfile;
-    private boolean buyer;
-    JPanel buttonPanel = new JPanel();
-    String selectedMessage;
-    JFrame frame;
-    ArrayList<String> items = new ArrayList<>();
-    ArrayList<String> messages = new ArrayList<>();
-    JMenuBar menuBar = new JMenuBar();
-    JMenuBar searchBar = new JMenuBar();
-    ScrollPane scrollPane = new ScrollPane();
-    ScrollPane scrollMessage = new ScrollPane();
-    JButton login;
-    JButton createAcc;
-    JTextField userText;
-    JPasswordField passText;
-    FullUser user;
+public class GUI extends Thread {
+    static JPanel buttonPanel = new JPanel();
+    static boolean isNewMessage = false;
+    static JPanel textPanel = new JPanel();
+    static String hashColor = "#f2f6ff";
+    static int selectedIndex;
+    static String selectedMessage;
+    static JFrame frame;
+    static ArrayList<String> items = new ArrayList<>();
+    static ArrayList<String> messages = new ArrayList<>();
+    static JMenuBar menuBar = new JMenuBar();
+    static JMenuBar searchBar = new JMenuBar();
+    static ScrollPane scrollPane = new ScrollPane();
+    static ScrollPane scrollMessage = new ScrollPane();
+    static JButton login;
+    static JButton createAcc;
+    static JTextField userText;
+    static JPasswordField passText;
+    static FullUser user;
 
     public static void thankYouMessage() {
         JOptionPane.showMessageDialog(null, "Thanks for using our buying and selling platform! We hope to see you again!", "Thank You!", JOptionPane.PLAIN_MESSAGE);
     }
 
-
-    public void Setup() {
+    public static void Setup() {
         frame = new JFrame("Basically Facebook");
         frame.setSize(750, 500);
         frame.setLocationRelativeTo(null);
@@ -61,7 +58,7 @@ public class GUI extends JFrame {
         //List(user.printConversationTitles()); a user needs to be created from logging in first
     }
 
-    public void Profile() {
+    public static void Profile() {
         frame = new JFrame();
         frame.setSize(900, 450);
         frame.setLocationRelativeTo(null);
@@ -165,7 +162,7 @@ public class GUI extends JFrame {
     public static void passwordCheck() {
 
     }
-    public void Menu() {
+    public static void Menu() {
         Setup();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
@@ -176,6 +173,7 @@ public class GUI extends JFrame {
         imageIcon = new ImageIcon(img);
         JMenuItem profile = new JMenuItem("profile",
                 imageIcon);
+        profile.setBackground(Color.decode(hashColor));
         menuBar.add(profile);
 
         ImageIcon imageIcon1 = new ImageIcon("search.png");
@@ -184,6 +182,7 @@ public class GUI extends JFrame {
         imageIcon1 = new ImageIcon(img1);
         JMenuItem search = new JMenuItem("search",
                 imageIcon1);
+        search.setBackground(Color.decode(hashColor));
         menuBar.add(search);
 
         ImageIcon imageIcon2 = new ImageIcon("logout.png");
@@ -192,7 +191,9 @@ public class GUI extends JFrame {
         imageIcon2 = new ImageIcon(img2);
         JMenuItem logout = new JMenuItem("logout",
                 imageIcon2);
+        logout.setBackground(Color.decode(hashColor));
         menuBar.add(logout);
+        space.setBackground(Color.decode(hashColor));
         menuBar.add(space);
         frame.setJMenuBar(menuBar);
 
@@ -220,7 +221,8 @@ public class GUI extends JFrame {
             }
         });
     }
-    public void Messages(String username) {
+
+    public static void Messages(String username) {
         buttonPanel.setVisible(false);
         String elements = "Arthur1: This is a message to a person." +
                 "\nArthur2: I am indeed a person and recognize that as a message" +
@@ -249,9 +251,12 @@ public class GUI extends JFrame {
                 "\nArthur1: What happens after I have finished? What happens when I reach the end?" +
                 "\nThe One True Arthur: You have fulfilled my wishes and reached the bottom. I will now release you from your burdens and set you free. Goodbye.";
         String[] added = elements.split("\n", -2);
-        messages.addAll(List.of(added));
+        //messages.addAll(List.of(added));
         buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        buttonPanel.setBackground(Color.decode(hashColor));
+        menuBar.setBackground(Color.decode(hashColor));
+        searchBar.setBackground(Color.decode(hashColor));
+
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setPreferredSize(new Dimension(100, 25));
         JLabel name = new JLabel(username);
@@ -265,13 +270,28 @@ public class GUI extends JFrame {
         buttonPanel.add(editMessage);
         buttonPanel.add(deleteMessage);
         frame.add(buttonPanel, BorderLayout.NORTH);
-
+        // I will change this to match the user instead of every other one once I get the input formatting right.
+        for (int i = 0; i < added.length; i++) {
+            if (i%2 == 0) {
+                messages.add("<html><FONT style=\"BACKGROUND-COLOR: #f06969\">" + added[i] + "</FONT></html>");
+            } else {
+                messages.add("<html><FONT style=\"BACKGROUND-COLOR: #81ed7e\">" + added[i] + "</FONT></html>");
+            }
+        }
         JList messagesList = new JList(messages.toArray());
+        messagesList.setBackground(Color.decode(hashColor));
         messagesList.setLayoutOrientation(JList.VERTICAL);
         scrollMessage.setPreferredSize(new Dimension(535, 400));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 selectedMessage = (String) messagesList.getSelectedValue();
+                for (int i = 0; i < messages.size(); i++) {
+                    if (messages.get(i).equals(selectedMessage)) {
+                        selectedIndex = i;
+                        selectedMessage = added[i];
+                        break;
+                    }
+                }
                 System.out.println(selectedMessage);
             }
         };
@@ -287,11 +307,11 @@ public class GUI extends JFrame {
         editMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    if (selectedMessage != null) {
-                        EditMessage(username, selectedMessage);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Please select the message you want to edit.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                if (selectedMessage != null) {
+                    EditMessage(username, selectedMessage);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select the message you want to edit.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         deleteMessage.addActionListener(new ActionListener() {
@@ -309,7 +329,7 @@ public class GUI extends JFrame {
             }
         });
     }
-    public void EditMessage(String username, String message) {
+    public static void EditMessage(String username, String message) {
         menuBar.setVisible(false);
         buttonPanel.setVisible(false);
         JPanel textPanel = new JPanel();
@@ -341,7 +361,7 @@ public class GUI extends JFrame {
         finalize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              //  PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE, )
+                //  PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE, )
             }
         });
         clearIcon.addActionListener(new ActionListener() {
@@ -366,10 +386,12 @@ public class GUI extends JFrame {
 
     }
 
-    public void NewMessage(String username) {
+    public static void NewMessage(String username) {
+        textPanel.setVisible(false);
         buttonPanel.setVisible(false);
         menuBar.setVisible(false);
-        JPanel textPanel = new JPanel();
+        isNewMessage = true;
+        textPanel = new JPanel();
         textPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
         textPanel.setPreferredSize(new Dimension(100, 50));
@@ -416,13 +438,14 @@ public class GUI extends JFrame {
                 menuBar.setVisible(true);
                 frame.remove(textPanel);
                 Messages(username);
+                isNewMessage = false;
             }
         });
 
 
     }
 
-    public void Search() {
+    public static void Search() {
         menuBar.setVisible(false);
         ImageIcon searchImage = new ImageIcon("search.png");
         Image image1 = searchImage.getImage();
@@ -475,8 +498,12 @@ public class GUI extends JFrame {
             }
         });
     }
-    public void ClearList() {items.clear();}
-    public void List(String elements) {
+
+    public static void ClearList() {
+        items.clear();
+    }
+
+    public static void List(String elements) {
         if (elements == null) {
             elements = "Nothing to see here";
         }
@@ -485,11 +512,16 @@ public class GUI extends JFrame {
         Messages(items.get(0));
         JList list = new JList(items.toArray());
         list.setLayoutOrientation(JList.VERTICAL);
+        scrollPane.setBackground(Color.decode(hashColor));
+        list.setBackground(Color.decode(hashColor));
         scrollPane.setPreferredSize(new Dimension(200, 750));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
                 Messages(selectedItem);
+                if (isNewMessage) {
+                    NewMessage(selectedItem);
+                }
                 System.out.println(selectedItem);
                 String[] part = selectedItem.split(":", 2);
             }
@@ -500,7 +532,7 @@ public class GUI extends JFrame {
 
     }
 
-    public void Login() {
+    public static void Login() {
         Menu();
         List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
         JFrame loginFrame = new JFrame("Login");
@@ -543,7 +575,7 @@ public class GUI extends JFrame {
     }
 
     //allows users to upload files
-    public void uploadFile() {
+    public static void uploadFile() {
         try {
             JFileChooser fileC = new JFileChooser();
             fileC.showSaveDialog(null);
@@ -568,21 +600,16 @@ public class GUI extends JFrame {
         }
     }
 
-    public void welcomeMessage() {
+    public static void welcomeMessage() {
         JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
     }
 
-    public void GUI(/*ClientCore client, String[] listOfUsernames, String[] userProfile, boolean buyer*/) {
-        this.listOfUsernames = listOfUsernames;
-        this.client = client;
-        this.userProfile = userProfile;
-        this.buyer = buyer;
-        // not done changing this stuff just switching to adding buttons and making the GUI look better.
+    public void run() {
         Login();
         welcomeMessage();
     }
 
-    ActionListener actionListener = new ActionListener() {
+    static ActionListener actionListener = new ActionListener() {
         //Change these to use Requests
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -597,18 +624,18 @@ public class GUI extends JFrame {
 
     };
 
-        private boolean isValidLogin() {
-            try {
-                String username = userText.getText();
-                String password = String.valueOf(passText.getPassword());
-                user = PublicInformation.login(username, password);
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-
-        public void main(String[] args) {
-            GUI();
+    private static boolean isValidLogin() {
+        try {
+            String username = userText.getText();
+            String password = String.valueOf(passText.getPassword());
+            user = PublicInformation.login(username, password);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new GUI());
+    }
+}

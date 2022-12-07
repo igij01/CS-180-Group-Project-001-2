@@ -5,7 +5,6 @@ import Protocol.ResponsePacket;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 public class ClientGUI extends JFrame {
