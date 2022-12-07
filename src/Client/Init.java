@@ -129,7 +129,7 @@ public class Init extends JFrame {
                 readBuffer.flip();
                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                 buffer = buffer.put(readBuffer);
-                packet = (ResponsePacket) DataPacket.packetDeserialize(buffer);
+                packet = (ResponsePacket) ResponsePacket.packetDeserialize(buffer);
                 if (packet != null) {
                     System.out.println(packet.args[0]);
                 }

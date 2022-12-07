@@ -7,6 +7,7 @@ import java.util.Arrays;
 public class DataPacket implements Externalizable {
     public ProtocolRequestType protocolRequestType;
     public String[] args;
+    private static byte[] bytesLeft = new byte[0];
 
     /**
      * create a data packet to send to the server
@@ -70,13 +71,25 @@ public class DataPacket implements Externalizable {
      * @param buffer the buffer that contains the serialized packet
      * @return the deserialized packet as {@code Object}
      */
-    public static Object packetDeserialize(ByteBuffer buffer) {
-        byte[] packet = buffer.array();
+    public static DataPacket packetDeserialize(ByteBuffer buffer) {
+        byte[] packet;
+        if (buffer == null)
+            packet = new byte[bytesLeft.length];
+        else {
+            byte[] dataPacket = buffer.array();
+            packet = new byte[dataPacket.length + bytesLeft.length];
+            System.arraycopy(dataPacket, 0, packet, 0, dataPacket.length);
+        }
+        if (bytesLeft.length > 0) {
+            System.arraycopy(bytesLeft, 0, packet, 0, bytesLeft.length);
+        }
         try (ByteArrayInputStream in = new ByteArrayInputStream(packet);
              ObjectInputStream oin = new ObjectInputStream(in)) {
-            return oin.readObject();
+            DataPacket o = (DataPacket) oin.readObject();
+            bytesLeft = in.readAllBytes();
+            System.out.println("Bytes left: " + Arrays.toString(bytesLeft));
+            return o;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
             return null;
         }
     }
