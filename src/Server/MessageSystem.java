@@ -6,6 +6,7 @@ import UserCore.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Objects;
@@ -170,52 +171,70 @@ public class MessageSystem {
      * main method responsible for processing the request
      *
      * @param buffer the input buffer
-     * @return the ByteBuffer as a response
+     * @return the ArrayList<ByteBuffer> as a response
      */
-    public ByteBuffer processRequest(ByteBuffer buffer) {
-        DataPacket packet = (DataPacket) DataPacket.packetDeserialize(buffer);
-        assert packet != null;
-        try {
-            if (!this.user.loginStatus())
-                throw new IllegalUserLoginStatus("The user is not logged in!"); //should never happen
-            return switch (Objects.requireNonNull(packet).protocolRequestType) {
-                case DISPLAY_PROFILE -> userProfile.displayUserProfile();
-                case CHANGE_USERNAME -> userProfile.changeUsername(packet.args);
-                //case ""
-                case LOGIN, REGISTER ->
-                        throw new IllegalRequestFormat(packet.protocolRequestType + "- is not allowed here!");
-                case CHANGE_EMAIL -> userProfile.changeEmail(packet.args);
-                case BLOCK_USER -> userProfile.blockUser(packet.args);
-                case UNBLOCK_USER -> userProfile.unblockUser(packet.args);
-                case INVIS_USER -> userProfile.invisUser(packet.args);
-                case UNINVIS_USER -> userProfile.uninvisUser(packet.args);
-                case FILTER_WORD -> userProfile.addFilterWord(packet.args);
-                case UNFILTER_WORD -> userProfile.removeAFilteredWord(packet.args);
-                case CHANGE_CENSOR_PATTERN -> userProfile.replaceFilterPattern(packet.args);
-                case TURN_ON_CENSOR_MODE -> userProfile.toggleFilterMode(false);
-                case TURN_OFF_CENSOR_MODE -> userProfile.toggleFilterMode(true);
-                case CREATE_STORE -> userProfile.createStore(packet.args);
-                case DELETE_ACCOUNT -> userProfile.deleteAccount(packet.args);
-                case RECOVER_ACCOUNT -> userProfile.recoverAccount();
-                case LOGOUT -> userProfile.logout();
-                case FORCE_LOGOUT -> userProfile.confirmLogOut();
+    public ArrayList<ByteBuffer> processRequest(ByteBuffer buffer) {
+        ArrayList<DataPacket> packets = new ArrayList<>();
+        ArrayList<ByteBuffer> response = new ArrayList<>();
+        boolean repeat = true;
+        DataPacket dataPacket = DataPacket.packetDeserialize(buffer);
+        if (dataPacket != null)
+            packets.add(dataPacket);
+        else
+            repeat = false;
 
-                case REQUEST_PUBLIC_INFO -> PublicInfo.sendPublicInfo(this.user);
-                case REQUEST_DASHBOARD -> PublicInfo.sendDashBoard(this.user, packet.args);
-
-                case SEND_MESSAGE_BUYER -> null;
-                case SEND_MESSAGE_SELLER -> null;
-                case SEND_MESSAGE_STORE -> null;
-                case EDIT_MESSAGE -> null;
-                case DELETE_MESSAGE -> null;
-                case DISPLAY_CONVERSATION_TITLES -> message.displayConversationTitles();
-                case DISPLAY_CONVERSATION -> null;
-                case EXPORT_CONVERSATION -> null;
-                case EXPORT_ALL_CONVERSATION -> null;
-            };
-        } catch (Exception e) {
-            e.printStackTrace();
-            return sendException(e, packet.protocolRequestType);
+        while(repeat) {
+            dataPacket = DataPacket.packetDeserialize(null);
+            if (dataPacket != null)
+                packets.add(dataPacket);
+            else
+                repeat = false;
         }
+
+        assert packets.size() > 0;
+        for (DataPacket packet : packets) {
+            try {
+                if (!this.user.loginStatus())
+                    throw new IllegalUserLoginStatus("The user is not logged in!"); //should never happen
+                response.add(switch (Objects.requireNonNull(packet).protocolRequestType) {
+                    case DISPLAY_PROFILE -> userProfile.displayUserProfile();
+                    case CHANGE_USERNAME -> userProfile.changeUsername(packet.args);
+                    //case ""
+                    case LOGIN, REGISTER -> throw new IllegalRequestFormat(packet.protocolRequestType + "- is not allowed here!");
+                    case CHANGE_EMAIL -> userProfile.changeEmail(packet.args);
+                    case BLOCK_USER -> userProfile.blockUser(packet.args);
+                    case UNBLOCK_USER -> userProfile.unblockUser(packet.args);
+                    case INVIS_USER -> userProfile.invisUser(packet.args);
+                    case UNINVIS_USER -> userProfile.uninvisUser(packet.args);
+                    case FILTER_WORD -> userProfile.addFilterWord(packet.args);
+                    case UNFILTER_WORD -> userProfile.removeAFilteredWord(packet.args);
+                    case CHANGE_CENSOR_PATTERN -> userProfile.replaceFilterPattern(packet.args);
+                    case TURN_ON_CENSOR_MODE -> userProfile.toggleFilterMode(false);
+                    case TURN_OFF_CENSOR_MODE -> userProfile.toggleFilterMode(true);
+                    case CREATE_STORE -> userProfile.createStore(packet.args);
+                    case DELETE_ACCOUNT -> userProfile.deleteAccount(packet.args);
+                    case RECOVER_ACCOUNT -> userProfile.recoverAccount();
+                    case LOGOUT -> userProfile.logout();
+                    case FORCE_LOGOUT -> userProfile.confirmLogOut();
+
+                    case REQUEST_PUBLIC_INFO -> PublicInfo.sendPublicInfo(this.user);
+                    case REQUEST_DASHBOARD -> PublicInfo.sendDashBoard(this.user, packet.args);
+
+                    case SEND_MESSAGE_BUYER -> null;
+                    case SEND_MESSAGE_SELLER -> null;
+                    case SEND_MESSAGE_STORE -> null;
+                    case EDIT_MESSAGE -> null;
+                    case DELETE_MESSAGE -> null;
+                    case DISPLAY_CONVERSATION_TITLES -> message.displayConversationTitles();
+                    case DISPLAY_CONVERSATION -> null;
+                    case EXPORT_CONVERSATION -> null;
+                    case EXPORT_ALL_CONVERSATION -> null;
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.add(sendException(e, packet.protocolRequestType));
+            }
+        }
+        return response;
     }
 }

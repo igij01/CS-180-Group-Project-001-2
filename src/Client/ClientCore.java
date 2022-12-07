@@ -47,7 +47,7 @@ public class ClientCore extends Thread {
                 readBuffer.flip();
                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                 buffer = buffer.put(readBuffer);
-                ResponsePacket packet = (ResponsePacket) DataPacket.packetDeserialize(buffer);
+                ResponsePacket packet = (ResponsePacket) ResponsePacket.packetDeserialize(buffer);
                 if (packet != null) {
                     System.out.println(packet.args[0]);
                 }
@@ -82,7 +82,7 @@ public class ClientCore extends Thread {
                                 readBuffer.flip();
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
-                                Object packet = DataPacket.packetDeserialize(buffer);
+                                Object packet = ResponsePacket.packetDeserialize(buffer);
                                 readQueue.add(packet);
                                 if (packet instanceof ResponsePacket) {
                                     System.out.println(((ResponsePacket) packet).args[0]);

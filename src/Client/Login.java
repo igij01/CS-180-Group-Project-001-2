@@ -132,7 +132,7 @@ public class Login extends JFrame {
             ResponsePacket packet;
             if ((packet = listener.getResponsePacket()) != null) {
                 String[] raw = packet.args;
-                GUI clientGUI = new GUI(client, listOfUsernames, raw, Boolean.parseBoolean(raw[0]));
+                ClientGUI clientGUI = new ClientGUI(client, listOfUsernames, raw, Boolean.parseBoolean(raw[0]));
                 clientGUI.setVisible(true);
             }
         } else {

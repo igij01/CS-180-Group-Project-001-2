@@ -105,7 +105,7 @@ public class ServerCore {
                                             .add(MessageSystem.sendException(e));
                                 }
                             } else {
-                                ((Queue<Buffer>) key.attachment()).add(table.get(socket).processRequest(buffer));
+                                ((Queue<Buffer>) key.attachment()).addAll(table.get(socket).processRequest(buffer));
                             }
 
 
@@ -124,9 +124,6 @@ public class ServerCore {
                         //this is why we call peek first, and only remove once (buffer.remaining() == 0)
                         for (ByteBuffer buffer; (buffer = (ByteBuffer) dataToWrite.peek()) != null; ) {
                             socket.write(buffer);
-                            Object packet = DataPacket.packetDeserialize(buffer);
-                            assert packet != null;
-                            System.out.println(packet.toString());
                             if (buffer.remaining() == 0) dataToWrite.remove();
                             else break; //can not write anymore. Wait for next write event
                         }
