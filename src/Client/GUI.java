@@ -220,7 +220,7 @@ public class GUI extends JFrame {
         list.setLayoutOrientation(JList.VERTICAL);
         scrollPane.setBackground(Color.decode(hashColor));
         list.setBackground(Color.decode(hashColor));
-        scrollPane.setPreferredSize(new Dimension(200, 750));
+        scrollPane.setPreferredSize(new Dimension(200, 500));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
