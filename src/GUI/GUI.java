@@ -222,10 +222,40 @@ public class GUI extends Thread {
      *
      * @return true if the password they entered is correct, false otherwise
      */
-    public static void passwordCheck() {
+    public static boolean passwordCheck() {
+        JFrame passCheck = new JFrame("Verify");
+        passCheck.setSize(350,150);
+        passCheck.setVisible(true);
+        JPanel panel = new JPanel();
+        passCheck.add(panel);
+        JLabel password = new JLabel("Enter Password");
+        panel.add(password);
+        JPasswordField firstPassword = new JPasswordField(10);
+        panel.add(firstPassword);
+        JLabel password2 = new JLabel("Confirm Password");
+        panel.add(password2);
+        JPasswordField secondPassword = new JPasswordField(10);
+        panel.add(secondPassword);
+        JButton submit = new JButton("Confirm");
+        panel.add(submit);
+        JLabel passwordsDifferent = new JLabel("The passwords don't match");
+        passwordsDifferent.setForeground(Color.RED);
+        passwordsDifferent.setVisible(false);
+        passwordsDifferent.setFont(new Font("Calibri",Font.ITALIC,12));
+        panel.add(passwordsDifferent);
 
+        submit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!Arrays.equals(firstPassword.getPassword(), secondPassword.getPassword())) {
+                    passwordsDifferent.setVisible(true);
+                }
+            }
+        });
+        return true;
     }
     public static void Menu() {
+        passwordCheck();
         Setup();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
