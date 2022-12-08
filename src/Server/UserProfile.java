@@ -33,12 +33,7 @@ public class UserProfile {
      * @return the user profile in ByteBuffer
      */
     protected ByteBuffer displayUserProfile() {
-        ArrayList<String> list = new ArrayList<>();
-        if (user instanceof FullBuyer)
-            list.add("true");
-        else
-            list.add("false");
-        list.addAll(List.of(this.user.toString().split("\\n")));
+        ArrayList<String> list = new ArrayList<>(List.of(this.user.toString().split("\\n")));
         return MessageSystem.toByteBufferPacket(ProtocolResponseType.PROFILE, list.toArray(new String[0]));
     }
 
