@@ -64,6 +64,7 @@ public class GUI extends JFrame {
         add(splitPane);
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(scrollMessage);
+        add(buttonPanel, BorderLayout.NORTH);
         Menu();
         list();
         setVisible(true);
@@ -243,7 +244,6 @@ public class GUI extends JFrame {
         if (noConversation) {
             messages[1] = "You have no Messages!";
         }
-        buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.decode(hashColor));
         menuBar.setBackground(Color.decode(hashColor));
         searchBar.setBackground(Color.decode(hashColor));
@@ -334,6 +334,7 @@ public class GUI extends JFrame {
 
             }
         });
+        pack();
     }
     public void EditMessage(String message) {
         menuBar.setVisible(false);
