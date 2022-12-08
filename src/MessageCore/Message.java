@@ -215,9 +215,9 @@ public class Message implements Serializable {
      */
     public ArrayList<String> toStringArr(User requestingUser) {
         ArrayList<String> result = new ArrayList<>(2);
-        result.set(0, String.format("%c%s: %s", ((readByTarget || isSender(requestingUser)) ? ' ' : '*'),
+        result.add(0, String.format("%c%s: %s", ((readByTarget || isSender(requestingUser)) ? ' ' : '*'),
                 User.userName(sender), message));
-        result.set(1, String.format("%s\t%s", dtf.format(time), (edited? "(edited)" : "")));
+        result.add(1, String.format("%s%s", dtf.format(time), (edited? "\t(edited)" : "")));
         if (!isParticipant(requestingUser))
             throw new IllegalUserAccessException();
         if (!isSender(requestingUser))

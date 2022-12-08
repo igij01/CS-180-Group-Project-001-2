@@ -312,7 +312,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (selectedMessage != null) {
-                    EditMessage(selectedIndex);
+                    EditMessage(selectedMessage);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select the message you want " +
                             "to edit.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -334,7 +334,7 @@ public class GUI extends JFrame {
             }
         });
     }
-    public void EditMessage(String username, String message) {
+    public void EditMessage(String message) {
         menuBar.setVisible(false);
         buttonPanel.setVisible(false);
         JPanel textPanel = new JPanel();
@@ -366,7 +366,8 @@ public class GUI extends JFrame {
         finalize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //  PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE, )
+                PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE, currentSelectedMessage,
+                        Integer.toString(selectedIndex), textArea.getText());
             }
         });
         clearIcon.addActionListener(new ActionListener() {
