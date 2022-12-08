@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class GUI extends JFrame {
@@ -270,12 +269,12 @@ public class GUI extends JFrame {
                 editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
                 editFormat.add(messages[i+1]);
                 messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
-                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
+                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i+1] + "</FONT></html>";
             } else {
                 editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
                 editFormat.add(messages[i+1]);
                 messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
-                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
+                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i+1] + "</FONT></html>";
             }
         }
         JList<String> messagesList = new JList<>(messages);

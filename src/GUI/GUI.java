@@ -6,7 +6,6 @@ import Protocol.ProtocolRequestType;
 import UserCore.FullBuyer;
 import UserCore.FullUser;
 import UserCore.PublicInformation;
-import UserCore.User;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -582,8 +581,15 @@ public class GUI extends Thread {
         ImageIcon clearImage = new ImageIcon(img2);
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
+        ImageIcon upload = new ImageIcon("upload.png");
+        Image uploadImage = clear.getImage();
+        Image uploadImg = uploadImage.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        ImageIcon uploadImageScale = new ImageIcon(uploadImg);
+        JMenuItem uploadIcon = new JMenuItem("",
+                uploadImageScale);
         textPanel.add(name);
         textPanel.add(textPane);
+        textPanel.add(uploadIcon);
         textPanel.add(clearIcon);
         textPanel.add(backIcon);
         frame.add(textPanel, BorderLayout.NORTH);
@@ -596,7 +602,12 @@ public class GUI extends Thread {
 //                    PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_BUYER, userText.getText(), String.valueOf(passText.getPassword()));
 //            }
 //        });
-
+        uploadIcon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                uploadFile();
+            }
+        });
         clearIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -749,22 +760,8 @@ public class GUI extends Thread {
     public static void uploadFile() {
         try {
             JFileChooser fileC = new JFileChooser();
-            fileC.showSaveDialog(null);
-            //return file;
-        /*JFrame UFFrame = new JFrame("Upload Your File");
-        JPanel UFPanel = new JPanel();
-        Container UFContent = UFFrame.getContentPane();
-        UFContent.setLayout(new BorderLayout());
-        UFFrame.setSize(600, 700);
-        UFFrame.setLocationRelativeTo(null);
-        UFFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        UFPanel.setLayout(null);
-        UFFrame.add(UFPanel);
-        JButton upload = new JButton("Upload File");
-        //upload.setBounds(75,200,100,25);
-        UFPanel.add(upload);
-        UFContent.add(UFPanel, BorderLayout.SOUTH);
-        UFFrame.setVisible(true);*/
+            fileC.showOpenDialog(null);
+            System.out.println(Arrays.toString(fileC.getSelectedFiles()));
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Invalid File!", "Error", JOptionPane.ERROR_MESSAGE);
