@@ -114,9 +114,8 @@ public class GUI extends Thread {
         panel.add(emailToChange);
         JButton changeEmail = new JButton("Change Email");
         panel.add(changeEmail);
-        delete = new JButton("Delete Account");
+        JButton delete = new JButton("Delete Account");
         panel.add(delete);
-        delete.addActionListener(actionListener);
         delete.setBounds(750, 400,50,50);
 
         frame.setJMenuBar(menuBar);
@@ -181,6 +180,7 @@ public class GUI extends Thread {
         imageIcon = new ImageIcon(img);
         JMenuItem profile = new JMenuItem("profile",
                 imageIcon);
+        profile.setBackground(Color.decode(hashColor));
         menuBar.add(profile);
 
         ImageIcon imageIcon1 = new ImageIcon("search.png");
@@ -189,6 +189,7 @@ public class GUI extends Thread {
         imageIcon1 = new ImageIcon(img1);
         JMenuItem search = new JMenuItem("search",
                 imageIcon1);
+        search.setBackground(Color.decode(hashColor));
         menuBar.add(search);
 
         ImageIcon imageIcon2 = new ImageIcon("logout.png");
@@ -197,7 +198,9 @@ public class GUI extends Thread {
         imageIcon2 = new ImageIcon(img2);
         JMenuItem logout = new JMenuItem("logout",
                 imageIcon2);
+        logout.setBackground(Color.decode(hashColor));
         menuBar.add(logout);
+        space.setBackground(Color.decode(hashColor));
         menuBar.add(space);
         frame.setJMenuBar(menuBar);
 
@@ -257,7 +260,10 @@ public class GUI extends Thread {
         String[] added = elements.split("\n", -2);
         messages = new ArrayList<>();
         buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        buttonPanel.setBackground(Color.decode(hashColor));
+        menuBar.setBackground(Color.decode(hashColor));
+        searchBar.setBackground(Color.decode(hashColor));
+
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setPreferredSize(new Dimension(100, 25));
         JLabel name = new JLabel(username);
@@ -291,6 +297,12 @@ public class GUI extends Thread {
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 selectedMessage = (String) messagesList.getSelectedValue();
+                for (int i = 0; i < messages.size(); i++) {
+                    if (messages.get(i).equals(selectedMessage)) {
+                        selectedMessage = added[i];
+                        break;
+                    }
+                }
                 System.out.println(selectedMessage);
             }
         };
@@ -489,9 +501,11 @@ public class GUI extends Thread {
     }
 
     public static void NewMessage(String username) {
+        textPanel.setVisible(false);
         buttonPanel.setVisible(false);
         menuBar.setVisible(false);
-        JPanel textPanel = new JPanel();
+        isNewMessage = true;
+        textPanel = new JPanel();
         textPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
         textPanel.setPreferredSize(new Dimension(100, 50));

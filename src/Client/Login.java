@@ -5,19 +5,12 @@ import Protocol.ProtocolRequestType;
 import Protocol.ProtocolResponseType;
 import Protocol.ResponsePacket;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.Color;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
-import java.util.List;
 
 public class Login extends JFrame {
 
@@ -131,9 +124,8 @@ public class Login extends JFrame {
             }
             ResponsePacket packet;
             if ((packet = listener.getResponsePacket()) != null) {
-                ClientGUI clientGUI = new ClientGUI(client, listOfUsernames, packet.args,
-                        packet.args.length == 6);
-//                GUI clientGUI = new GUI(client, listOfUsernames, raw, Boolean.parseBoolean(raw[0]));
+                String[] raw = packet.args;
+                GUI clientGUI = new GUI(client, listOfUsernames, raw, Boolean.parseBoolean(raw[0]));
                 clientGUI.setVisible(true);
             }
         } else {

@@ -1,6 +1,8 @@
 package Client;
 
+import Protocol.ErrorPacket;
 import Protocol.ProtocolRequestType;
+import Protocol.ResponsePacket;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -9,17 +11,23 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class GUI extends JFrame {
     private ArrayList<String> items = new ArrayList<>();
     private String hashColor = "#f2f6ff";
+    private ArrayList<String> editFormat = new ArrayList<>();
     private String selectedMessage;
 
     private boolean isNewMessage = false;
-    private int selectedIndex;
-    private ArrayList<String> messages = new ArrayList<>();
+    private String[] messages = {"Arthur", "Hello There", "Hello", "HI"};
+    private JPanel themesPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
     private ScrollPane scrollMessage = new ScrollPane();
+    private String hashText1 = "#f06969";
+    private String hashText2 = "#81ed7e";
+    private String hashTextB = "#f2f6ff";
+    private String theme = "Christmas Theme";
 
     private JMenuBar menuBar;
     private JMenuBar searchBar;
@@ -47,13 +55,18 @@ public class GUI extends JFrame {
         this.client = client;
         this.userProfile = userProfile;
         this.buyer = buyer;
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION_TITLES));
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_PUBLIC_INFO));
+        AsyncListener listener = new AsyncListener();
+        listener.execute();
         setTitle("Basically Facebook");
         setSize(750,500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         add(scrollPane, BorderLayout.WEST);
-        //List(user.printConversationTitles()); a user needs to be created from logging in first
+        add(buttonPanel, BorderLayout.NORTH);
+        menuBar = new JMenuBar();
         Menu();
     }
 
@@ -86,33 +99,36 @@ public class GUI extends JFrame {
 
     }
     public void Menu() {
-        menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
         JMenuItem space = new JMenuItem("");
         ImageIcon imageIcon = new ImageIcon("profile.png");
         Image image = imageIcon.getImage();
-        Image img = image.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img = image.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(img);
         JMenuItem profile = new JMenuItem("profile",
                 imageIcon);
+        profile.setBackground(Color.decode(hashColor));
         menuBar.add(profile);
 
         ImageIcon imageIcon1 = new ImageIcon("search.png");
         Image image1 = imageIcon1.getImage();
-        Image img1 = image1.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img1 = image1.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         imageIcon1 = new ImageIcon(img1);
         JMenuItem search = new JMenuItem("search",
                 imageIcon1);
+        search.setBackground(Color.decode(hashColor));
         menuBar.add(search);
 
         ImageIcon imageIcon2 = new ImageIcon("logout.png");
         Image image2 = imageIcon2.getImage();
-        Image img2 = image2.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img2 = image2.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         imageIcon2 = new ImageIcon(img2);
         JMenuItem logout = new JMenuItem("logout",
                 imageIcon2);
+        logout.setBackground(Color.decode(hashColor));
         menuBar.add(logout);
+        space.setBackground(Color.decode(hashColor));
         menuBar.add(space);
         setJMenuBar(menuBar);
 
@@ -187,12 +203,8 @@ public class GUI extends JFrame {
         });
     }
     public void clearList() {items.clear();}
-    public void list(String elements) {
-        if (elements == null) {
-            elements = "Nothing to see here";
-        }
-        String[] added = elements.split("\n", -2);
-        items.addAll(List.of(added));
+    public void list(String[] elements) {
+        items.addAll(List.of(elements));
         Messages(items.get(0));
         JList list = new JList(items.toArray());
         list.setLayoutOrientation(JList.VERTICAL);
@@ -216,47 +228,53 @@ public class GUI extends JFrame {
 
     public void Messages(String username) {
         buttonPanel.setVisible(false);
-        String elements = "String of Conversations taken from the selected user.";
-        String[] added = elements.split("\n", -2);
-        //messages.addAll(List.of(added));
+        if (noConversation) {
+            messages[1] = "You have no Messages!";
+        }
+        if (!username.equals(messages[0])) {
+            return;
+        }
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION, username));
         buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.decode(hashColor));
         menuBar.setBackground(Color.decode(hashColor));
         searchBar.setBackground(Color.decode(hashColor));
 
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setPreferredSize(new Dimension(100, 25));
+        buttonPanel.setPreferredSize(new Dimension(200, 25));
         JLabel name = new JLabel(username);
+        JLabel currentTheme = new JLabel(theme + "    ");
+        currentTheme.setBackground(Color.decode(hashColor));
         JButton newMessage = new JButton("New Message");
         JButton editMessage = new JButton("Edit Message");
         JButton deleteMessage = new JButton("Delete Message");
+        JButton themes = new JButton("Themes");
         JSeparator separator = new JSeparator();
         buttonPanel.add(name);
         buttonPanel.add(separator);
+        buttonPanel.add(currentTheme);
         buttonPanel.add(newMessage);
         buttonPanel.add(editMessage);
         buttonPanel.add(deleteMessage);
-        add(buttonPanel, BorderLayout.NORTH);
-        // I will change this to match the user instead of every other one once I get the input formatting right.
-        for (int i = 0; i < added.length; i++) {
+        buttonPanel.add(themes);
+        for (int i = 1; i < messages.length; i++) {
             if (i%2 == 0) {
-                messages.add("<html><FONT style=\"BACKGROUND-COLOR: #f06969\">" + added[i] + "</FONT></html>");
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
+                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
             } else {
-                messages.add("<html><FONT style=\"BACKGROUND-COLOR: #81ed7e\">" + added[i] + "</FONT></html>");
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
+                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
             }
         }
-        JList messagesList = new JList(messages.toArray());
-        messagesList.setBackground(Color.decode(hashColor));
-
+        JList messagesList = new JList(messages);
+        messagesList.setBackground(Color.decode(hashTextB));
         messagesList.setLayoutOrientation(JList.VERTICAL);
-        scrollMessage.setPreferredSize(new Dimension(535, 400));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 selectedMessage = (String) messagesList.getSelectedValue();
-                for (int i = 0; i < messages.size(); i++) {
-                    if (messages.get(i).equals(selectedMessage)) {
-                        selectedIndex = i;
-                        selectedMessage = added[i];
+                for (int i = 1; i < messages.length; i++) {
+                    if (messages[i].equals(selectedMessage)) {
+                        selectedMessage = editFormat.get(i);
                         break;
                     }
                 }
@@ -264,10 +282,15 @@ public class GUI extends JFrame {
             }
         };
         messagesList.addMouseListener(mouseListener);
-
-
+        scrollMessage.setPreferredSize(new Dimension(700, 400));
         scrollMessage.add(messagesList);
-
+        add(scrollMessage, BorderLayout.EAST);
+        themes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                themes(username);
+            }
+        });
         newMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -354,6 +377,102 @@ public class GUI extends JFrame {
 
 
 
+    }
+    public void themes(String username) {
+        buttonPanel.setVisible(false);
+        themesPanel = new JPanel();
+        JButton christmas = new JButton("Christmas");
+        JButton plants = new JButton("Nature");
+        JButton ocean = new JButton("Ocean");
+        JButton reef = new JButton("Coastal Reef");
+        JButton blood = new JButton("Blood");
+        JButton lavender = new JButton("Lavender Haze");
+        JButton sunshine = new JButton("Sunshine");
+        themesPanel.add(christmas);
+        christmas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#f06969";
+                hashText2 = "#81ed7e";
+                hashTextB = "#f2f6ff";
+                theme = "Christmas Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(plants);
+        plants.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#78e856";
+                hashText2 = "#528045";
+                hashTextB = "#abf794";
+                theme = "Nature Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(ocean);
+        ocean.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#6f81f2";
+                hashText2 = "#426bc9";
+                hashTextB = "#a3b6e3";
+                theme = "Ocean Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(reef);
+        reef.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#9fd2fc";
+                hashText2 = "#53f5e5";
+                hashTextB = "#dcfcfa";
+                theme = "Coastal Reef Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(blood);
+        blood.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#91272e";
+                hashText2 = "#e34d57";
+                hashTextB = "#1f0204";
+                theme = "Blood Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(lavender);
+        lavender.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#ee82fa";
+                hashText2 = "#ae67b5";
+                hashTextB = "#f8d4fc";
+                theme = "Lavender Haze Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        themesPanel.add(sunshine);
+        sunshine.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hashText1 = "#fafc5b";
+                hashText2 = "#edd445";
+                hashTextB = "#f9fab4";
+                theme = "Sunshine Theme";
+                themesPanel.setVisible(false);
+                Messages(username);
+            }
+        });
+        add(themesPanel, BorderLayout.NORTH);
     }
 
     public void NewMessage(String username) {
@@ -464,6 +583,62 @@ public class GUI extends JFrame {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    private class AsyncListener extends SwingWorker<Object, Void> {
+        @Override
+        protected Object doInBackground() throws Exception {
+            while (!isCancelled()){
+                Object packet = client.popFromQueue();
+                if (packet != null)
+                    return packet;
+            }
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            Object packet = null;
+            try {
+                packet = get();
+            } catch (InterruptedException e) {}
+            catch (ExecutionException e) {
+                String why = null;
+                Throwable cause = e.getCause();
+                if (cause != null) {
+                    why = cause.getMessage();
+                } else {
+                    why = e.getMessage();
+                }
+                System.err.println("Error retrieving file: " + why);
+                return;
+            }
+            if (packet instanceof ResponsePacket) {
+                System.out.println(packet);
+                ResponsePacket responsePacket = (ResponsePacket) packet;
+                switch (responsePacket.protocolResponseType) {
+                    case CONVERSATION_TITLES:
+                        conversationTitles = responsePacket.args;
+                        if (conversationTitles[0].equalsIgnoreCase("You have no conversation!"))
+                            noConversation = true;
+                        else
+                            noConversation = false;
+                        System.out.println(conversationTitles.length);
+                        list(conversationTitles);
+                        break;
+                    case PUBLIC_INFO:
+                        break;
+                    case CONVERSATION:
+                        messages = responsePacket.args;
+
+
+                }
+            } else if (packet instanceof ErrorPacket) {
+
+            }
+            AsyncListener asyncListener = new AsyncListener();
+            asyncListener.execute();
         }
     }
 }
