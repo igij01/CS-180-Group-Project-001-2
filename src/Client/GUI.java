@@ -10,6 +10,7 @@ import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -17,9 +18,11 @@ public class GUI extends JFrame {
     private String hashColor = "#f2f6ff";
     private ArrayList<String> editFormat = new ArrayList<>();
     private String selectedMessage;
+    private int selectedIndex;
 
     private boolean isNewMessage = false;
-    private String[] messages = {"Arthur", "Hello There", "Hello", "HI"};
+    private String[] messages = {"loading"};
+    private String currentSelectedMessage = null;
     private JPanel themesPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
     private ScrollPane scrollMessage = new ScrollPane();
@@ -204,8 +207,11 @@ public class GUI extends JFrame {
     }
     //public void clearList() {items.clear();}
     public void list() {
-        if (!noConversation)
-            Messages(conversationTitles[0]);
+        if (!noConversation && currentSelectedMessage == null) {
+            client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
+                    conversationTitles[0]));
+            currentSelectedMessage = conversationTitles[0];
+        }
         JList list = new JList(conversationTitles);
         list.setLayoutOrientation(JList.VERTICAL);
         scrollPane.setBackground(Color.decode(hashColor));
@@ -214,10 +220,11 @@ public class GUI extends JFrame {
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
+                currentSelectedMessage = selectedItem;
                 client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
                         selectedItem));
                 if (isNewMessage) {
-                    NewMessage(selectedItem);
+                    NewMessage();
                 }
                 System.out.println(selectedItem);
                 String[] part = selectedItem.split(":", 2);
@@ -227,13 +234,16 @@ public class GUI extends JFrame {
         scrollPane.add(list);
     }
 
-    public void Messages(String username) {
-        buttonPanel.setVisible(false);
+    public void Messages(String[] messageFromServer) {
+        if (messageFromServer != null) {
+            if (!messageFromServer[0].equals(this.currentSelectedMessage))
+                return;
+            this.messages = messageFromServer;
+            this.messages = Arrays.copyOfRange(this.messages, 1, this.messages.length);
+            buttonPanel.setVisible(false);
+        }
         if (noConversation) {
             messages[1] = "You have no Messages!";
-        }
-        if (!username.equals(messages[0])) {
-            return;
         }
         buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.decode(hashColor));
@@ -242,7 +252,7 @@ public class GUI extends JFrame {
 
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setPreferredSize(new Dimension(200, 25));
-        JLabel name = new JLabel(username);
+        JLabel name = new JLabel(this.currentSelectedMessage);
         JLabel currentTheme = new JLabel(theme + "    ");
         currentTheme.setBackground(Color.decode(hashColor));
         JButton newMessage = new JButton("New Message");
@@ -266,14 +276,15 @@ public class GUI extends JFrame {
                 messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
             }
         }
-        JList messagesList = new JList(messages);
+        JList<String> messagesList = new JList<>(messages);
         messagesList.setBackground(Color.decode(hashTextB));
         messagesList.setLayoutOrientation(JList.VERTICAL);
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                selectedMessage = (String) messagesList.getSelectedValue();
-                for (int i = 1; i < messages.length; i++) {
+                selectedMessage = messagesList.getSelectedValue();
+                for (int i = 0; i < messages.length; i++) {
                     if (messages[i].equals(selectedMessage)) {
+                        selectedIndex = i;
                         selectedMessage = editFormat.get(i);
                         break;
                     }
@@ -288,22 +299,23 @@ public class GUI extends JFrame {
         themes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                themes(username);
+                themes();
             }
         });
         newMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                NewMessage(username);
+                NewMessage();
             }
         });
         editMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (selectedMessage != null) {
-                    EditMessage(username, selectedMessage);
+                    EditMessage(selectedIndex);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Please select the message you want to edit.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please select the message you want " +
+                            "to edit.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -311,11 +323,11 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (selectedMessage != null) {
-                    //PacketAssembler.assemblePacket(ProtocolRequestType.DELETE_MESSAGE,)
-                    //if this traces to null does that mean its not made yet? and can I use the message directly?
-                    Messages(username);
+                    client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DELETE_MESSAGE,
+                            String.valueOf(selectedIndex)));
                 } else {
-                    JOptionPane.showMessageDialog(null, "Please select the message you want to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please select the message you want " +
+                            "to delete.", "Error", JOptionPane.ERROR_MESSAGE);
 
                 }
 
@@ -368,11 +380,11 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 menuBar.setVisible(true);
                 remove(textPanel);
-                Messages(username);
+                Messages(null);
             }
         });
     }
-    public void themes(String username) {
+    public void themes() {
         buttonPanel.setVisible(false);
         themesPanel = new JPanel();
         JButton christmas = new JButton("Christmas");
@@ -391,7 +403,7 @@ public class GUI extends JFrame {
                 hashTextB = "#f2f6ff";
                 theme = "Christmas Theme";
                 themesPanel.setVisible(false);
-                Messages(username);
+                Messages(null);
             }
         });
         themesPanel.add(plants);
@@ -403,7 +415,7 @@ public class GUI extends JFrame {
                 hashTextB = "#abf794";
                 theme = "Nature Theme";
                 themesPanel.setVisible(false);
-                Messages(username);
+                Messages(null);
             }
         });
         themesPanel.add(ocean);
@@ -415,7 +427,7 @@ public class GUI extends JFrame {
                 hashTextB = "#a3b6e3";
                 theme = "Ocean Theme";
                 themesPanel.setVisible(false);
-                Messages(username);
+                Messages(null);
             }
         });
         themesPanel.add(reef);
@@ -427,7 +439,7 @@ public class GUI extends JFrame {
                 hashTextB = "#dcfcfa";
                 theme = "Coastal Reef Theme";
                 themesPanel.setVisible(false);
-                Messages(username);
+                Messages(null);
             }
         });
         themesPanel.add(blood);
@@ -439,7 +451,7 @@ public class GUI extends JFrame {
                 hashTextB = "#1f0204";
                 theme = "Blood Theme";
                 themesPanel.setVisible(false);
-                Messages(username);
+                Messages(null);
             }
         });
         themesPanel.add(lavender);
@@ -451,7 +463,7 @@ public class GUI extends JFrame {
                 hashTextB = "#f8d4fc";
                 theme = "Lavender Haze Theme";
                 themesPanel.setVisible(false);
-                Messages(username);
+                Messages(null);
             }
         });
         themesPanel.add(sunshine);
@@ -463,13 +475,13 @@ public class GUI extends JFrame {
                 hashTextB = "#f9fab4";
                 theme = "Sunshine Theme";
                 themesPanel.setVisible(false);
-                Messages(username);
+                Messages(null);
             }
         });
         add(themesPanel, BorderLayout.NORTH);
     }
 
-    public void NewMessage(String username) {
+    public void NewMessage() {
         isNewMessage = true;
         buttonPanel.setVisible(false);
         menuBar.setVisible(false);
@@ -480,7 +492,7 @@ public class GUI extends JFrame {
         JTextArea textArea = new JTextArea();
         JScrollPane textPane = new JScrollPane(textArea);
         textPane.setPreferredSize(new Dimension(600, 40));
-        JButton name = new JButton("Send to " + username + "  ");
+        JButton name = new JButton("Send to " + this.currentSelectedMessage + "  ");
         ImageIcon back = new ImageIcon("back.png");
         Image backImg = back.getImage();
         Image backScale = backImg.getScaledInstance(30, 20, java.awt.Image.SCALE_SMOOTH);
@@ -499,14 +511,13 @@ public class GUI extends JFrame {
         textPanel.add(backIcon);
         add(textPanel, BorderLayout.NORTH);
 
-//        name.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                if () // needs to find out if the selected user is a buyer seller or store. Still need to understand formate the list is coming in from.
-//                    // this will be used when the selected user type is determined
-//                    PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_BUYER, userText.getText(), String.valueOf(passText.getPassword()));
-//            }
-//        });
+        name.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_USER, currentSelectedMessage,
+                        textArea.getText());
+            }
+        });
 
         clearIcon.addActionListener(new ActionListener() {
             @Override
@@ -519,7 +530,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 menuBar.setVisible(true);
                 remove(textPanel);
-                Messages(username);
+                Messages(null);
                 isNewMessage = false;
             }
         });
