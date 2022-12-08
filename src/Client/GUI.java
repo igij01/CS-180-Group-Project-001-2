@@ -38,6 +38,8 @@ public class GUI extends JFrame {
     private JButton createAcc;
     private JTextField userText;
     private JPasswordField passText;
+    private JLabel name = new JLabel(this.currentSelectedMessage);
+    private JLabel currentTheme = new JLabel(theme + "    ");
 
     private String[] conversationTitles = {"Loading"};
     private String[] listOfUsernames;
@@ -240,9 +242,6 @@ public class GUI extends JFrame {
         searchBar.setBackground(Color.decode(hashColor));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setPreferredSize(new Dimension(100, 25));
-        JLabel name = new JLabel(this.currentSelectedMessage);
-        JLabel currentTheme = new JLabel(theme + "    ");
-        currentTheme.setBackground(Color.decode(hashColor));
         JButton newMessage = new JButton("New Message");
         JButton editMessage = new JButton("Edit Message");
         JButton deleteMessage = new JButton("Delete Message");
@@ -296,7 +295,11 @@ public class GUI extends JFrame {
 
     public void Messages(String[] messageFromServer) {
         menuBar.setVisible(true);
+        name.setText(this.currentSelectedMessage);
+        currentTheme.setText(theme + "    ");
+        currentTheme.setBackground(Color.decode(hashColor));
         buttonPanel.setVisible(true);
+        add(buttonPanel, BorderLayout.NORTH);
         if (messageFromServer != null) {
             if (!messageFromServer[0].equals(this.currentSelectedMessage))
                 return;
