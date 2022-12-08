@@ -10,8 +10,12 @@ import UserCore.PublicInformation;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -634,7 +638,7 @@ public class GUI extends Thread {
         uploadIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                uploadFile();
+                textArea.setText(uploadFile());
             }
         });
         clearIcon.addActionListener(new ActionListener() {
@@ -786,18 +790,25 @@ public class GUI extends Thread {
     }
 
     //allows users to upload files
-    public static void uploadFile() {
+    public static String uploadFile() {
         try {
-            JFileChooser fileC = new JFileChooser();
-            fileC.showOpenDialog(null);
-            System.out.println(Arrays.toString(fileC.getSelectedFiles()));
-
-        } catch (Exception e) {
+            File f = new File("C:\\Users\\pc\\Documents\\New folder\\");
+            JFileChooser fc = new JFileChooser(f, FileSystemView.getFileSystemView());
+            int answer = fc.showOpenDialog(null); // (JFrame.this) when in JFrame
+            if (answer == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                byte[] content = Files.readAllBytes(file.toPath());
+                String text = new String(content); // Using default encoding
+                fc.getFileSystemView();
+                return text;
+            }
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Invalid File!", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return null;
     }
 
-    public static void welcomeMessage() {
+        public static void welcomeMessage() {
         JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
     }
 
