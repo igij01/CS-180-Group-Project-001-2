@@ -333,6 +333,9 @@ public class GUI extends JFrame {
                     if (messages[i].equals(selectedMessage)) {
                         selectedIndex = i;
                         selectedMessage = editFormat.get(i);
+                        if (!(i%2 == 0)) {
+                            selectedMessage = null;
+                        }
                         break;
                     }
                 }
