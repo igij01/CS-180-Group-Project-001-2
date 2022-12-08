@@ -34,7 +34,7 @@ public enum ProtocolRequestType {
     DELETE_MESSAGE(3),
     DISPLAY_CONVERSATION_TITLES(0),
     DISPLAY_CONVERSATION(1), //conversation NAME
-    EXPORT_CONVERSATION(1), //conversation NAME, can be an array
+    EXPORT_CONVERSATION(1), //conversation NAME
     EXPORT_ALL_CONVERSATION(0);
 
 

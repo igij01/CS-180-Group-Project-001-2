@@ -205,7 +205,6 @@ public class MessageSystem {
                 response.add(switch (Objects.requireNonNull(packet).protocolRequestType) {
                     case DISPLAY_PROFILE -> userProfile.displayUserProfile();
                     case CHANGE_USERNAME -> userProfile.changeUsername(packet.args);
-                    //case ""
                     case LOGIN, REGISTER -> throw new IllegalRequestFormat(packet.protocolRequestType + "- is not allowed here!");
                     case CHANGE_EMAIL -> userProfile.changeEmail(packet.args);
                     case BLOCK_USER -> userProfile.blockUser(packet.args);
@@ -228,12 +227,12 @@ public class MessageSystem {
 
                     case SEND_MESSAGE_USER -> message.sendMessageUser(packet.args);
                     case SEND_MESSAGE_STORE -> message.sendMessageStore(packet.args);
-                    case EDIT_MESSAGE -> null;
-                    case DELETE_MESSAGE -> null;
+                    case EDIT_MESSAGE -> message.editMessage(packet.args);
+                    case DELETE_MESSAGE -> message.deleteMessage(packet.args);
                     case DISPLAY_CONVERSATION_TITLES -> message.displayConversationTitles();
                     case DISPLAY_CONVERSATION -> message.displayConversation(packet.args);
-                    case EXPORT_CONVERSATION -> null;
-                    case EXPORT_ALL_CONVERSATION -> null;
+                    case EXPORT_CONVERSATION -> message.exportCSV(packet.args);
+                    case EXPORT_ALL_CONVERSATION -> message.exportCSVAll();
                 });
             } catch (Exception e) {
                 e.printStackTrace();

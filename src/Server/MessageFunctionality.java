@@ -1,6 +1,7 @@
 package Server;
 
 import MessageCore.IllegalTargetException;
+import MessageCore.IllegalUserAccessException;
 import Protocol.ProtocolResponseType;
 import UserCore.*;
 
@@ -96,5 +97,59 @@ public class MessageFunctionality {
         return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION, user.printConversation(params[0]));
     }
 
+    /**
+     * edit the message
+     * @param params the raw parameter list <b>(conversation_title, {@code int} message_index, new_message)</b>
+     * @return the new conversation content
+     * @throws IllegalUserNameException is thrown when the such title cannot be found
+     * @throws NumberFormatException when the second parameter is not a integer
+     */
+    protected ByteBuffer editMessage(String[] params) throws IllegalUserNameException,
+            NumberFormatException {
+        this.user.editMessage(params[0], Integer.parseInt(params[1]), params[2]);
+        FullUser target = PublicInformation.findUser(params[0], this.user);
+        if (userToMessageFunc.get(target) != null) {
+            ByteBuffer[] response = userToMessageFunc.get(target).updateMessage(this.user.getUsername());
+            MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user), response);
+        }
+        return displayConversation(new String[]{params[0]});
+    }
 
-}
+    /**
+     * delete the message
+     * @param params the raw parameter list <b>(conversation_title, {@code int} message_index)</b>
+     * @return the new conversation content
+     * @throws IllegalUserNameException is thrown when the such title cannot be found
+     * @throws NumberFormatException when the second parameter is not an integer
+     */
+    protected ByteBuffer deleteMessage(String[] params) throws IllegalUserNameException,
+            NumberFormatException {
+        this.user.deleteMessage(params[0], Integer.parseInt(params[1]));
+        return displayConversation(new String[]{params[0]});
+    }
+
+    /**
+     * export the conversation by title
+     * @param params the raw parameter list <b>(conversation_title)</b>
+     * @return the conversation in csv
+     * @throws IllegalUserNameException is thrown when the such title cannot be found
+     */
+    protected ByteBuffer exportCSV(String[] params) throws IllegalUserNameException {
+        return MessageSystem.toByteBufferPacket(ProtocolResponseType.CSV_EXPORT,
+                this.user.printConversationInCSV(params[0]));
+    }
+
+    /**
+     * export all conversation in csv
+     * @return the string ready to write to csv
+     * @throws InvalidActionException when the conversation is empty
+     */
+    protected ByteBuffer exportCSVAll() throws InvalidActionException {
+        String result = this.user.printAllConversationInCSV();
+        if (result == null)
+            throw new InvalidActionException("no conversation to export!");
+        return MessageSystem.toByteBufferPacket(ProtocolResponseType.CSV_EXPORT, this.user.printAllConversationInCSV());
+    }
+
+
+ }

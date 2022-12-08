@@ -181,6 +181,29 @@ public class FullUser implements Serializable {
     }
 
     /**
+     * edit the messages in the specific conversation by title
+     *
+     * @param conversationTitle the title of the conversation you want to delete
+     * @param messageIndex      where the message is located in the specified conversation
+     * @throws IllegalUserNameException  is thrown when the such title cannot be found
+     * @throws IllegalUserAccessException is thrown from editMessage when user is not allowed to access method
+     */
+    public void deleteMessage(String conversationTitle, int messageIndex) throws
+            IllegalUserNameException, IllegalUserAccessException {
+        conversationTitle = conversationTitle.replace("\n", "");
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversations.get(i).getOtherUser(this.user).getUserName().equalsIgnoreCase(conversationTitle)) {
+                if (this.conversations.get(i).deleteMessage(this.user, messageIndex)) {
+                    Conversation c = this.conversations.remove(i);
+                    Objects.requireNonNull(PublicInformation.userTranslate(c.getOtherUser(this.user)))
+                            .receiveDestroyConversation(c);
+                }
+            }
+        }
+        throw new IllegalUserNameException();
+    }
+
+    /**
      * edit the messages in the specific conversation
      *
      * @param conversationIndex where the conversation is located in conversations list
@@ -192,6 +215,26 @@ public class FullUser implements Serializable {
     public void editMessage(int conversationIndex, int messageIndex, String newMessage)
             throws IndexOutOfBoundsException, IllegalUserAccessException {
         conversations.get(conversationIndex).editMessage(this.user, messageIndex, newMessage);
+    }
+
+    /**
+     * edit the messages in the specific conversation by title
+     *
+     * @param conversationTitle the title of the conversation you want to edit
+     * @param messageIndex      where the message is located in the specified conversation
+     * @param newMessage        the message that will replace the previous message
+     * @throws IllegalUserNameException  is thrown when the such title cannot be found
+     * @throws IllegalUserAccessException is thrown from editMessage when user is not allowed to access method
+     */
+    public void editMessage(String conversationTitle, int messageIndex, String newMessage) throws
+            IllegalUserNameException, IllegalUserAccessException {
+        conversationTitle = conversationTitle.replace("\n", "");
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversations.get(i).getOtherUser(this.user).getUserName().equalsIgnoreCase(conversationTitle)) {
+                conversations.get(i).editMessage(this.user, messageIndex, newMessage);
+            }
+        }
+        throw new IllegalUserNameException();
     }
 
     /**
@@ -308,8 +351,11 @@ public class FullUser implements Serializable {
      * print the content of the conversation by index the user select in the form of:
      * <p>
      * title,
-     * user1: message
-     * timestamp'\t'(edited)
+     * <p>
+     * user1: message,
+     * <p>
+     * timestamp'\t'(edited),
+     * <p>
      * ...
      *
      * @param title the title of the conversation
@@ -370,6 +416,41 @@ public class FullUser implements Serializable {
                 pw.println(filter(conversations.get(i).toStringCSV(this.user)));
             }
         }
+    }
+
+    /**
+     * export the conversation by title
+     * @param conversationTitle the title of the conversation you want to export
+     * @return the string to write to csv file
+     * @throws IllegalUserNameException is thrown when the such title cannot be found
+     * @throws IllegalUserAccessException if the user is not a participant (should never happen)
+     */
+    public String printConversationInCSV(String conversationTitle) throws IllegalUserNameException,
+            IllegalUserAccessException {
+        for (Conversation conversation : conversations) {
+            if (conversation.getOtherUser(this.user).getUserName().equalsIgnoreCase(conversationTitle)) {
+                return "receiver,sender,timestamp,content" + "\n" + conversation
+                        .toStringCSV(this.user) + "\n";
+            }
+        }
+        throw new IllegalUserNameException();
+    }
+
+    /**
+     * export all conversation in csv
+     * @return the string to write to csv file
+     * @throws IllegalUserAccessException if the user is not a participant (should never happen)
+     */
+    public String printAllConversationInCSV() throws IllegalUserAccessException {
+        if (conversations.size() == 0)
+            return null;
+        StringBuilder str = new StringBuilder();
+        str.append("receiver,sender,timestamp,content").append('\n');
+        for (Conversation conversation : conversations) {
+            str.append(conversation.toStringCSV(this.user)).append('\n');
+        }
+        str.deleteCharAt(str.length() - 1);
+        return str.toString();
     }
 
     /**
