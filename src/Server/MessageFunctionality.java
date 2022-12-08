@@ -47,7 +47,7 @@ public class MessageFunctionality {
             throw new InvalidActionException("The target user blocked you!");
         if (userToMessageFunc.get(target) != null) {
             ByteBuffer[] response = userToMessageFunc.get(target).updateMessage(this.user.getUsername());
-            MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user), response);
+            MessageSystem.runNotificationThread(MessageSystem.userToKey.get(target), response);
         }
         if (currentConversation.equals(params[0]))
             return displayConversation(new String[]{params[0]});
@@ -104,7 +104,7 @@ public class MessageFunctionality {
      * @param params the raw parameter list <b>(conversation_title, {@code int} message_index, new_message)</b>
      * @return the new conversation content
      * @throws IllegalUserNameException is thrown when the such title cannot be found
-     * @throws NumberFormatException when the second parameter is not a integer
+     * @throws NumberFormatException when the second parameter is not an integer
      */
     protected ByteBuffer editMessage(String[] params) throws IllegalUserNameException,
             NumberFormatException {
@@ -112,7 +112,7 @@ public class MessageFunctionality {
         FullUser target = PublicInformation.findUser(params[0], this.user);
         if (userToMessageFunc.get(target) != null) {
             ByteBuffer[] response = userToMessageFunc.get(target).updateMessage(this.user.getUsername());
-            MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user), response);
+            MessageSystem.runNotificationThread(MessageSystem.userToKey.get(target), response);
         }
         return displayConversation(new String[]{params[0]});
     }
