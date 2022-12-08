@@ -184,6 +184,7 @@ public class MessageSystem {
         ArrayList<ByteBuffer> response = new ArrayList<>();
         boolean repeat = true;
         DataPacket dataPacket = DataPacket.packetDeserialize(buffer);
+        System.out.println(dataPacket);
         if (dataPacket != null)
             packets.add(dataPacket);
         else

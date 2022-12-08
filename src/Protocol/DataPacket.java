@@ -88,7 +88,6 @@ public class DataPacket implements Externalizable {
              ObjectInputStream oin = new ObjectInputStream(in)) {
             DataPacket o = (DataPacket) oin.readObject();
             bytesLeft = in.readAllBytes();
-            System.out.println("Bytes left: " + Arrays.toString(bytesLeft));
             return o;
         } catch (IOException | ClassNotFoundException e) {
             return null;

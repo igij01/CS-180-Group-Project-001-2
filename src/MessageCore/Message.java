@@ -81,6 +81,7 @@ public class Message implements Serializable {
             throw new IllegalUserAccessException("User is not a sender therefore cannot edit the message");
         this.edited = true;
         readByTarget = false;
+        this.message = newMessage;
         setTimeToNow();
     }
 

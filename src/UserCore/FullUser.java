@@ -198,6 +198,7 @@ public class FullUser implements Serializable {
                     Objects.requireNonNull(PublicInformation.userTranslate(c.getOtherUser(this.user)))
                             .receiveDestroyConversation(c);
                 }
+                return;
             }
         }
         throw new IllegalUserNameException();
@@ -229,7 +230,9 @@ public class FullUser implements Serializable {
     public void editMessage(String conversationTitle, int messageIndex, String newMessage) throws
             IllegalUserNameException, IllegalUserAccessException {
         conversationTitle = conversationTitle.replace("\n", "");
+        System.out.println(conversationTitle);
         for (int i = 0; i < conversations.size(); i++) {
+            System.out.println(conversations.get(i).getOtherUser(this.user).getUserName());
             if (conversations.get(i).getOtherUser(this.user).getUserName().equals(conversationTitle)) {
                 conversations.get(i).editMessage(this.user, messageIndex, newMessage);
                 return;

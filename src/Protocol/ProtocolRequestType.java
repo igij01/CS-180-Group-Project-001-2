@@ -31,7 +31,7 @@ public enum ProtocolRequestType {
     SEND_MESSAGE_USER(2),
     SEND_MESSAGE_STORE(2),
     EDIT_MESSAGE(3), //conversation NAME, message index, new message
-    DELETE_MESSAGE(3),
+    DELETE_MESSAGE(2),
     DISPLAY_CONVERSATION_TITLES(0),
     DISPLAY_CONVERSATION(1), //conversation NAME
     EXPORT_CONVERSATION(1), //conversation NAME

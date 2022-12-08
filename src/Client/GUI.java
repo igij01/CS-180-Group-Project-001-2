@@ -214,7 +214,7 @@ public class GUI extends JFrame {
         if (!noConversation && currentSelectedMessage == null) {
             client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
                     conversationTitles[0]));
-            currentSelectedMessage = conversationTitles[0];
+            currentSelectedMessage = conversationTitles[0].replace("\n", "");
         }
         JList list = new JList(conversationTitles);
         list.setLayoutOrientation(JList.VERTICAL);
@@ -224,8 +224,8 @@ public class GUI extends JFrame {
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
-                if (!currentSelectedMessage.equals(selectedItem) || messages.length < 1) {
-                    currentSelectedMessage = selectedItem;
+                if (!currentSelectedMessage.equals(selectedItem) || messages[0].equals("loading")) {
+                    currentSelectedMessage = selectedItem.replace("\n", "");
                     client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
                             selectedItem));
                 }
@@ -283,7 +283,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (selectedMessage != null) {
                     client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DELETE_MESSAGE,
-                            String.valueOf(selectedIndex)));
+                            currentSelectedMessage, String.valueOf(selectedIndex)));
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select the message you want " +
                             "to delete.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -296,14 +296,16 @@ public class GUI extends JFrame {
 
     public void Messages(String[] messageFromServer) {
         menuBar.setVisible(true);
+        System.out.println(currentSelectedMessage);
         name.setText(this.currentSelectedMessage);
         currentTheme.setText(theme + "    ");
         currentTheme.setBackground(Color.decode(hashColor));
         buttonPanel.setVisible(true);
         add(buttonPanel, BorderLayout.NORTH);
         if (messageFromServer != null) {
-            if (!messageFromServer[0].equals(this.currentSelectedMessage))
+            if (!messageFromServer[0].equals(this.currentSelectedMessage)) {
                 return;
+            }
             this.messages = messageFromServer;
             this.messages = Arrays.copyOfRange(this.messages, 1, this.messages.length);
         }
@@ -316,7 +318,7 @@ public class GUI extends JFrame {
         for (int i = 0; i < messages.length; i += 2) {
             if (i % 4 == 0) {
                 System.out.println(Arrays.toString(messages));
-                editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 1));
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
                 editFormat.add(messages[i+1]);
                 messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i] + "</FONT></html>";
                 messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i+1] + "</FONT></html>";
@@ -383,7 +385,7 @@ public class GUI extends JFrame {
         finalize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(currentSelectedMessage + selectedIndex / 2);
+                System.out.println(textArea.getText());
                 client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE,
                         currentSelectedMessage, Integer.toString(selectedIndex / 2), textArea.getText()));
             }
