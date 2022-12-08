@@ -16,9 +16,11 @@ import java.util.concurrent.ExecutionException;
 public class GUI extends JFrame {
     private String hashColor = "#f2f6ff";
     private ArrayList<String> editFormat = new ArrayList<>();
+
+    private String[] manipulateColor = {""};
     private String selectedMessage;
     private int selectedIndex;
-
+    private boolean themeUpdate;
     private boolean isNewMessage = false;
     private String[] messages = {"loading"};
     private String currentSelectedMessage = null;
@@ -308,20 +310,24 @@ public class GUI extends JFrame {
         if (noConversation) {
             messages[1] = "You have no Messages!";
         }
+        if (!themeUpdate) {
+            manipulateColor = Arrays.copyOf(messages, messages.length);
+        }
         for (int i = 0; i < messages.length; i += 2) {
             if (i % 4 == 0) {
                 System.out.println(Arrays.toString(messages));
-                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 1));
                 editFormat.add(messages[i+1]);
-                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
-                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i+1] + "</FONT></html>";
+                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i] + "</FONT></html>";
+                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i+1] + "</FONT></html>";
             } else {
-                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 1));
                 editFormat.add(messages[i+1]);
-                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
-                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i+1] + "</FONT></html>";
+                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + manipulateColor[i] + "</FONT></html>";
+                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + manipulateColor[i+1] + "</FONT></html>";
             }
         }
+        themeUpdate = false;
         JList<String> messagesList = new JList<>(messages);
         messagesList.setBackground(Color.decode(hashTextB));
         messagesList.setLayoutOrientation(JList.VERTICAL);
@@ -398,6 +404,7 @@ public class GUI extends JFrame {
     }
     public void themes() {
         buttonPanel.setVisible(false);
+        themeUpdate = true;
         themesPanel = new JPanel();
         JButton christmas = new JButton("Christmas");
         JButton plants = new JButton("Nature");
