@@ -192,7 +192,7 @@ public class FullUser implements Serializable {
             IllegalUserNameException, IllegalUserAccessException {
         conversationTitle = conversationTitle.replace("\n", "");
         for (int i = 0; i < conversations.size(); i++) {
-            if (conversations.get(i).getOtherUser(this.user).getUserName().equalsIgnoreCase(conversationTitle)) {
+            if (conversations.get(i).getOtherUser(this.user).getUserName().equals(conversationTitle)) {
                 if (this.conversations.get(i).deleteMessage(this.user, messageIndex)) {
                     Conversation c = this.conversations.remove(i);
                     Objects.requireNonNull(PublicInformation.userTranslate(c.getOtherUser(this.user)))
@@ -230,7 +230,7 @@ public class FullUser implements Serializable {
             IllegalUserNameException, IllegalUserAccessException {
         conversationTitle = conversationTitle.replace("\n", "");
         for (int i = 0; i < conversations.size(); i++) {
-            if (conversations.get(i).getOtherUser(this.user).getUserName().equalsIgnoreCase(conversationTitle)) {
+            if (conversations.get(i).getOtherUser(this.user).getUserName().equals(conversationTitle)) {
                 conversations.get(i).editMessage(this.user, messageIndex, newMessage);
             }
         }
@@ -365,7 +365,7 @@ public class FullUser implements Serializable {
     public String[] printConversation(String title) throws IllegalUserNameException {
         title = title.replace("\n", "");
         for (int i = 0; i < conversations.size(); i++) {
-            if (conversations.get(i).getOtherUser(this.user).getUserName().equalsIgnoreCase(title)) {
+            if (conversations.get(i).getOtherUser(this.user).getUserName().equals(title)) {
                 ArrayList<String> arr = conversations.get(i).toStringArrayConversation(this.user);
                 for (int j = 0; j < arr.size(); j += 2) {
                     arr.set(j, filter(arr.get(j)));
@@ -428,7 +428,7 @@ public class FullUser implements Serializable {
     public String printConversationInCSV(String conversationTitle) throws IllegalUserNameException,
             IllegalUserAccessException {
         for (Conversation conversation : conversations) {
-            if (conversation.getOtherUser(this.user).getUserName().equalsIgnoreCase(conversationTitle)) {
+            if (conversation.getOtherUser(this.user).getUserName().equals(conversationTitle)) {
                 return "receiver,sender,timestamp,content" + "\n" + conversation
                         .toStringCSV(this.user) + "\n";
             }

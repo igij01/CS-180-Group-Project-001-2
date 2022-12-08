@@ -31,8 +31,8 @@ public class GUI extends JFrame {
     private String hashTextB = "#f2f6ff";
     private String theme = "Christmas Theme";
 
-    private JMenuBar menuBar;
-    private JMenuBar searchBar;
+    private JMenuBar menuBar = new JMenuBar();
+    private JMenuBar searchBar = new JMenuBar();
     private ScrollPane scrollPane = new ScrollPane();
     private JButton login;
     private JButton createAcc;
@@ -65,18 +65,16 @@ public class GUI extends JFrame {
         setSize(750,500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
         add(scrollPane, BorderLayout.WEST);
-        add(buttonPanel, BorderLayout.NORTH);
-        menuBar = new JMenuBar();
+        add(scrollMessage, BorderLayout.EAST);
         Menu();
         list();
+        setVisible(true);
     }
 
     public void Profile() {
         setSize(500,600);
         setLocationRelativeTo(null);
-        menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
 
@@ -162,7 +160,6 @@ public class GUI extends JFrame {
 
     public void Search() {
         menuBar.setVisible(false);
-        searchBar = new JMenuBar();
         ImageIcon searchImage = new ImageIcon("search.png");
         Image image1 = searchImage.getImage();
         Image img1 = image1.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
@@ -220,14 +217,15 @@ public class GUI extends JFrame {
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
-                currentSelectedMessage = selectedItem;
-                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
-                        selectedItem));
+                if (!currentSelectedMessage.equals(selectedItem)) {
+                    currentSelectedMessage = selectedItem;
+                    client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
+                            selectedItem));
+                }
                 if (isNewMessage) {
                     NewMessage();
                 }
                 System.out.println(selectedItem);
-                String[] part = selectedItem.split(":", 2);
             }
         };
         list.addMouseListener(mouseListener);
@@ -235,12 +233,12 @@ public class GUI extends JFrame {
     }
 
     public void Messages(String[] messageFromServer) {
+        buttonPanel.setVisible(false);
         if (messageFromServer != null) {
             if (!messageFromServer[0].equals(this.currentSelectedMessage))
                 return;
             this.messages = messageFromServer;
             this.messages = Arrays.copyOfRange(this.messages, 1, this.messages.length);
-            buttonPanel.setVisible(false);
         }
         if (noConversation) {
             messages[1] = "You have no Messages!";
@@ -251,7 +249,7 @@ public class GUI extends JFrame {
         searchBar.setBackground(Color.decode(hashColor));
 
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setPreferredSize(new Dimension(200, 25));
+        buttonPanel.setPreferredSize(new Dimension(100, 25));
         JLabel name = new JLabel(this.currentSelectedMessage);
         JLabel currentTheme = new JLabel(theme + "    ");
         currentTheme.setBackground(Color.decode(hashColor));
@@ -267,18 +265,23 @@ public class GUI extends JFrame {
         buttonPanel.add(editMessage);
         buttonPanel.add(deleteMessage);
         buttonPanel.add(themes);
-        for (int i = 1; i < messages.length; i++) {
-            if (i%2 == 0) {
+        for (int i = 0; i < messages.length; i += 2) {
+            if (i%4 == 0) {
                 editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
+                editFormat.add(messages[i+1]);
                 messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
+                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
             } else {
                 editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
+                editFormat.add(messages[i+1]);
                 messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
+                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
             }
         }
         JList<String> messagesList = new JList<>(messages);
         messagesList.setBackground(Color.decode(hashTextB));
         messagesList.setLayoutOrientation(JList.VERTICAL);
+        scrollMessage.setPreferredSize(new Dimension(700, 400));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 selectedMessage = messagesList.getSelectedValue();
@@ -293,9 +296,7 @@ public class GUI extends JFrame {
             }
         };
         messagesList.addMouseListener(mouseListener);
-        scrollMessage.setPreferredSize(new Dimension(700, 400));
         scrollMessage.add(messagesList);
-        add(scrollMessage, BorderLayout.EAST);
         themes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -636,7 +637,8 @@ public class GUI extends JFrame {
                     case PUBLIC_INFO:
                         break;
                     case CONVERSATION:
-                        messages = responsePacket.args;
+                        Messages(((ResponsePacket) packet).args);
+                        break;
 
 
                 }
