@@ -611,7 +611,7 @@ public class GUI extends Thread {
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
         ImageIcon upload = new ImageIcon("upload.png");
-        Image uploadImage = clear.getImage();
+        Image uploadImage = upload.getImage();
         Image uploadImg = uploadImage.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
         ImageIcon uploadImageScale = new ImageIcon(uploadImg);
         JMenuItem uploadIcon = new JMenuItem("",
