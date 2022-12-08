@@ -1,10 +1,12 @@
 package GUI;
 
+import Client.ClientCore;
 import Client.PacketAssembler;
 import Protocol.ProtocolRequestType;
 import UserCore.FullBuyer;
 import UserCore.FullUser;
 import UserCore.PublicInformation;
+import UserCore.User;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -42,6 +44,22 @@ public class GUI extends Thread {
     static JPasswordField passText;
     static FullUser user;
 
+    static String username;
+    static String password;
+    static String email;
+    static String censorPattern;
+    static String role;
+    static String[] blockedUsers;
+    static String[] invisibleUsers;
+    static String[] filteredWords;
+
+    static String[] stores;
+
+    static boolean censorMode;
+
+
+    private static ClientCore client;
+
     public static void thankYouMessage() {
         JOptionPane.showMessageDialog(null, "Thanks for using our buying and selling platform! We hope to see you again!", "Thank You!", JOptionPane.PLAIN_MESSAGE);
     }
@@ -64,6 +82,46 @@ public class GUI extends Thread {
         //List("Arthur\nLincoln\nSamson\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nsomething\nelse");
         //List(user.printConversationTitles()); a user needs to be created from logging in first
     }
+    private void getProfileInfo(ArrayList<String> info) {
+        if (info.size() == 7) {
+            role = "SELLER";
+        } else {
+            role = "BUYER";
+        }
+        String accInfo = info.get(0).substring(26);
+        accInfo = accInfo.replace(", Email = ", "\n");
+        username = accInfo.substring(0, accInfo.indexOf("\n") - 2);
+        accInfo = accInfo.substring(accInfo.indexOf("\n") + 2);
+        accInfo = accInfo.replace(", role = BUYER", "\n");
+        email = accInfo.substring(0,accInfo.indexOf("\n") - 2);
+        accInfo = info.get(1).substring(info.get(1).indexOf("[") + 1, info.get(1).lastIndexOf("]"));
+        blockedUsers = accInfo.split(",");
+        if (blockedUsers[0].isEmpty()) {
+            blockedUsers[0] = "No Blocked Users : )";
+        }
+        accInfo = info.get(2).substring(info.get(2).indexOf("[") + 1, info.get(2).lastIndexOf("]"));
+        invisibleUsers = accInfo.split(",");
+        if (invisibleUsers[0].isEmpty()) {
+            invisibleUsers[0] = "No invisible Users";
+        }
+        accInfo = info.get(3).substring(13);
+        censorMode = accInfo.equals("ON");
+        accInfo = info.get(4).substring(info.get(4).indexOf("[") + 1, info.get(4).lastIndexOf("]"));
+        filteredWords = accInfo.split(",");
+        if (filteredWords[0].isEmpty()) {
+            filteredWords[0] = "None";
+        }
+        accInfo = info.get(5).substring(18);
+        censorPattern = accInfo;
+        if (role.equals("SELLER")) {
+            accInfo = info.get(6).substring(info.get(6).indexOf("[") + 1, info.get(6).lastIndexOf("]"));
+            stores = accInfo.split(",");
+            if (stores[0].isEmpty()) {
+                filteredWords[0] = "You have no stores";
+            }
+        }
+
+    }
 
     public static void Profile() {
         frame = new JFrame();
@@ -75,7 +133,6 @@ public class GUI extends Thread {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         frame.add(panel);
         ArrayList<String> sampleList = new ArrayList<>(Arrays.asList("bad","disgust","Stop it", "wtf"));
-
         JLabel usernameLabel = new JLabel("Username:");
         panel.add(usernameLabel);
         JTextField username = new JTextField("Ericoco", 12);
