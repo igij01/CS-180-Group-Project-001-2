@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class GUI extends JFrame {
-    private ArrayList<String> items = new ArrayList<>();
     private String hashColor = "#f2f6ff";
     private ArrayList<String> editFormat = new ArrayList<>();
     private String selectedMessage;
@@ -68,6 +67,7 @@ public class GUI extends JFrame {
         add(buttonPanel, BorderLayout.NORTH);
         menuBar = new JMenuBar();
         Menu();
+        list();
     }
 
     public void Profile() {
@@ -202,11 +202,11 @@ public class GUI extends JFrame {
             }
         });
     }
-    public void clearList() {items.clear();}
-    public void list(String[] elements) {
-        items.addAll(List.of(elements));
-        Messages(items.get(0));
-        JList list = new JList(items.toArray());
+    //public void clearList() {items.clear();}
+    public void list() {
+        if (!noConversation)
+            Messages(conversationTitles[0]);
+        JList list = new JList(conversationTitles);
         list.setLayoutOrientation(JList.VERTICAL);
         scrollPane.setBackground(Color.decode(hashColor));
         list.setBackground(Color.decode(hashColor));
@@ -214,7 +214,8 @@ public class GUI extends JFrame {
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
-                Messages(selectedItem);
+                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
+                        selectedItem));
                 if (isNewMessage) {
                     NewMessage(selectedItem);
                 }
@@ -234,7 +235,6 @@ public class GUI extends JFrame {
         if (!username.equals(messages[0])) {
             return;
         }
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION, username));
         buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.decode(hashColor));
         menuBar.setBackground(Color.decode(hashColor));
@@ -371,12 +371,6 @@ public class GUI extends JFrame {
                 Messages(username);
             }
         });
-
-
-
-
-
-
     }
     public void themes(String username) {
         buttonPanel.setVisible(false);
@@ -625,7 +619,7 @@ public class GUI extends JFrame {
                         else
                             noConversation = false;
                         System.out.println(conversationTitles.length);
-                        list(conversationTitles);
+                        list();
                         break;
                     case PUBLIC_INFO:
                         break;

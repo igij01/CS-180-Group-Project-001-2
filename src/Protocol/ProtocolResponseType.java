@@ -49,5 +49,6 @@ public enum ProtocolResponseType {
     CSV_EXPORT,
     LOGOUT_SUCCESS,
     ACCOUNT_DELETION,
-    LOGIN_SUCCESS, DASHBOARD
+    LOGIN_SUCCESS,
+    DASHBOARD
 }
