@@ -214,14 +214,21 @@ public class GUI extends JFrame {
                     conversationTitles[0]));
             currentSelectedMessage = conversationTitles[0].replace("\n", "");
         }
-        JList list = new JList(conversationTitles);
+        String[] colorManipulate = Arrays.copyOf(conversationTitles, conversationTitles.length);
+        for (int i = 0; i < colorManipulate.length; i++) {
+            if (colorManipulate[i].contains("\n")) {
+                conversationTitles[i] = conversationTitles[i].replace("\n", "");
+                colorManipulate[i] = "<html><FONT style=\"BACKGROUND-COLOR: #bccce3\">" + colorManipulate[i] + "</FONT></html>";
+            }
+        }
+        JList list = new JList(colorManipulate);
         list.setLayoutOrientation(JList.VERTICAL);
         scrollPane.setBackground(Color.decode(hashColor));
         list.setBackground(Color.decode(hashColor));
         scrollPane.setPreferredSize(new Dimension(200, 500));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                String selectedItem = (String) list.getSelectedValue();
+                String selectedItem = conversationTitles[list.getSelectedIndex()];
                 if (!currentSelectedMessage.equals(selectedItem) || messages[0].equals("loading")) {
                     currentSelectedMessage = selectedItem.replace("\n", "");
                     client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
@@ -268,7 +275,7 @@ public class GUI extends JFrame {
         editMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (selectedMessage != null && selectedIndex % 2 == 0) {
+                if (selectedMessage != null) {
                     EditMessage(selectedMessage);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select the message you want " +
@@ -315,13 +322,11 @@ public class GUI extends JFrame {
         for (int i = 0; i < messages.length; i += 2) {
             if (i % 4 == 0) {
                 System.out.println(Arrays.toString(messages));
-                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
-                editFormat.add(messages[i+1]);
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 2));
                 manipulateColor[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i] + "</FONT></html>";
                 manipulateColor[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i+1] + "</FONT></html>";
             } else {
-                editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 1));
-                editFormat.add(messages[i+1]);
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 2));
                 manipulateColor[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + manipulateColor[i] + "</FONT></html>";
                 manipulateColor[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + manipulateColor[i+1] + "</FONT></html>";
             }
@@ -333,17 +338,10 @@ public class GUI extends JFrame {
         scrollMessage.setPreferredSize(new Dimension(700, 400));
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                selectedMessage = messagesList.getSelectedValue();
-                for (int i = 0; i < messages.length; i++) {
-                    if (messages[i].equals(selectedMessage)) {
-                        selectedIndex = i;
-                        selectedMessage = editFormat.get(i);
-                        if (!(i%2 == 0)) {
-                            selectedMessage = null;
-                        }
-                        break;
-                    }
-                }
+                int index = messagesList.getSelectedIndex();
+                selectedMessage = editFormat.get(index / 2);
+                selectedIndex = index / 2;
+                System.out.println(selectedIndex + ". " + selectedMessage);
             }
         };
         messagesList.addMouseListener(mouseListener);
@@ -384,7 +382,9 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 System.out.println(textArea.getText());
                 client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE,
-                        currentSelectedMessage, Integer.toString(selectedIndex / 2), textArea.getText()));
+                        currentSelectedMessage, Integer.toString(selectedIndex), textArea.getText()));
+                remove(textPanel);
+                Messages(null);
             }
         });
         clearIcon.addActionListener(new ActionListener() {
@@ -534,6 +534,11 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_USER, currentSelectedMessage,
                         textArea.getText()));
+                menuBar.setVisible(true);
+                buttonPanel.setVisible(true);
+                remove(textPanel);
+                isNewMessage = false;
+                Messages(null);
             }
         });
 
