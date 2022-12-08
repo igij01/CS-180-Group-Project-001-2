@@ -235,6 +235,8 @@ public class GUI extends JFrame {
     }
 
     public void Messages(String[] messageFromServer) {
+        menuBar.setVisible(true);
+        buttonPanel.setVisible(true);
         if (messageFromServer != null) {
             if (!messageFromServer[0].equals(this.currentSelectedMessage))
                 return;
@@ -381,7 +383,6 @@ public class GUI extends JFrame {
         backIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                menuBar.setVisible(true);
                 remove(textPanel);
                 Messages(null);
             }
