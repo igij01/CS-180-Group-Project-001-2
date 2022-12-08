@@ -24,6 +24,7 @@ public class GUI extends JFrame {
     private String currentSelectedMessage = null;
     private JPanel themesPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
+    private JSplitPane splitPane = new JSplitPane();
     private ScrollPane scrollMessage = new ScrollPane();
     private String hashText1 = "#f06969";
     private String hashText2 = "#81ed7e";
@@ -56,19 +57,20 @@ public class GUI extends JFrame {
         this.client = client;
         this.userProfile = userProfile;
         this.buyer = buyer;
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION_TITLES));
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_PUBLIC_INFO));
-        AsyncListener listener = new AsyncListener();
-        listener.execute();
         setTitle("Basically Facebook");
         setSize(750,500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(scrollPane, BorderLayout.WEST);
-        add(scrollMessage, BorderLayout.EAST);
+        add(splitPane);
+        splitPane.setLeftComponent(scrollPane);
+        splitPane.setRightComponent(scrollMessage);
         Menu();
         list();
         setVisible(true);
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION_TITLES));
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_PUBLIC_INFO));
+        AsyncListener listener = new AsyncListener();
+        listener.execute();
     }
 
     public void Profile() {
@@ -232,7 +234,6 @@ public class GUI extends JFrame {
     }
 
     public void Messages(String[] messageFromServer) {
-        buttonPanel.setVisible(false);
         if (messageFromServer != null) {
             if (!messageFromServer[0].equals(this.currentSelectedMessage))
                 return;
