@@ -232,6 +232,7 @@ public class FullUser implements Serializable {
         for (int i = 0; i < conversations.size(); i++) {
             if (conversations.get(i).getOtherUser(this.user).getUserName().equals(conversationTitle)) {
                 conversations.get(i).editMessage(this.user, messageIndex, newMessage);
+                return;
             }
         }
         throw new IllegalUserNameException();
@@ -325,9 +326,9 @@ public class FullUser implements Serializable {
         ArrayList<String> conversationTitles = new ArrayList<>();
         for (int i = 0; i < conversations.size(); i++) {
             if (conversations.get(i).newMessageStatus(this.user)) {
-                conversationTitles.add(filter(conversations.get(i).getOtherUser(this.user).getUserName()) + '\n');
+                conversationTitles.add(conversations.get(i).getOtherUser(this.user).getUserName() + '\n');
             } else {
-                conversationTitles.add(filter(conversations.get(i).getOtherUser(this.user).getUserName()));
+                conversationTitles.add(conversations.get(i).getOtherUser(this.user).getUserName());
             }
         }
         if (conversationTitles.isEmpty())

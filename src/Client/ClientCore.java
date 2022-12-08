@@ -71,7 +71,7 @@ public class ClientCore extends Thread {
                 if (select > 0) {
                     for (SelectionKey key : selector.selectedKeys()) {
                         if (key.isValid() && key.isReadable()) {
-                            System.out.println("Readable: " + key.channel());
+//                            System.out.println("Readable: " + key.channel());
                             SocketChannel socket = ((SocketChannel) key.channel());
                             readBuffer.clear();
                             int read = socket.read(readBuffer);
@@ -90,7 +90,7 @@ public class ClientCore extends Thread {
                                 if (responsePacket != null) {
                                     readQueue.add(responsePacket);
                                     if (responsePacket instanceof ResponsePacket) {
-                                        System.out.println(Arrays.toString(((ResponsePacket) responsePacket).args));
+    //                                    System.out.println(Arrays.toString(((ResponsePacket) responsePacket).args));
                                     } else if (responsePacket instanceof ErrorPacket) {
                                         System.out.println(((ErrorPacket) responsePacket).errorMessage);
                                     }
@@ -111,7 +111,6 @@ public class ClientCore extends Thread {
                                     else
                                         repeat = false;
                                 }
-                                //readQueue.add(buffer);
                             }
                             key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ); //enable write flag
                         }
@@ -124,7 +123,6 @@ public class ClientCore extends Thread {
                             //this is why we call peek first, and only remove once (buffer.remaining() == 0)
                             for (ByteBuffer buffer; (buffer = this.writeQueue.peek()) != null; ) {
                                 socket.write(buffer);
-                                System.out.println("send");
                                 if (buffer.remaining() == 0) this.writeQueue.remove();
                                 else break; //can not write anymore. Wait for next write event
                             }
@@ -143,7 +141,6 @@ public class ClientCore extends Thread {
 
     public void addByteBufferToWrite(ByteBuffer bfr) {
         writeQueue.add(bfr);
-        System.out.println("added");
         for (SelectionKey key : selector.keys()) {
             if (key.channel() instanceof SocketChannel) {
                 key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE); //enable write flag

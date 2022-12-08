@@ -69,7 +69,7 @@ public class GUI extends JFrame {
         buttonPanel();
         add(buttonPanel, BorderLayout.NORTH);
         Menu();
-        list();
+        displayList();
         setVisible(true);
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION_TITLES));
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_PUBLIC_INFO));
@@ -208,7 +208,7 @@ public class GUI extends JFrame {
         });
     }
     //public void clearList() {items.clear();}
-    public void list() {
+    public void displayList() {
         if (!noConversation && currentSelectedMessage == null) {
             client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
                     conversationTitles[0]));
@@ -222,7 +222,7 @@ public class GUI extends JFrame {
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = (String) list.getSelectedValue();
-                if (!currentSelectedMessage.equals(selectedItem)) {
+                if (!currentSelectedMessage.equals(selectedItem) || messages.length < 1) {
                     currentSelectedMessage = selectedItem;
                     client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
                             selectedItem));
@@ -230,7 +230,6 @@ public class GUI extends JFrame {
                 if (isNewMessage) {
                     NewMessage();
                 }
-                System.out.println(selectedItem);
             }
         };
         list.addMouseListener(mouseListener);
@@ -269,7 +268,7 @@ public class GUI extends JFrame {
         editMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (selectedMessage != null) {
+                if (selectedMessage != null && selectedIndex % 2 == 0) {
                     EditMessage(selectedMessage);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select the message you want " +
@@ -310,7 +309,8 @@ public class GUI extends JFrame {
             messages[1] = "You have no Messages!";
         }
         for (int i = 0; i < messages.length; i += 2) {
-            if (i%4 == 0) {
+            if (i % 4 == 0) {
+                System.out.println(Arrays.toString(messages));
                 editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
                 editFormat.add(messages[i+1]);
                 messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
@@ -339,7 +339,6 @@ public class GUI extends JFrame {
                         break;
                     }
                 }
-                System.out.println(selectedMessage);
             }
         };
         messagesList.addMouseListener(mouseListener);
@@ -378,8 +377,9 @@ public class GUI extends JFrame {
         finalize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE, currentSelectedMessage,
-                        Integer.toString(selectedIndex), textArea.getText());
+                System.out.println(currentSelectedMessage + selectedIndex / 2);
+                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE,
+                        currentSelectedMessage, Integer.toString(selectedIndex / 2), textArea.getText()));
             }
         });
         clearIcon.addActionListener(new ActionListener() {
@@ -526,8 +526,8 @@ public class GUI extends JFrame {
         name.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_USER, currentSelectedMessage,
-                        textArea.getText());
+                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_USER, currentSelectedMessage,
+                        textArea.getText()));
             }
         });
 
@@ -543,8 +543,8 @@ public class GUI extends JFrame {
                 menuBar.setVisible(true);
                 buttonPanel.setVisible(true);
                 remove(textPanel);
-                Messages(null);
                 isNewMessage = false;
+                Messages(null);
             }
         });
 
@@ -643,7 +643,7 @@ public class GUI extends JFrame {
                         else
                             noConversation = false;
                         System.out.println(conversationTitles.length);
-                        list();
+                        displayList();
                         break;
                     case PUBLIC_INFO:
                         break;

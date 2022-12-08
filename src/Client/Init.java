@@ -140,7 +140,7 @@ public class Init extends JFrame {
             lblMessage.setText("Server not opened!");
             return;
         } catch (UnresolvedAddressException | UnsupportedAddressTypeException e) {
-            lblMessage.setText("Please enter a valid servername!");
+            lblMessage.setText("Please enter a valid server name!");
             return;
         }
         assert packet != null;

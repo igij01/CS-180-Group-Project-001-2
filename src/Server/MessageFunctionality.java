@@ -49,6 +49,8 @@ public class MessageFunctionality {
             ByteBuffer[] response = userToMessageFunc.get(target).updateMessage(this.user.getUsername());
             MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user), response);
         }
+        if (currentConversation.equals(params[0]))
+            return displayConversation(new String[]{params[0]});
         return displayConversationTitles();
     }
 
