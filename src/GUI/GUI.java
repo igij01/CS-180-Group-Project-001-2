@@ -255,7 +255,6 @@ public class GUI extends Thread {
         return true;
     }
     public static void Menu() {
-        passwordCheck();
         Setup();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
