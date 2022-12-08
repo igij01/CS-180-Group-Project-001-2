@@ -64,6 +64,7 @@ public class GUI extends JFrame {
         add(splitPane);
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(scrollMessage);
+        buttonPanel();
         add(buttonPanel, BorderLayout.NORTH);
         Menu();
         list();
@@ -233,23 +234,10 @@ public class GUI extends JFrame {
         list.addMouseListener(mouseListener);
         scrollPane.add(list);
     }
-
-    public void Messages(String[] messageFromServer) {
-        menuBar.setVisible(true);
-        buttonPanel.setVisible(true);
-        if (messageFromServer != null) {
-            if (!messageFromServer[0].equals(this.currentSelectedMessage))
-                return;
-            this.messages = messageFromServer;
-            this.messages = Arrays.copyOfRange(this.messages, 1, this.messages.length);
-        }
-        if (noConversation) {
-            messages[1] = "You have no Messages!";
-        }
+    public void buttonPanel() {
         buttonPanel.setBackground(Color.decode(hashColor));
         menuBar.setBackground(Color.decode(hashColor));
         searchBar.setBackground(Color.decode(hashColor));
-
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setPreferredSize(new Dimension(100, 25));
         JLabel name = new JLabel(this.currentSelectedMessage);
@@ -267,38 +255,6 @@ public class GUI extends JFrame {
         buttonPanel.add(editMessage);
         buttonPanel.add(deleteMessage);
         buttonPanel.add(themes);
-        for (int i = 0; i < messages.length; i += 2) {
-            if (i%4 == 0) {
-                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
-                editFormat.add(messages[i+1]);
-                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
-                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i+1] + "</FONT></html>";
-            } else {
-                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
-                editFormat.add(messages[i+1]);
-                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
-                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i+1] + "</FONT></html>";
-            }
-        }
-        JList<String> messagesList = new JList<>(messages);
-        messagesList.setBackground(Color.decode(hashTextB));
-        messagesList.setLayoutOrientation(JList.VERTICAL);
-        scrollMessage.setPreferredSize(new Dimension(700, 400));
-        MouseListener mouseListener = new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                selectedMessage = messagesList.getSelectedValue();
-                for (int i = 0; i < messages.length; i++) {
-                    if (messages[i].equals(selectedMessage)) {
-                        selectedIndex = i;
-                        selectedMessage = editFormat.get(i);
-                        break;
-                    }
-                }
-                System.out.println(selectedMessage);
-            }
-        };
-        messagesList.addMouseListener(mouseListener);
-        scrollMessage.add(messagesList);
         themes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -336,6 +292,52 @@ public class GUI extends JFrame {
 
             }
         });
+    }
+
+    public void Messages(String[] messageFromServer) {
+        menuBar.setVisible(true);
+        buttonPanel.setVisible(true);
+        if (messageFromServer != null) {
+            if (!messageFromServer[0].equals(this.currentSelectedMessage))
+                return;
+            this.messages = messageFromServer;
+            this.messages = Arrays.copyOfRange(this.messages, 1, this.messages.length);
+        }
+        if (noConversation) {
+            messages[1] = "You have no Messages!";
+        }
+        for (int i = 0; i < messages.length; i += 2) {
+            if (i%4 == 0) {
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
+                editFormat.add(messages[i+1]);
+                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i] + "</FONT></html>";
+                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + messages[i+1] + "</FONT></html>";
+            } else {
+                editFormat.add(messages[i].substring(messages[i].indexOf(": ")));
+                editFormat.add(messages[i+1]);
+                messages[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i] + "</FONT></html>";
+                messages[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + messages[i+1] + "</FONT></html>";
+            }
+        }
+        JList<String> messagesList = new JList<>(messages);
+        messagesList.setBackground(Color.decode(hashTextB));
+        messagesList.setLayoutOrientation(JList.VERTICAL);
+        scrollMessage.setPreferredSize(new Dimension(700, 400));
+        MouseListener mouseListener = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                selectedMessage = messagesList.getSelectedValue();
+                for (int i = 0; i < messages.length; i++) {
+                    if (messages[i].equals(selectedMessage)) {
+                        selectedIndex = i;
+                        selectedMessage = editFormat.get(i);
+                        break;
+                    }
+                }
+                System.out.println(selectedMessage);
+            }
+        };
+        messagesList.addMouseListener(mouseListener);
+        scrollMessage.add(messagesList);
         pack();
     }
     public void EditMessage(String message) {
@@ -533,6 +535,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 menuBar.setVisible(true);
+                buttonPanel.setVisible(true);
                 remove(textPanel);
                 Messages(null);
                 isNewMessage = false;
