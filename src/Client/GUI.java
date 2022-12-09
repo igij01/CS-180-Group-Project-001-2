@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 
 public class GUI extends JFrame {
     private String hashColor = "#f2f6ff";
-
+    private String logoutResponse;
     private String selectedMessage;
     private int selectedIndex;
     private boolean themeUpdate;
@@ -161,7 +161,7 @@ public class GUI extends JFrame {
         logout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Login(); //return them to the login page
+                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.LOGOUT));
             }
         });
     }
@@ -671,6 +671,15 @@ public class GUI extends JFrame {
                         break;
                     case CONVERSATION:
                         Messages(((ResponsePacket) packet).args);
+                        break;
+                    case LOGOUT_SUCCESS:
+                        JOptionPane.showMessageDialog(null, responsePacket.args[0], "Success", JOptionPane.INFORMATION_MESSAGE);
+                        break;
+                    case ACCOUNT_DELETION:
+                        int selection = JOptionPane.showConfirmDialog(null, responsePacket.args[0], "Warning", JOptionPane.YES_NO_OPTION);
+                        if (selection == JOptionPane.YES_OPTION) {
+                            PacketAssembler.assemblePacket(ProtocolRequestType.FORCE_LOGOUT);
+                        }
                         break;
 
 
