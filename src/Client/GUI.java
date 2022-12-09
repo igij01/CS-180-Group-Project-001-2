@@ -7,6 +7,7 @@ import Protocol.ResponsePacket;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
@@ -173,7 +174,9 @@ public class GUI extends JFrame {
         ImageIcon image = new ImageIcon(img1);
         JMenuItem SearchIcon = new JMenuItem("Search",
                 image);
-        JTextField searchText = new JTextField();
+        JComboBox<String> searchText = new JComboBox<String>((buyer ? listOfSellers : listOfBuyers));
+        searchText.setEditor(new BasicComboBoxEditor());
+        searchText.setEditable(true);
         searchBar.add(SearchIcon);
         searchBar.add(searchText);
         ImageIcon clear = new ImageIcon("clear.png");
@@ -205,7 +208,7 @@ public class GUI extends JFrame {
         clearIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchText.setText("");
+                ((JTextField) searchText.getEditor().getEditorComponent()).setText("");
             }
         });
         SearchIcon.addActionListener(new ActionListener() {
@@ -320,7 +323,6 @@ public class GUI extends JFrame {
 
     public void Messages(String[] messageFromServer) {
         menuBar.setVisible(true);
-        System.out.println(currentSelectedMessage);
         name.setText(this.currentSelectedMessage);
         currentTheme.setText(theme + "    ");
         currentTheme.setBackground(Color.decode(hashColor));
@@ -340,7 +342,6 @@ public class GUI extends JFrame {
         ArrayList<String> editFormat = new ArrayList<>();
         for (int i = 0; i < messages.length; i += 2) {
             if (i % 4 == 0) {
-                System.out.println(Arrays.toString(messages));
                 editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 2));
                 manipulateColor[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i] + "</FONT></html>";
                 manipulateColor[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i+1] + "</FONT></html>";
@@ -360,7 +361,6 @@ public class GUI extends JFrame {
                 int index = messagesList.getSelectedIndex();
                 selectedMessage = editFormat.get(index / 2);
                 selectedIndex = index / 2;
-                System.out.println(selectedIndex + ". " + selectedMessage);
             }
         };
         messagesList.addMouseListener(mouseListener);
@@ -399,7 +399,6 @@ public class GUI extends JFrame {
         finalize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(textArea.getText());
                 client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE,
                         currentSelectedMessage, Integer.toString(selectedIndex), textArea.getText()));
                 remove(textPanel);
@@ -680,10 +679,20 @@ public class GUI extends JFrame {
                             noConversation = true;
                         else
                             noConversation = false;
-                        System.out.println(conversationTitles.length);
                         displayList();
                         break;
                     case PUBLIC_INFO:
+                        assert buyer ^ responsePacket.args.length != 2;
+                        if (responsePacket.args.length == 2) {
+                            listOfStores = (responsePacket.args[0].replace("[", "")
+                                    .replace("]", "").split(", "));
+                            listOfSellers = (responsePacket.args[1].replace("[", "")
+                                    .replace("]", "").split(", "));
+                            System.out.println(Arrays.toString(listOfStores));
+                            System.out.println(Arrays.toString(listOfSellers));
+                        } else
+                            listOfBuyers = (responsePacket.args[0].replace("[", "")
+                                    .replace("]", "").split(", "));
                         break;
                     case CONVERSATION:
                         Messages(((ResponsePacket) packet).args);
