@@ -36,6 +36,8 @@ public class GUI extends JFrame {
 
     private JMenuBar menuBar = new JMenuBar();
     private JMenuBar searchBar = new JMenuBar();
+    private JComboBox<String> searchUser = new JComboBox<>();
+    private JList<String> listUser = new JList<>();
     private ScrollPane scrollPane = new ScrollPane();
     private JButton login;
     private JButton createAcc;
@@ -63,7 +65,7 @@ public class GUI extends JFrame {
         this.userProfile = userProfile;
         this.buyer = buyer;
         setTitle("Basically Facebook");
-        setSize(750,500);
+        setSize(750, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(splitPane);
@@ -73,6 +75,7 @@ public class GUI extends JFrame {
         add(buttonPanel, BorderLayout.NORTH);
         Menu();
         displayList();
+        Search();
         setVisible(true);
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION_TITLES));
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_PUBLIC_INFO));
@@ -81,7 +84,7 @@ public class GUI extends JFrame {
     }
 
     public void Profile() {
-        setSize(500,600);
+        setSize(500, 600);
         setLocationRelativeTo(null);
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
@@ -100,13 +103,18 @@ public class GUI extends JFrame {
                 setVisible(false);
                 Menu();
             }
+
             @Override
-            public void menuDeselected(MenuEvent e) {}
+            public void menuDeselected(MenuEvent e) {
+            }
+
             @Override
-            public void menuCanceled(MenuEvent e) {}
+            public void menuCanceled(MenuEvent e) {
+            }
         });
 
     }
+
     public void Menu() {
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
@@ -154,7 +162,7 @@ public class GUI extends JFrame {
         search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Search();
+                displaySearch();
             }
         });
 
@@ -166,22 +174,31 @@ public class GUI extends JFrame {
         });
     }
 
-    public void Search() {
+    public void displaySearch() {
+        scrollMessage.setVisible(false);
+        buttonPanel.setVisible(false);
         menuBar.setVisible(false);
+        setJMenuBar(searchBar);
+        searchBar.setVisible(true);
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(buyer ? listOfSellers : listOfBuyers);
+        searchUser.setModel(model);
+        setDisplayListToUsername((buyer ? listOfStores : listOfBuyers));
+    }
+
+    public void Search() {
         ImageIcon searchImage = new ImageIcon("search.png");
         Image image1 = searchImage.getImage();
-        Image img1 = image1.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img1 = image1.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         ImageIcon image = new ImageIcon(img1);
         JMenuItem SearchIcon = new JMenuItem("Search",
                 image);
-        JComboBox<String> searchText = new JComboBox<String>((buyer ? listOfSellers : listOfBuyers));
-        searchText.setEditor(new BasicComboBoxEditor());
-        searchText.setEditable(true);
+        searchUser.setEditor(new BasicComboBoxEditor());
+        searchUser.setEditable(true);
         searchBar.add(SearchIcon);
-        searchBar.add(searchText);
+        searchBar.add(searchUser);
         ImageIcon clear = new ImageIcon("clear.png");
         Image image2 = clear.getImage();
-        Image img2 = image2.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img2 = image2.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         ImageIcon clearImage = new ImageIcon(img2);
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
@@ -194,42 +211,179 @@ public class GUI extends JFrame {
         JMenuItem backIcon = new JMenuItem("",
                 backImage);
         searchBar.add(backIcon);
-        setJMenuBar(searchBar);
+        JButton buttonSeller = new JButton("Create New Message to seller");
+        JButton buttonStore = new JButton("Create New Message to store");
+        JButton buttonBuyerList = new JButton("Create New Message to buyer from list");
+        JButton buttonBuyerSearch = new JButton("Create New Message to buyer from search");
+        if (buyer) {
+            searchBar.add(buttonSeller);
+            searchBar.add(buttonStore);
+        } else {
+            searchBar.add(buttonBuyerList);
+            searchBar.add(buttonBuyerSearch);
+        }
 
         backIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchBar.setVisible(false);
-                menuBar.setVisible(true);
-                setJMenuBar(menuBar);
+                closeSearchBar();
             }
         });
 
         clearIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ((JTextField) searchText.getEditor().getEditorComponent()).setText("");
+                ((JTextField) searchUser.getEditor().getEditorComponent()).setText("");
             }
         });
         SearchIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                ClearList();
-//                if (user instanceof FullBuyer) {
-//                    List(PublicInformation.findSellerBasedOnLetters(searchText.getText(), (FullBuyer) user));
-//                //List("woah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nwoah\nboat");
-//                    if (storeList((FullBuyer) user) == null) {
-//                        System.out.println("There are no stores!");
-//                    } else {
-//                        List(Objects.requireNonNull(storeList((FullBuyer) user)));
-//                    }
-//                } else {
-//                    List(findBuyerBasedOnLetters(searchText.getText(), (FullSeller) user));
-//                }
+                if (buyer) {
+                    ArrayList<String> userFound = new ArrayList<>();
+                    for (String seller : listOfSellers) {
+                        if (seller.contains(((JTextField) searchUser.getEditor().getEditorComponent()).getText())) {
+                            userFound.add(seller);
+                        }
+                    }
+                    if (userFound.isEmpty())
+                        userFound.add("No Seller found");
+                    DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(userFound.toArray(new String[0]));
+                    searchUser.setModel(model);
+                } else {
+                    ArrayList<String> userFound = new ArrayList<>();
+                    for (String buyer : listOfBuyers) {
+                        if (buyer.contains(((JTextField) searchUser.getEditor().getEditorComponent()).getText())) {
+                            userFound.add(buyer);
+                        }
+                    }
+                    if (userFound.isEmpty())
+                        userFound.add("No Buyer found");
+                    DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(userFound.toArray(new String[0]));
+                    searchUser.setModel(model);
+                }
+            }
+        });
+        buttonSeller.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (searchUser.getSelectedItem() == null ||
+                        searchUser.getSelectedItem().equals("There are no sellers!") ||
+                        searchUser.getSelectedItem().equals("No Seller found"))
+                    JOptionPane.showMessageDialog(null, "invalid seller to message",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                else
+                    searchCreateNewMessage((String) searchUser.getSelectedItem(), false);
+            }
+        });
+
+        buttonStore.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listUser.getSelectedValue() == null ||
+                        listUser.getSelectedValue().equals("There are no stores!"))
+                    JOptionPane.showMessageDialog(null, "invalid store to message",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                else
+                    searchCreateNewMessage((String) searchUser.getSelectedItem(), true);
+            }
+        });
+
+        buttonBuyerList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listUser.getSelectedValue() == null ||
+                        listUser.getSelectedValue().equals("There are no buyers!"))
+                    JOptionPane.showMessageDialog(null, "invalid buyer to message",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                else
+                    searchCreateNewMessage((String) searchUser.getSelectedItem(), false);
+            }
+        });
+
+        buttonBuyerSearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (searchUser.getSelectedItem() == null ||
+                        searchUser.getSelectedItem().equals("There are no buyers!") ||
+                        searchUser.getSelectedItem().equals("No Buyer found"))
+                    JOptionPane.showMessageDialog(null, "invalid buyer to message",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                else
+                    searchCreateNewMessage((String) searchUser.getSelectedItem(), false);
             }
         });
     }
-    //public void clearList() {items.clear();}
+
+    public void searchCreateNewMessage(String selectedString, boolean isStore) {
+        JPanel textPanel = new JPanel();
+        textPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
+        textPanel.setPreferredSize(new Dimension(100, 50));
+        JTextArea textArea = new JTextArea();
+        JScrollPane textPane = new JScrollPane(textArea);
+        textPane.setPreferredSize(new Dimension(600, 40));
+        JButton name = new JButton("Send to " + selectedString + "  ");
+        ImageIcon clear = new ImageIcon("clear.png");
+        Image image2 = clear.getImage();
+        Image img2 = image2.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
+        ImageIcon clearImage = new ImageIcon(img2);
+        JMenuItem clearIcon = new JMenuItem("",
+                clearImage);
+        ImageIcon upload = new ImageIcon("upload.png");
+        Image uploadImage = upload.getImage();
+        Image uploadImg = uploadImage.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
+        ImageIcon uploadImageScale = new ImageIcon(uploadImg);
+        JMenuItem uploadIcon = new JMenuItem("",
+                uploadImageScale);
+        textPanel.add(name);
+        textPanel.add(textPane);
+        textPanel.add(uploadIcon);
+        textPanel.add(clearIcon);
+        splitPane.setRightComponent(textPanel);
+
+        name.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                client.addByteBufferToWrite(PacketAssembler.assemblePacket(
+                        (isStore ? ProtocolRequestType.SEND_MESSAGE_STORE : ProtocolRequestType.SEND_MESSAGE_USER),
+                        selectedString, textArea.getText()));
+                closeSearchBar();
+            }
+        });
+        uploadIcon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText(uploadFile());
+            }
+        });
+        clearIcon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText("");
+            }
+        });
+    }
+
+    private void closeSearchBar() {
+        searchBar.setVisible(false);
+        menuBar.setVisible(true);
+        setJMenuBar(menuBar);
+        buttonPanel.setVisible(true);
+        add(buttonPanel, BorderLayout.NORTH);
+        scrollPane.removeAll();
+        scrollMessage.setVisible(true);
+        splitPane.setRightComponent(scrollMessage);
+        displayList();
+    }
+
+    public void setDisplayListToUsername(String[] usernames) {
+        scrollPane.removeAll();
+        listUser = new JList<>(usernames);
+        listUser.setLayoutOrientation(JList.VERTICAL);
+        scrollPane.add(listUser);
+    }
+
     public void displayList() {
         if (!noConversation && currentSelectedMessage == null) {
             client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
@@ -264,6 +418,7 @@ public class GUI extends JFrame {
         list.addMouseListener(mouseListener);
         scrollPane.add(list);
     }
+
     public void buttonPanel() {
         buttonPanel.setBackground(Color.decode(hashColor));
         menuBar.setBackground(Color.decode(hashColor));
@@ -344,11 +499,11 @@ public class GUI extends JFrame {
             if (i % 4 == 0) {
                 editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 2));
                 manipulateColor[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i] + "</FONT></html>";
-                manipulateColor[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i+1] + "</FONT></html>";
+                manipulateColor[i + 1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText1 + "\">" + manipulateColor[i + 1] + "</FONT></html>";
             } else {
                 editFormat.add(messages[i].substring(messages[i].indexOf(": ") + 2));
                 manipulateColor[i] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + manipulateColor[i] + "</FONT></html>";
-                manipulateColor[i+1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + manipulateColor[i+1] + "</FONT></html>";
+                manipulateColor[i + 1] = "<html><FONT style=\"BACKGROUND-COLOR: " + hashText2 + "\">" + manipulateColor[i + 1] + "</FONT></html>";
             }
         }
         themeUpdate = false;
@@ -367,16 +522,17 @@ public class GUI extends JFrame {
         scrollMessage.add(messagesList);
         pack();
     }
+
     public void EditMessage(String message) {
         menuBar.setVisible(false);
         buttonPanel.setVisible(false);
         JPanel textPanel = new JPanel();
         textPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.X_AXIS));
-        textPanel.setPreferredSize(new Dimension(100,50));
+        textPanel.setPreferredSize(new Dimension(100, 50));
         JTextArea textArea = new JTextArea(message);
         JScrollPane textPane = new JScrollPane(textArea);
-        textPane.setPreferredSize(new Dimension(600,40));
+        textPane.setPreferredSize(new Dimension(600, 40));
         JButton finalize = new JButton("Finalize Edited Message");
         ImageIcon back = new ImageIcon("back.png");
         Image backImg = back.getImage();
@@ -419,6 +575,7 @@ public class GUI extends JFrame {
             }
         });
     }
+
     public void themes() {
         buttonPanel.setVisible(false);
         themeUpdate = true;
@@ -537,13 +694,13 @@ public class GUI extends JFrame {
                 backImage);
         ImageIcon clear = new ImageIcon("clear.png");
         Image image2 = clear.getImage();
-        Image img2 = image2.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image img2 = image2.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         ImageIcon clearImage = new ImageIcon(img2);
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
         ImageIcon upload = new ImageIcon("upload.png");
         Image uploadImage = upload.getImage();
-        Image uploadImg = uploadImage.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        Image uploadImg = uploadImage.getScaledInstance(15, 15, java.awt.Image.SCALE_SMOOTH);
         ImageIcon uploadImageScale = new ImageIcon(uploadImg);
         JMenuItem uploadIcon = new JMenuItem("",
                 uploadImageScale);
@@ -591,6 +748,7 @@ public class GUI extends JFrame {
 
 
     }
+
     //allows users to upload files
     public String uploadFile() {
         try {
@@ -630,6 +788,7 @@ public class GUI extends JFrame {
             }
         }
     };
+
     private boolean isValidLogin() {
         try {
             String username = userText.getText();
@@ -644,7 +803,7 @@ public class GUI extends JFrame {
     private class AsyncListener extends SwingWorker<Object, Void> {
         @Override
         protected Object doInBackground() throws Exception {
-            while (!isCancelled()){
+            while (!isCancelled()) {
                 Object packet = client.popFromQueue();
                 if (packet != null)
                     return packet;
@@ -657,8 +816,8 @@ public class GUI extends JFrame {
             Object packet = null;
             try {
                 packet = get();
-            } catch (InterruptedException e) {}
-            catch (ExecutionException e) {
+            } catch (InterruptedException e) {
+            } catch (ExecutionException e) {
                 String why = null;
                 Throwable cause = e.getCause();
                 if (cause != null) {
@@ -699,6 +858,9 @@ public class GUI extends JFrame {
                         break;
                     case LOGOUT_SUCCESS:
                         JOptionPane.showMessageDialog(null, responsePacket.args[0], "Success", JOptionPane.INFORMATION_MESSAGE);
+                        dispose();
+                        //TODO someone fix this please
+                        System.exit(0);
                         break;
                     case ACCOUNT_DELETION:
                         int selection = JOptionPane.showConfirmDialog(null, responsePacket.args[0], "Warning", JOptionPane.YES_NO_OPTION);

@@ -162,7 +162,6 @@ public class ClientCore extends Thread {
     }
 
     public boolean removeFromQueue(Object o) {
-        System.out.println(Thread.currentThread().getStackTrace()[0]);
         return readQueue.remove(o);
     }
 
