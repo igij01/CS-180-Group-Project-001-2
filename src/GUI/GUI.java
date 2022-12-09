@@ -10,11 +10,10 @@ import UserCore.PublicInformation;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import javax.swing.filechooser.FileSystemView;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -792,17 +791,18 @@ public class GUI extends Thread {
     //allows users to upload files
     public static String uploadFile() {
         try {
-            File f = new File("C:\\Users\\pc\\Documents\\New folder\\");
-            JFileChooser fc = new JFileChooser(f, FileSystemView.getFileSystemView());
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
+            JFileChooser fc = new JFileChooser();
+            fc.setFileFilter(filter);
             int answer = fc.showOpenDialog(null); // (JFrame.this) when in JFrame
             if (answer == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 byte[] content = Files.readAllBytes(file.toPath());
                 String text = new String(content); // Using default encoding
-                fc.getFileSystemView();
                 return text;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Invalid File!", "Error", JOptionPane.ERROR_MESSAGE);
         }
         return null;
