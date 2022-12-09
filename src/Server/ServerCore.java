@@ -76,15 +76,17 @@ public class ServerCore {
                         } catch (Exception e) {
                             System.out.println("Socket Closed " + key.channel());
                             socket.close();
-                            table.get(socket).userLogOut();
-                            table.remove(socket);
+                            MessageSystem userToBeLogout = table.remove(socket);
+                            if (userToBeLogout != null)
+                                userToBeLogout.userLogOut();
                             continue; //socket is closed. continue loop
                         }
                         if (read == -1) {
                             System.out.println("Socket Closed " + key.channel());
                             socket.close();
-                            table.get(socket).userLogOut();
-                            table.remove(socket);
+                            MessageSystem userToBeLogout = table.remove(socket);
+                            if (userToBeLogout != null)
+                                userToBeLogout.userLogOut();
                             continue; //socket is closed. continue loop
                         }
 
