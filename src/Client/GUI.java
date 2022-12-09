@@ -11,7 +11,10 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +48,8 @@ public class GUI extends JFrame {
     private JPasswordField passText;
     private JLabel name = new JLabel(this.currentSelectedMessage);
     private JLabel currentTheme = new JLabel(theme + "    ");
+
+    private File exportPath = null;
 
     private String[] conversationTitles = {"Loading"};
     private String[] listOfUsernames;
@@ -428,6 +433,7 @@ public class GUI extends JFrame {
         JButton newMessage = new JButton("New Message");
         JButton editMessage = new JButton("Edit Message");
         JButton deleteMessage = new JButton("Delete Message");
+        JButton exportConversation = new JButton("Export Conversation");
         JButton themes = new JButton("Themes");
         JSeparator separator = new JSeparator();
         buttonPanel.add(name);
@@ -436,6 +442,7 @@ public class GUI extends JFrame {
         buttonPanel.add(newMessage);
         buttonPanel.add(editMessage);
         buttonPanel.add(deleteMessage);
+        buttonPanel.add(exportConversation);
         buttonPanel.add(themes);
         themes.addActionListener(new ActionListener() {
             @Override
@@ -476,6 +483,37 @@ public class GUI extends JFrame {
 
                 }
 
+            }
+        });
+        exportConversation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (currentSelectedMessage != null) {
+                    String[] option = new String[]{"export all", "export conversation with " + currentSelectedMessage};
+                    int selection = JOptionPane.showOptionDialog(null, "what do you want to export?",
+                            "export", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                            option, option[1]);
+                    if (selection == JOptionPane.CLOSED_OPTION)
+                        return;
+                    System.out.println(selection);
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    fileChooser.setToolTipText("Please choose the directory you want to the export csv file in");
+                    int answer = fileChooser.showOpenDialog(null);
+                    if (answer == JFileChooser.APPROVE_OPTION) {
+                        exportPath = fileChooser.getSelectedFile();
+                        if (selection == 0)
+                            client.addByteBufferToWrite(PacketAssembler.assemblePacket(
+                                    ProtocolRequestType.EXPORT_ALL_CONVERSATION));
+                        else if (selection == 1)
+                            client.addByteBufferToWrite(PacketAssembler.assemblePacket(
+                                    ProtocolRequestType.EXPORT_CONVERSATION, currentSelectedMessage));
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select the message you want " +
+                            "to export.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                }
             }
         });
     }
@@ -858,7 +896,21 @@ public class GUI extends JFrame {
                                     .replace("]", "").split(", "));
                         break;
                     case CONVERSATION:
-                        Messages(((ResponsePacket) packet).args);
+                        Messages(responsePacket.args);
+                        break;
+                    case CSV_EXPORT:
+                        assert exportPath != null;
+                        File csvExport = new File(exportPath.getAbsolutePath() + File.separator
+                                + "export_conversation.csv");
+                        try (PrintWriter pw = new PrintWriter(csvExport)) {
+                            pw.write(responsePacket.args[0]);
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(null, "IO error while exporting " +
+                                    "the conversation", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        JOptionPane.showMessageDialog(null, "Successfully export csv file to - " +
+                                csvExport.getAbsolutePath(), "Success", JOptionPane.INFORMATION_MESSAGE);
                         break;
                     case LOGOUT_SUCCESS:
                         JOptionPane.showMessageDialog(null, responsePacket.args[0], "Success", JOptionPane.INFORMATION_MESSAGE);
