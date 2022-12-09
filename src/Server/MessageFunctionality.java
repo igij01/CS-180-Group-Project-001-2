@@ -49,8 +49,10 @@ public class MessageFunctionality {
             ByteBuffer[] response = userToMessageFunc.get(target).updateMessage(this.user.getUsername());
             MessageSystem.runNotificationThread(MessageSystem.userToKey.get(target), response);
         }
-        if (currentConversation.equals(params[0]))
+        if (currentConversation.equals(params[0])) {
+            MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user), displayConversationTitles());
             return displayConversation(new String[]{params[0]});
+        }
         return displayConversationTitles();
     }
 
@@ -114,6 +116,7 @@ public class MessageFunctionality {
             ByteBuffer[] response = userToMessageFunc.get(target).updateMessage(this.user.getUsername());
             MessageSystem.runNotificationThread(MessageSystem.userToKey.get(target), response);
         }
+        MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user), displayConversationTitles());
         return displayConversation(new String[]{params[0]});
     }
 
@@ -127,6 +130,7 @@ public class MessageFunctionality {
     protected ByteBuffer deleteMessage(String[] params) throws IllegalUserNameException,
             NumberFormatException {
         this.user.deleteMessage(params[0], Integer.parseInt(params[1]));
+        MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user), displayConversationTitles());
         return displayConversation(new String[]{params[0]});
     }
 

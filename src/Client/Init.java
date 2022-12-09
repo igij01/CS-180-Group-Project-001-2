@@ -1,6 +1,7 @@
 package Client;
 
 import Protocol.DataPacket;
+import Protocol.PacketDeserializer;
 import Protocol.ResponsePacket;
 
 import javax.swing.*;
@@ -107,8 +108,9 @@ public class Init extends JFrame {
 
     public void initialize(String server, int port) throws IOException {
         final ByteBuffer readBuffer = ByteBuffer.allocate(0x1000);
-        SocketChannel channel = null;
-        SocketAddress address = null;
+        PacketDeserializer deserializer = new PacketDeserializer();
+        SocketChannel channel;
+        SocketAddress address;
         try {
             address = new InetSocketAddress(server, port);
         } catch (IllegalArgumentException e) {
@@ -119,7 +121,6 @@ public class Init extends JFrame {
         ResponsePacket packet = null;
 
         try {
-            assert address != null;
             channel = SocketChannel.open(address);
             readBuffer.clear();
             int read = channel.read(readBuffer);
@@ -130,7 +131,7 @@ public class Init extends JFrame {
                 readBuffer.flip();
                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                 buffer = buffer.put(readBuffer);
-                packet = (ResponsePacket) ResponsePacket.packetDeserialize(buffer);
+                packet = (ResponsePacket) deserializer.packetDeserialize(buffer);
                 if (packet != null) {
                     System.out.println(packet.args[0]);
                 }
@@ -144,7 +145,7 @@ public class Init extends JFrame {
             return;
         }
         assert packet != null;
-        ClientCore client = new ClientCore(channel);
+        ClientCore client = new ClientCore(channel, deserializer);
         client.start();
         Login login = new Login(client, PacketAssembler.convertStringToStringArray(packet.args[0]));
         dispose();

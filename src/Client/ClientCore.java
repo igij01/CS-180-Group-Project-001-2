@@ -1,9 +1,6 @@
 package Client;
 
-import Protocol.DataPacket;
-import Protocol.ErrorPacket;
-import Protocol.ProtocolRequestType;
-import Protocol.ResponsePacket;
+import Protocol.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,6 +16,7 @@ import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class ClientCore extends Thread {
+    private PacketDeserializer deserializer;
 
     private SocketChannel channel;
     private SocketAddress address;
@@ -26,11 +24,12 @@ public class ClientCore extends Thread {
     private ArrayBlockingQueue<Object> readQueue;
     private Selector selector = Selector.open();
 
-    public ClientCore(SocketChannel channel) throws IOException {
+    public ClientCore(SocketChannel channel, PacketDeserializer deserializer) throws IOException {
         this.channel = channel;
         this.channel.register(selector, SelectionKey.OP_WRITE);
         this.writeQueue = new ArrayBlockingQueue<>(1000);
         this.readQueue = new ArrayBlockingQueue<>(1000);
+        this.deserializer = deserializer;
 
     }
 
@@ -39,6 +38,7 @@ public class ClientCore extends Thread {
         this.writeQueue = new ArrayBlockingQueue<>(1000);
         this.readQueue = new ArrayBlockingQueue<>(1000);
         final ByteBuffer readBuffer = ByteBuffer.allocate(0x1000);
+        this.deserializer = new PacketDeserializer();
         try {
             this.channel = SocketChannel.open(address);
             readBuffer.clear();
@@ -50,7 +50,7 @@ public class ClientCore extends Thread {
                 readBuffer.flip();
                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                 buffer = buffer.put(readBuffer);
-                ResponsePacket packet = (ResponsePacket) ResponsePacket.packetDeserialize(buffer);
+                ResponsePacket packet = (ResponsePacket) deserializer.packetDeserialize(buffer);
                 if (packet != null) {
                     System.out.println(packet.args[0]);
                 }
@@ -86,7 +86,7 @@ public class ClientCore extends Thread {
                                 ByteBuffer buffer = ByteBuffer.allocate(readBuffer.remaining());
                                 buffer = buffer.put(readBuffer);
                                 boolean repeat = true;
-                                Object responsePacket = ResponsePacket.packetDeserialize(buffer);
+                                Object responsePacket = deserializer.packetDeserialize(buffer);
                                 if (responsePacket != null) {
                                     readQueue.add(responsePacket);
                                     if (responsePacket instanceof ResponsePacket) {
@@ -99,7 +99,7 @@ public class ClientCore extends Thread {
                                     repeat = false;
 
                                 while(repeat) {
-                                    responsePacket = ResponsePacket.packetDeserialize(null);
+                                    responsePacket = deserializer.packetDeserialize(null);
                                     if (responsePacket != null) {
                                         readQueue.add(responsePacket);
                                         if (responsePacket instanceof ResponsePacket) {

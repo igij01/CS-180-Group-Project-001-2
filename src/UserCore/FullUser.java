@@ -327,11 +327,11 @@ public class FullUser implements Serializable {
             conversations.remove(c);
         conversations.addAll(0, newConversations);
         ArrayList<String> conversationTitles = new ArrayList<>();
-        for (int i = 0; i < conversations.size(); i++) {
-            if (conversations.get(i).newMessageStatus(this.user)) {
-                conversationTitles.add(conversations.get(i).getOtherUser(this.user).getUserName() + '\n');
+        for (Conversation conversation : conversations) {
+            if (conversation.newMessageStatus(this.user)) {
+                conversationTitles.add(conversation.getOtherUser(this.user).getUserName() + '\n');
             } else {
-                conversationTitles.add(conversations.get(i).getOtherUser(this.user).getUserName());
+                conversationTitles.add(conversation.getOtherUser(this.user).getUserName());
             }
         }
         if (conversationTitles.isEmpty())

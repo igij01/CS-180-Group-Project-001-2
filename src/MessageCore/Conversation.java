@@ -191,7 +191,6 @@ public class Conversation implements Serializable {
      */
     public String toStringCSV(User requestingUser) {
         if (requestingUser.equals(this.buyer) || requestingUser.equals(this.seller)) {
-            updateReadStatus(requestingUser);
             StringBuilder rawString = new StringBuilder();
             for (Message m : conversation) {
                 rawString.append(m.fileToString(requestingUser)).append('\n');

@@ -22,7 +22,7 @@ import java.util.Objects;
 public class MessageSystem {
     protected static Selector selector = null;
     protected static Hashtable<FullUser, SelectionKey> userToKey = new Hashtable<>();
-    private FullUser user;
+    private final FullUser user;
     private final UserProfile userProfile;
     private final MessageFunctionality message;
 
@@ -106,7 +106,7 @@ public class MessageSystem {
      */
     public MessageSystem(ByteBuffer initMessage, int numRead, SelectionKey key) throws
             InvalidPasswordException, IllegalUserNameException, EmailFormatException, IllegalRequestFormat {
-        DataPacket initPacket = DataPacket.packetDeserialize(initMessage);
+        DataPacket initPacket = DataPacket.packetDeserializeServer(initMessage);
         if (initPacket != null) {
             if (initPacket.protocolRequestType == ProtocolRequestType.LOGIN) {
                 this.user = logIn(initPacket.args[0], initPacket.args[1]);
@@ -183,7 +183,7 @@ public class MessageSystem {
         ArrayList<DataPacket> packets = new ArrayList<>();
         ArrayList<ByteBuffer> response = new ArrayList<>();
         boolean repeat = true;
-        DataPacket dataPacket = DataPacket.packetDeserialize(buffer);
+        DataPacket dataPacket = DataPacket.packetDeserializeServer(buffer);
         System.out.println(dataPacket);
         if (dataPacket != null)
             packets.add(dataPacket);
@@ -191,7 +191,7 @@ public class MessageSystem {
             repeat = false;
 
         while(repeat) {
-            dataPacket = DataPacket.packetDeserialize(null);
+            dataPacket = DataPacket.packetDeserializeServer(null);
             if (dataPacket != null)
                 packets.add(dataPacket);
             else
@@ -206,7 +206,8 @@ public class MessageSystem {
                 response.add(switch (Objects.requireNonNull(packet).protocolRequestType) {
                     case DISPLAY_PROFILE -> userProfile.displayUserProfile();
                     case CHANGE_USERNAME -> userProfile.changeUsername(packet.args);
-                    case LOGIN, REGISTER -> throw new IllegalRequestFormat(packet.protocolRequestType + "- is not allowed here!");
+                    case LOGIN, REGISTER -> throw new IllegalRequestFormat(packet.protocolRequestType +
+                            "- is not allowed here!");
                     case CHANGE_EMAIL -> userProfile.changeEmail(packet.args);
                     case BLOCK_USER -> userProfile.blockUser(packet.args);
                     case UNBLOCK_USER -> userProfile.unblockUser(packet.args);

@@ -2,7 +2,6 @@ package Protocol;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DataPacket implements Externalizable {
@@ -68,11 +67,15 @@ public class DataPacket implements Externalizable {
 
     /**
      * deserialize serialized packet
+     * <p>
+     * Note: <b>This is designed for server deserialization ONLY, for deserialization on the client side,
+     * please use PacketDeserializer</b>
      *
      * @param buffer the buffer that contains the serialized packet
      * @return the deserialized packet as {@code Object}
+     * @see PacketDeserializer#packetDeserialize(ByteBuffer)
      */
-    public static DataPacket packetDeserialize(ByteBuffer buffer) {
+    public static DataPacket packetDeserializeServer(ByteBuffer buffer) {
         byte[] packet;
         if (buffer == null)
             packet = new byte[bytesLeft.length];
