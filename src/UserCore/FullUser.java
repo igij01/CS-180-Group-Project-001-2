@@ -653,6 +653,31 @@ public class FullUser implements Serializable {
                 "\ncensored pattern: " + this.replaceChar;
     }
 
+    public String[] serverToString() {
+        ArrayList<String> out = new ArrayList<>();
+        out.add(user.serverToString());
+        StringBuilder stringBuilder = new StringBuilder();
+        if (blocked.size() > 0) {
+            for (User block : blocked) {
+                stringBuilder.append(block.getUserName()).append('\n');
+            }
+            out.add(stringBuilder.deleteCharAt(stringBuilder.length() - 1).toString());
+        } else
+            out.add("you don't have anyone blocked");
+        if (invisible.size() > 0) {
+            stringBuilder = new StringBuilder();
+            for (User invis : invisible) {
+                stringBuilder.append(invis.getUserName()).append('\n');
+            }
+            out.add(stringBuilder.deleteCharAt(stringBuilder.length() - 1).toString());
+        } else
+            out.add("you don't have anyone invisible");
+        out.add(ignoreFiltering ? "OFF" : "ON");
+        out.add(String.valueOf(filterWords));
+        out.add(String.valueOf(replaceChar));
+        return out.toArray(new String[0]);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

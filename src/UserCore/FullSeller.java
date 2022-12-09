@@ -7,6 +7,7 @@ import MessageCore.IllegalTargetException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -156,5 +157,19 @@ public class FullSeller extends FullUser implements Serializable {
     @Override
     public String toString() {
         return super.toString() + "\nStore: " + stores;
+    }
+
+    @Override
+    public String[] serverToString() {
+        ArrayList<String> out = new ArrayList<>(List.of(super.serverToString()));
+        if (stores.size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Store store : stores) {
+                stringBuilder.append(store.getStoreName()).append('\n');
+            }
+            out.add(stringBuilder.deleteCharAt(stringBuilder.length() - 1).toString());
+        } else
+            out.add("you don't have any store");
+        return out.toArray(new String[0]);
     }
 }

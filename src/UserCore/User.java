@@ -158,4 +158,9 @@ public class User implements Serializable {
                 ", role = " + role +
                 (waitingToBeDeleted ? ", ACCOUNT WAITING TO BE DELETED!" : "");
     }
+
+    public String serverToString() {
+        return String.format("%s\n%s\n%s%s", userName, email, role,
+                (waitingToBeDeleted ? "\nACCOUNT WAITING TO BE DELETED!" : ""));
+    }
 }

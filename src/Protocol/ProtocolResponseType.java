@@ -1,50 +1,51 @@
 package Protocol;
 
 public enum ProtocolResponseType {
-    /*
-    list of usernames: {user1, user2, user3, etc...}
-     */
+    /**
+    list of usernames: {user1, user2, user3, etc...} <br>
+     **/
     USER_NAMES,
-    /*
-    String[6] - buyer
-    1. account info: UserName = 'buyer', Email = 'mail@mail.com', role = BUYER
-    2. blocked users: []
-    3. made invisible users: []
-    4. censor mode: ON
-    5. filtered words: []
-    6. censored pattern: *
-
-    String[7] - seller
-    1. account info: UserName = 'seller', Email = 'mail@mail.com', role = SELLER
-    2. blocked users: []
-    3. made invisible users: []
-    4. censor mode: ON
-    5. filtered words: []
-    6. censored pattern: *
-    7. Store: []
-     */
+    /**
+    only the things after ":" is in the array<br>
+    String[6] - buyer<br>
+    (1. account info): buyer '\n' mail@mail.com '\n' BUYER<br>
+    (2. blocked users): <br>
+    (3. made invisible users): <br>
+    (4. censor mode): ON<br>
+    (5. filtered words): []<br>
+    (6. censored pattern): *<br>
+     <br>
+    String[7] - seller<br>
+    (1. account info): buyer '\n' mail@mail.com '\n' SELLER '\n' ACCOUNT WAITING TO BE DELETED!<br>
+    (2. blocked users): <br>
+    (3. made invisible users): <br>
+    (4. censor mode): OFF<br>
+    (5. filtered words): []<br>
+    (6. censored pattern): *<br>
+    (7. Store): []<br>
+     **/
     PROFILE,
-    /*
-    String[2] - buyer
-    1. array of store - [store1, store2...]
-    2. array of seller(for searching purpose ONLY) - [seller1, seller2...]
-    String[1] - seller
-    1. array of buyer(for searching purpose ONLY) - [buyer1, buyer2...]
-     */
+    /**
+    String[2] - buyer<br>
+    1. array of store - [store1, store2...]<br>
+    2. array of seller(for searching purpose ONLY) - [seller1, seller2...]<br>
+    String[1] - seller<br>
+    1. array of buyer(for searching purpose ONLY) - [buyer1, buyer2...]<br>
+     **/
     PUBLIC_INFO,
     /*
 
      */
     CONVERSATION_TITLES,
-    /*
-    String[]
-    target_username
-    username: message
-    timestamp, edited flag
-    username1: message
-    timestamp, edited flag
+    /**
+    String[]<br>
+    target_username<br>
+    username: message<br>
+    timestamp, edited flag<br>
+    username1: message<br>
+    timestamp, edited flag<br>
     ...
-     */
+     **/
     CONVERSATION,
     CSV_EXPORT,
     LOGOUT_SUCCESS,

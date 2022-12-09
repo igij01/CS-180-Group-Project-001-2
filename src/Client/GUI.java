@@ -11,7 +11,6 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,6 +27,7 @@ public class GUI extends JFrame {
     private boolean isNewMessage = false;
     private String[] messages = {"loading"};
     private String currentSelectedMessage = null;
+    private Profile profileFrame;
     private JPanel themesPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
     private JSplitPane splitPane = new JSplitPane();
@@ -55,7 +55,7 @@ public class GUI extends JFrame {
     private String[] listOfUsernames;
     private String[] listOfStores = {"Loading"};
     private String[] listOfBuyers = {"Loading"};
-    private String[] listOfSellers;
+    private String[] listOfSellers = {"loading"};
     private ClientCore client;
     private String[] userProfile;
     private boolean buyer;
@@ -69,6 +69,7 @@ public class GUI extends JFrame {
         this.client = client;
         this.userProfile = userProfile;
         this.buyer = buyer;
+        profileFrame = new Profile();
         setTitle("Basically Facebook");
         setSize(750, 500);
         setLocationRelativeTo(null);
@@ -88,36 +89,212 @@ public class GUI extends JFrame {
         listener.execute();
     }
 
-    public void Profile() {
-        setSize(500, 600);
-        setLocationRelativeTo(null);
-        JMenu menu = new JMenu("Menu");
-        menuBar.add(menu);
+    private class Profile extends JFrame {
+        private JMenuBar profileMenuBar;
+        private JMenu menu;
+        private JPanel panelProfile;
+        private JPanel panelBlockUser;
+        private JPanel panelInvisUser;
+        private JPanel panelCensorWords;
+        private JPanel panelStore;
+        private JPanel changeProfile;
+        private JPanel dashBoard;
+        private JTextField usernameField;
+        private JTextField emailField;
+        private JTextField roleTextField;
+        private JLabel accountToBeDeleted;
+        private JComboBox<String> censorList;
+        private JTextField pattern;
+        private JLabel censorModeLabel;
+        private JComboBox<String> blockList;
+        private JComboBox<String> availableUser;
+        private JComboBox<String> invisList;
+        private JList<String> listOfStores;
 
-        JPanel panel = new JPanel();
-        JLabel email = new JLabel("Email: user.getUser().getUserName()");
-        JLabel password = new JLabel("Password: *******");
-        panel.add(email);
-        panel.add(password);
+        private String username;
+        private String email;
+        private String role;
+        private boolean toBeDeleted;
+        private String[] blockedUsers;
+        private String[] invisUsers;
+        private String censorMode;
+        private String[] filterWords;
+        private String censorPattern;
+        private String[] stores;
 
-        setJMenuBar(menuBar);
-        setVisible(true);
-        menu.addMenuListener(new MenuListener() {
-            @Override
-            public void menuSelected(MenuEvent e) {
-                setVisible(false);
-                Menu();
+
+        private void processServerResponse() {
+            //processing the output from server
+            String[] userInfo = userProfile[0].split("\n");
+            System.out.println(Arrays.toString(userInfo));
+            username = userInfo[0];
+            email = userInfo[1];
+            role = userInfo[2];
+            toBeDeleted = userInfo.length == 4;
+            blockedUsers = userProfile[1].split("\n");
+            invisUsers = userProfile[2].split("\n");
+            censorMode = userProfile[3];
+            filterWords = userProfile[4].replace("[", "").replace("]", "").split(", ");
+            censorPattern = userProfile[5];
+            stores = null;
+            if (!buyer) {
+                stores = userProfile[6].split("\n");
             }
 
-            @Override
-            public void menuDeselected(MenuEvent e) {
+        }
+
+        public Profile() {
+            setTitle("Profile");
+            setSize(500, 600);
+            setLocationRelativeTo(null);
+            Container contentPane = getContentPane();
+            contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+            profileMenuBar = new JMenuBar();
+            menu = new JMenu("Menu");
+            profileMenuBar.add(menu);
+            processServerResponse();
+
+            panelProfile = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panelProfile.setName("Profile");
+            contentPane.add(panelProfile);
+            JLabel usernameLabel = new JLabel("Username:");
+            panelProfile.add(usernameLabel);
+            usernameField = new JTextField(username, username.length());
+            usernameField.setEditable(false);
+            panelProfile.add(usernameField);
+            JLabel emailLabel = new JLabel("Email:");
+            panelProfile.add(emailLabel);
+            emailField = new JTextField(email, email.length());
+            emailField.setEditable(false);
+            panelProfile.add(emailField);
+            JLabel roleLabel = new JLabel("Role:");
+            panelProfile.add(roleLabel);
+            roleTextField = new JTextField(role, role.length());
+            roleTextField.setEditable(false);
+            panelProfile.add(roleTextField);
+            accountToBeDeleted = new JLabel();
+            accountToBeDeleted.setForeground(new Color(224, 27, 36));
+            panelProfile.add(accountToBeDeleted);
+            if (toBeDeleted)
+                accountToBeDeleted.setText("ACCOUNT WAITING TO BE DELETED!");
+
+            if (!buyer) {
+                panelStore = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                panelStore.setName("Store");
+                contentPane.add(panelStore);
+                listOfStores = new JList<>(stores);
+                panelStore.add(listOfStores);
+                JTextField newStoreField = new JTextField(15);
+                panelStore.add(newStoreField);
+                JButton button = new JButton("Add store");
+                panelStore.add(button);
             }
 
-            @Override
-            public void menuCanceled(MenuEvent e) {
-            }
-        });
+            panelCensorWords = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panelCensorWords.setName("censor");
+            contentPane.add(panelCensorWords);
+            JLabel censorLabel = new JLabel("Censored Words:");
+            panelCensorWords.add(censorLabel);
+            censorList = new JComboBox<>(filterWords);
+            panelCensorWords.add(censorList);
+            JButton removeCensoredWord = new JButton("Remove Word");
+            panelCensorWords.add(removeCensoredWord);
+            JTextField addCensoredWord = new JTextField(15);
+            panelCensorWords.add(addCensoredWord);
+            JButton addCensorship = new JButton("Add Censored Word");
+            panelCensorWords.add(addCensorship);
+            JLabel censorPatternLabel = new JLabel("Censor pattern:");
+            panelCensorWords.add(censorPatternLabel);
+            pattern = new JTextField(1);
+            pattern.setEditable(true);
+            pattern.setText(censorPattern);
+            panelCensorWords.add(pattern);
+            JButton changeCensorPattern = new JButton("change pattern");
+            panelCensorWords.add(changeCensorPattern);
+            censorModeLabel = new JLabel();
+            censorModeLabel.setText(censorMode);
+            panelCensorWords.add(censorModeLabel);
 
+            panelBlockUser = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panelBlockUser.setName("Block User");
+            contentPane.add(panelBlockUser);
+            JLabel blockLabel = new JLabel("Blocked User:");
+            panelBlockUser.add(blockLabel);
+            blockList = new JComboBox<>(blockedUsers);
+            panelBlockUser.add(blockList);
+            JButton removeBlockedUser = new JButton("Unblock user");
+            panelBlockUser.add(removeBlockedUser);
+            JTextField addBlockedUser = new JTextField(15);
+            panelBlockUser.add(addBlockedUser);
+            JButton addBlocked = new JButton("Add block user");
+            panelBlockUser.add(addBlocked);
+
+            availableUser = new JComboBox<>((buyer ? listOfSellers : listOfBuyers));
+            availableUser.setName("list of available user");
+            contentPane.add(availableUser);
+
+            panelInvisUser = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panelInvisUser.setName("Invisible User");
+            contentPane.add(panelInvisUser);
+            JLabel invisLabel = new JLabel("Made Invisible User:");
+            panelInvisUser.add(invisLabel);
+            invisList = new JComboBox<>(invisUsers);
+            panelInvisUser.add(invisList);
+            JButton removeInvisUser = new JButton("un-invisible user");
+            panelInvisUser.add(removeInvisUser);
+            JTextField addInvisUser = new JTextField(15);
+            panelInvisUser.add(addInvisUser);
+            JButton addInvisible = new JButton("Add invisible user");
+            panelInvisUser.add(addInvisible);
+
+            changeProfile = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            changeProfile.setName("Profile change");
+            contentPane.add(changeProfile);
+            JTextField usernameToChange = new JTextField(15);
+            changeProfile.add(usernameToChange);
+            JButton changeUsername = new JButton("Change Username");
+            changeProfile.add(changeUsername);
+            JTextField emailToChange = new JTextField(15);
+            changeProfile.add(emailToChange);
+            JButton changeEmail = new JButton("Change Email");
+            changeProfile.add(changeEmail);
+            JButton delete = new JButton("Delete Account");
+            changeProfile.add(delete);
+            delete.setBounds(750, 400, 50, 50);
+            menu.addMenuListener(new MenuListener() {
+                @Override
+                public void menuSelected(MenuEvent e) {
+                    setVisible(false);
+                    Menu();
+                }
+
+                @Override
+                public void menuDeselected(MenuEvent e) {
+                }
+
+                @Override
+                public void menuCanceled(MenuEvent e) {
+                }
+            });
+            addCensorship.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+            changeUsername.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+        }
+
+        public void showProfile() {
+            //changes to the screen
+            processServerResponse();
+            setVisible(true);
+        }
     }
 
     public void Menu() {
@@ -158,9 +335,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-                Profile();
-
-                // set the profile window to visible
+                profileFrame.setVisible(true);
             }
         });
 

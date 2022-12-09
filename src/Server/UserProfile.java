@@ -26,15 +26,13 @@ public class UserProfile {
     /**
      * print the user profile
      * <p>
-     * 1. true/false (is buyer)
-     * 2. account info
-     * 3.
+     * see protocol response type for detail output
      *
      * @return the user profile in ByteBuffer
+     * @see ProtocolResponseType#PROFILE
      */
     protected ByteBuffer displayUserProfile() {
-        ArrayList<String> list = new ArrayList<>(List.of(this.user.toString().split("\\n")));
-        return MessageSystem.toByteBufferPacket(ProtocolResponseType.PROFILE, list.toArray(new String[0]));
+        return MessageSystem.toByteBufferPacket(ProtocolResponseType.PROFILE, this.user.serverToString());
     }
 
     /**
