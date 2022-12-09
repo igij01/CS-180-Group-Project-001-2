@@ -7,8 +7,11 @@ import Protocol.ResponsePacket;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
@@ -523,8 +526,15 @@ public class GUI extends JFrame {
         ImageIcon clearImage = new ImageIcon(img2);
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
+        ImageIcon upload = new ImageIcon("upload.png");
+        Image uploadImage = upload.getImage();
+        Image uploadImg = uploadImage.getScaledInstance(15, 15,  java.awt.Image.SCALE_SMOOTH);
+        ImageIcon uploadImageScale = new ImageIcon(uploadImg);
+        JMenuItem uploadIcon = new JMenuItem("",
+                uploadImageScale);
         textPanel.add(name);
         textPanel.add(textPane);
+        textPanel.add(uploadIcon);
         textPanel.add(clearIcon);
         textPanel.add(backIcon);
         add(textPanel, BorderLayout.NORTH);
@@ -541,7 +551,12 @@ public class GUI extends JFrame {
                 Messages(null);
             }
         });
-
+        uploadIcon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.setText(uploadFile());
+            }
+        });
         clearIcon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -562,28 +577,24 @@ public class GUI extends JFrame {
 
     }
     //allows users to upload files
-    public void uploadFile() {
+    public String uploadFile() {
         try {
-            JFileChooser fileC = new JFileChooser();
-            fileC.showSaveDialog(null);
-        /*JFrame UFFrame = new JFrame("Upload Your File");
-        JPanel UFPanel = new JPanel();
-        Container UFContent = UFFrame.getContentPane();
-        UFContent.setLayout(new BorderLayout());
-        UFFrame.setSize(600, 700);
-        UFFrame.setLocationRelativeTo(null);
-        UFFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        UFPanel.setLayout(null);
-        UFFrame.add(UFPanel);
-        JButton upload = new JButton("Upload File");
-        //upload.setBounds(75,200,100,25);
-        UFPanel.add(upload);
-        UFContent.add(UFPanel, BorderLayout.SOUTH);
-        UFFrame.setVisible(true);*/
-
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
+            JFileChooser fc = new JFileChooser();
+            fc.setFileFilter(filter);
+            fc.setAcceptAllFileFilterUsed(false);
+            int answer = fc.showOpenDialog(null); // (JFrame.this) when in JFrame
+            if (answer == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                byte[] content = Files.readAllBytes(file.toPath());
+                String text = new String(content); // Using default encoding
+                return text;
+            }
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Invalid File!", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return null;
     }
 
     public ActionListener actionListener = new ActionListener() {

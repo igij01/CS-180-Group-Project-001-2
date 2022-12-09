@@ -794,6 +794,7 @@ public class GUI extends Thread {
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
             JFileChooser fc = new JFileChooser();
             fc.setFileFilter(filter);
+            fc.setAcceptAllFileFilterUsed(false);
             int answer = fc.showOpenDialog(null); // (JFrame.this) when in JFrame
             if (answer == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
