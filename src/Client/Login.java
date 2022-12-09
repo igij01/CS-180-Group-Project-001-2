@@ -139,10 +139,12 @@ public class Login extends JFrame {
                 case ILLEGAL_REQUEST_FORMAT:
                     lblMessage.setText("The guy programmed this made a mistake :((");
                     return;
+                case ILLEGAL_USER_LOGIN_STATUS:
+                    lblMessage.setText("You account is already logged in somewhere else!");
+                    return;
                 default:
                     System.out.println(errorPacket.errorType);
                     System.out.println("That's was unexpected....");
-                    return;
             }
         }
     }

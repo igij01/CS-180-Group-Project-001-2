@@ -452,11 +452,15 @@ public class GUI extends JFrame {
         editMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (selectedMessage != null) {
-                    EditMessage(selectedMessage);
-                } else {
+                if (selectedMessage == null) {
                     JOptionPane.showMessageDialog(null, "Please select the message you want " +
                             "to edit.", "Error", JOptionPane.ERROR_MESSAGE);
+                } else if (messages[selectedIndex * 2].substring(0, messages[selectedIndex * 2].indexOf(": ")).
+                        replace("*", "").equals(currentSelectedMessage)) {
+                    JOptionPane.showMessageDialog(null, "You can only edit your own message!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    EditMessage(selectedMessage);
                 }
             }
         });

@@ -157,9 +157,8 @@ public class Register extends JFrame {
             }
             ResponsePacket packet;
             if ((packet = listener.getResponsePacket()) != null) {
-                ClientGUI clientGUI = new ClientGUI(client, listOfUsernames, packet.args,
+                GUI clientGUI = new GUI(client, listOfUsernames, packet.args,
                         packet.args.length == 6);
-                clientGUI.setVisible(true);
             }
         } else {
             ErrorPacket errorPacket = listener.getErrorPacket();
