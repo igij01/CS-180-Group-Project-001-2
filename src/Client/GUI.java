@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class GUI extends JFrame {
@@ -56,6 +57,7 @@ public class GUI extends JFrame {
     private String[] listOfStores = {"Loading"};
     private String[] listOfBuyers = {"Loading"};
     private String[] listOfSellers = {"loading"};
+    private String dashboard = "loading";
     private ClientCore client;
     private String[] userProfile;
     private boolean buyer;
@@ -85,6 +87,7 @@ public class GUI extends JFrame {
         setVisible(true);
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION_TITLES));
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_PUBLIC_INFO));
+        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_DASHBOARD, "true"));
         AsyncListener listener = new AsyncListener();
         listener.execute();
     }
@@ -110,6 +113,9 @@ public class GUI extends JFrame {
         private JComboBox<String> availableUser;
         private JComboBox<String> invisList;
         private JList<String> listOfStores;
+        private JButton deleteRecoverButton;
+        private JTextArea textPane;
+        private JCheckBox increasing;
 
         private String username;
         private String email;
@@ -126,7 +132,6 @@ public class GUI extends JFrame {
         private void processServerResponse() {
             //processing the output from server
             String[] userInfo = userProfile[0].split("\n");
-            System.out.println(Arrays.toString(userInfo));
             username = userInfo[0];
             email = userInfo[1];
             role = userInfo[2];
@@ -140,18 +145,18 @@ public class GUI extends JFrame {
             if (!buyer) {
                 stores = userProfile[6].split("\n");
             }
-
         }
 
         public Profile() {
             setTitle("Profile");
-            setSize(500, 600);
+            setSize(1200, 400);
             setLocationRelativeTo(null);
             Container contentPane = getContentPane();
             contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
             profileMenuBar = new JMenuBar();
             menu = new JMenu("Menu");
             profileMenuBar.add(menu);
+            setJMenuBar(profileMenuBar);
             processServerResponse();
 
             panelProfile = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -177,6 +182,8 @@ public class GUI extends JFrame {
             panelProfile.add(accountToBeDeleted);
             if (toBeDeleted)
                 accountToBeDeleted.setText("ACCOUNT WAITING TO BE DELETED!");
+            else
+                accountToBeDeleted.setText("");
 
             if (!buyer) {
                 panelStore = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -214,6 +221,8 @@ public class GUI extends JFrame {
             censorModeLabel = new JLabel();
             censorModeLabel.setText(censorMode);
             panelCensorWords.add(censorModeLabel);
+            JButton toggleCensorMode = new JButton("Toggle censor mode");
+            panelCensorWords.add(toggleCensorMode);
 
             panelBlockUser = new JPanel(new FlowLayout(FlowLayout.CENTER));
             panelBlockUser.setName("Block User");
@@ -224,8 +233,8 @@ public class GUI extends JFrame {
             panelBlockUser.add(blockList);
             JButton removeBlockedUser = new JButton("Unblock user");
             panelBlockUser.add(removeBlockedUser);
-            JTextField addBlockedUser = new JTextField(15);
-            panelBlockUser.add(addBlockedUser);
+            JLabel separatorBlocked = new JLabel("     ");
+            panelBlockUser.add(separatorBlocked);
             JButton addBlocked = new JButton("Add block user");
             panelBlockUser.add(addBlocked);
 
@@ -242,8 +251,8 @@ public class GUI extends JFrame {
             panelInvisUser.add(invisList);
             JButton removeInvisUser = new JButton("un-invisible user");
             panelInvisUser.add(removeInvisUser);
-            JTextField addInvisUser = new JTextField(15);
-            panelInvisUser.add(addInvisUser);
+            JLabel separatorInvis = new JLabel("     ");
+            panelInvisUser.add(separatorInvis);
             JButton addInvisible = new JButton("Add invisible user");
             panelInvisUser.add(addInvisible);
 
@@ -258,14 +267,21 @@ public class GUI extends JFrame {
             changeProfile.add(emailToChange);
             JButton changeEmail = new JButton("Change Email");
             changeProfile.add(changeEmail);
-            JButton delete = new JButton("Delete Account");
-            changeProfile.add(delete);
-            delete.setBounds(750, 400, 50, 50);
+            if (toBeDeleted) {
+                deleteRecoverButton.setText("Recover Account");
+            } else {
+                deleteRecoverButton = new JButton("Delete Account");
+            }
+            changeProfile.add(deleteRecoverButton);
+
+            textPane = new JTextArea();
+            increasing = new JCheckBox("Sort in increasing order?");
+            contentPane.add(textPane);
+            contentPane.add(increasing);
             menu.addMenuListener(new MenuListener() {
                 @Override
                 public void menuSelected(MenuEvent e) {
                     setVisible(false);
-                    Menu();
                 }
 
                 @Override
@@ -276,16 +292,182 @@ public class GUI extends JFrame {
                 public void menuCanceled(MenuEvent e) {
                 }
             });
+            removeCensoredWord.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (censorList.getSelectedItem() == null || censorList.getSelectedItem().equals("No censor word!")) {
+                        JOptionPane.showMessageDialog(null, "Invalid censor word", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.UNFILTER_WORD,
+                                (String) censorList.getSelectedItem()));
+                    }
+                }
+            });
+
             addCensorship.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println(addCensoredWord.getText());
+                    if (addCensoredWord.getText().matches("[^[\\w']]+")) {
+                        JOptionPane.showMessageDialog(null, "Not a word!", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.FILTER_WORD,
+                                addCensoredWord.getText()));
+                    }
+                }
+            });
+
+            changeCensorPattern.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (pattern.getText().length() != 1) {
+                        JOptionPane.showMessageDialog(null, "Invalid character", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(
+                                ProtocolRequestType.CHANGE_CENSOR_PATTERN, pattern.getText()));
+                    }
+                }
+            });
+
+            toggleCensorMode.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (censorMode.equals("ON"))
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(
+                                ProtocolRequestType.TURN_OFF_CENSOR_MODE));
+                    else
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(
+                                ProtocolRequestType.TURN_ON_CENSOR_MODE));
+                }
+            });
+
+            removeBlockedUser.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (blockList.getSelectedItem() == null ||
+                            blockList.getSelectedItem().equals("you don't have anyone blocked")) {
+                        JOptionPane.showMessageDialog(null, "Invalid username to unblock", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.UNBLOCK_USER,
+                                (String) blockList.getSelectedItem()));
+                    }
+                }
+            });
+
+            addBlocked.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (availableUser.getSelectedItem() == null ||
+                            availableUser.getSelectedItem().equals("There are no sellers!") ||
+                            availableUser.getSelectedItem().equals("There are no buyers!")) {
+                        JOptionPane.showMessageDialog(null, "Invalid username to block", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.BLOCK_USER,
+                                (String) availableUser.getSelectedItem()));
+                    }
+                }
+            });
+
+            removeInvisUser.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (invisList.getSelectedItem() == null ||
+                            invisList.getSelectedItem().equals("you don't have anyone invisible")) {
+                        JOptionPane.showMessageDialog(null, "Invalid username to unblock", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.UNINVIS_USER,
+                                (String) invisList.getSelectedItem()));
+                    }
+                }
+            });
+
+            addInvisible.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (availableUser.getSelectedItem() == null ||
+                            availableUser.getSelectedItem().equals("There are no sellers!") ||
+                            availableUser.getSelectedItem().equals("There are no buyers!")) {
+                        JOptionPane.showMessageDialog(null, "Invalid username to make invisible",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.INVIS_USER,
+                                (String) availableUser.getSelectedItem()));
+                    }
+                }
+            });
+            
+            changeUsername.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (usernameToChange.getText().isBlank()) {
+                        return;
+                    } else if (Arrays.asList(listOfUsernames).contains(usernameToChange.getText())) {
+                        JOptionPane.showMessageDialog(null, "username already taken!",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        String password = JOptionPane.showInputDialog(null,
+                                "please put in your password to confirm", "password", JOptionPane.QUESTION_MESSAGE);
+                        if (password.isBlank())
+                            return;
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.CHANGE_USERNAME,
+                                usernameToChange.getText(), password));
+                    }
+                }
+            });
+
+            changeEmail.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (emailToChange.getText().isBlank()) {
+                        return;
+                    } else if (emailToChange.getText().matches("\\b[\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\\b")) {
+                        JOptionPane.showMessageDialog(null, "invalid email",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        String password = JOptionPane.showInputDialog(null,
+                                "please put in your password to confirm", "password", JOptionPane.QUESTION_MESSAGE);
+                        if (password.isBlank())
+                            return;
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.CHANGE_EMAIL,
+                                emailToChange.getText(), password));
+                    }
+                }
+            });
+
+            deleteRecoverButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (deleteRecoverButton.getText().equals("Delete Account")) {
+                        String password = JOptionPane.showInputDialog(null,
+                                "please put in your password to confirm", "password", JOptionPane.QUESTION_MESSAGE);
+                        if (password.isBlank())
+                            return;
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DELETE_ACCOUNT,
+                                emailToChange.getText()));
+                    } else {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.RECOVER_ACCOUNT));
+                    }
+                }
+            });
+
+            changeUsername.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
                 }
             });
-            changeUsername.addActionListener(new ActionListener() {
+
+            increasing.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_DASHBOARD,
+                            String.valueOf(increasing.isSelected())));
                 }
             });
         }
@@ -293,6 +475,51 @@ public class GUI extends JFrame {
         public void showProfile() {
             //changes to the screen
             processServerResponse();
+
+            //profile
+            usernameField.setText(username);
+            usernameField.setColumns(username.length());
+            emailField.setText(email);
+            emailField.setColumns(email.length());
+            roleTextField.setText(role);
+            roleTextField.setColumns(role.length());
+            accountToBeDeleted.setText("");
+            if (toBeDeleted) {
+                deleteRecoverButton.setText("Recover Account");
+                accountToBeDeleted.setText("ACCOUNT WAITING TO BE DELETED!");
+            } else {
+                deleteRecoverButton.setText("Delete Account");
+                accountToBeDeleted.setText("");
+            }
+
+            //store
+            if (!buyer) {
+                DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(stores);
+                listOfStores.setModel(model);
+            }
+
+            //censor words
+            DefaultComboBoxModel<String> censorModel = new DefaultComboBoxModel<>(filterWords);
+            censorList.setModel(censorModel);
+            pattern.setText(censorPattern);
+            censorModeLabel.setText(censorMode);
+
+            //block user
+            DefaultComboBoxModel<String> blockedModel = new DefaultComboBoxModel<>(blockedUsers);
+            blockList.setModel(blockedModel);
+
+            //available user
+            DefaultComboBoxModel<String> availableModel = new DefaultComboBoxModel<>
+                    (buyer ? listOfSellers : listOfBuyers);
+            availableUser.setModel(availableModel);
+
+            //invis user
+            DefaultComboBoxModel<String> invisModel = new DefaultComboBoxModel<>(invisUsers);
+            invisList.setModel(invisModel);
+
+            //dashboard
+            textPane.setText(dashboard);
+
             setVisible(true);
         }
     }
@@ -334,8 +561,7 @@ public class GUI extends JFrame {
         profile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                profileFrame.setVisible(true);
+                profileFrame.showProfile();
             }
         });
 
@@ -1057,6 +1283,15 @@ public class GUI extends JFrame {
                             noConversation = false;
                         displayList();
                         break;
+                    case PROFILE:
+                        userProfile = responsePacket.args;
+                        if (profileFrame.isVisible()) {
+                            profileFrame.showProfile();
+                        }
+                        break;
+                    case USER_NAMES:
+                        listOfUsernames = responsePacket.args;
+                        break;
                     case PUBLIC_INFO:
                         assert buyer ^ responsePacket.args.length != 2;
                         if (responsePacket.args.length == 2) {
@@ -1099,11 +1334,17 @@ public class GUI extends JFrame {
                             PacketAssembler.assemblePacket(ProtocolRequestType.FORCE_LOGOUT);
                         }
                         break;
-
-
+                    case DASHBOARD:
+                        dashboard = responsePacket.args[0];
+                        if (profileFrame.isVisible()) {
+                            profileFrame.showProfile();
+                        }
+                        break;
                 }
             } else if (packet instanceof ErrorPacket) {
-
+                ErrorPacket errorPacket = (ErrorPacket) packet;
+                JOptionPane.showMessageDialog(null, String.format("%s: %s", errorPacket.requestType,
+                        errorPacket.errorMessage), "Error", JOptionPane.ERROR_MESSAGE);
             }
             AsyncListener asyncListener = new AsyncListener();
             asyncListener.execute();

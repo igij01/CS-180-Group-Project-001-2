@@ -673,7 +673,10 @@ public class FullUser implements Serializable {
         } else
             out.add("you don't have anyone invisible");
         out.add(ignoreFiltering ? "OFF" : "ON");
-        out.add(String.valueOf(filterWords));
+        if (filterWords.size() > 0)
+            out.add(String.valueOf(filterWords));
+        else
+            out.add("No censor word!");
         out.add(String.valueOf(replaceChar));
         return out.toArray(new String[0]);
     }
