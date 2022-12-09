@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 
 public class GUI extends JFrame {
     private String hashColor = "#f2f6ff";
-    private String logoutResponse;
     private String selectedMessage;
     private int selectedIndex;
     private boolean themeUpdate;
@@ -184,7 +183,24 @@ public class GUI extends JFrame {
         JMenuItem clearIcon = new JMenuItem("",
                 clearImage);
         searchBar.add(clearIcon);
+
+        ImageIcon back = new ImageIcon("back.png");
+        Image backImg = back.getImage();
+        Image backScale = backImg.getScaledInstance(30, 20, java.awt.Image.SCALE_SMOOTH);
+        ImageIcon backImage = new ImageIcon(backScale);
+        JMenuItem backIcon = new JMenuItem("",
+                backImage);
+        searchBar.add(backIcon);
         setJMenuBar(searchBar);
+
+        backIcon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchBar.setVisible(false);
+                menuBar.setVisible(true);
+                setJMenuBar(menuBar);
+            }
+        });
 
         clearIcon.addActionListener(new ActionListener() {
             @Override
