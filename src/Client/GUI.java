@@ -193,8 +193,16 @@ public class GUI extends JFrame {
                 panelStore.add(listOfStores);
                 JTextField newStoreField = new JTextField(15);
                 panelStore.add(newStoreField);
-                JButton button = new JButton("Add store");
-                panelStore.add(button);
+                JButton addStoreButton = new JButton("Add store");
+                panelStore.add(addStoreButton);
+                addStoreButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (!newStoreField.getText().isBlank())
+                            client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.CREATE_STORE,
+                                    newStoreField.getText()));
+                    }
+                });
             }
 
             panelCensorWords = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -292,6 +300,7 @@ public class GUI extends JFrame {
                 public void menuCanceled(MenuEvent e) {
                 }
             });
+
             removeCensoredWord.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

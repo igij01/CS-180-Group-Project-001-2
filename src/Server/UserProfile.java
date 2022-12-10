@@ -137,7 +137,7 @@ public class UserProfile {
     protected ByteBuffer uninvisUser(String[] params) throws IllegalUserNameException, InvalidActionException {
         FullUser unInvidUser = findUserBasedOnRole(params[0]);
         assert unInvidUser != null;
-        if (!user.unblock(unInvidUser))
+        if (!user.unInvisible(unInvidUser))
             throw new InvalidActionException("the username " + params[0] + " is not made invisible by you!");
         return displayUserProfile();
     }
