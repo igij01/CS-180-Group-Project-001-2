@@ -1,6 +1,8 @@
 package UserCore;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
 /**
@@ -23,6 +25,10 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
 
     private static boolean deserialized = false;
 
+    private static File file1 = new File("src/UserCore/serialized_file_1");
+    private static File file2 = new File("src/UserCore/serialized_file_2");
+    private static int counter = 0;
+
 //    private static final File serialzedFile;
 //    static {
 //        if (System.getProperty("os.name").contains("Windows")) {
@@ -38,11 +44,32 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static void init() {
         if (!deserialized) {
+            LocalDateTime file1Time = null;
+            LocalDateTime file2Time = null;
             try (ObjectInputStream oin = new ObjectInputStream
-                         (new FileInputStream("src/UserCore/serialized_file"))) {
+                         (new FileInputStream(file1))) {
                 readFromSerializedFile(oin);
+                file1Time = (LocalDateTime) oin.readObject();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
+            }
+
+            try (ObjectInputStream oin = new ObjectInputStream
+                    (new FileInputStream(file2))) {
+                readFromSerializedFile(oin);
+                file2Time = (LocalDateTime) oin.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            if (file2Time == null || file1Time != null && file1Time.isAfter(file2Time)) {
+                try (ObjectInputStream oin = new ObjectInputStream
+                        (new FileInputStream(file1))) {
+                    readFromSerializedFile(oin);
+                    oin.readObject();
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -115,6 +142,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             oin.writeObject(listOfSellers);
             oin.writeObject(listOfStores);
             oin.writeObject(listOfUsersNames);
+            oin.writeObject(LocalDateTime.now(ZoneId.of("US/Eastern")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -134,13 +162,16 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
             for (FullBuyer fullBuyer : listOfBuyers) {
                 fullBuyer.receiveUserDestruction(user);
             }
+            listOfUsersWaitingDestruction.remove(user);
         }
         try (ObjectOutputStream oin = new ObjectOutputStream
-                (new FileOutputStream("src/UserCore/serialized_file"))) {
+                (new FileOutputStream((counter % 2 == 0 ? file1 : file2)))) {
             oin.writeObject(listOfBuyers);
             oin.writeObject(listOfSellers);
             oin.writeObject(listOfStores);
             oin.writeObject(listOfUsersNames);
+            oin.writeObject(LocalDateTime.now(ZoneId.of("US/Eastern")));
+            counter++;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -456,7 +487,7 @@ public class PublicInformation { //Add an ArrayList of FullBuyer/FullSeller inst
      */
     public static Store getStore(String storeName) {
         for (Store listOfStore : listOfStores) {
-            if (storeName.equalsIgnoreCase(listOfStore.getStoreName())) {
+            if (storeName.equals(listOfStore.getStoreName())) {
                 return listOfStore;
             }
         }

@@ -32,7 +32,7 @@ public class ServerCore {
         PublicInformation.init();
 
         new Thread(() -> {
-            while (true) {
+            while (selector.isOpen()) {
                 Scanner scanner = new Scanner(System.in);
                 String command = scanner.nextLine();
                 if (command.equalsIgnoreCase("shutdown")) {
@@ -46,6 +46,26 @@ public class ServerCore {
                     }
                     PublicInformation.serialize();
                     return;
+                }
+            }
+        }).start();
+
+        new Thread(() -> {
+            while (selector.isOpen()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (MessageFunctionality.userToMessageFunc.size() == 0) {
+                    System.out.println("serializing");
+                    PublicInformation.serialize();
+                    System.out.println("Done serializing");
+                    try {
+                        Thread.sleep(30000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }).start();

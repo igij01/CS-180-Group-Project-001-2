@@ -49,6 +49,8 @@ public class MessageFunctionality {
         if (target == null)
             throw new IllegalTargetException("user cannot be found!");
         boolean blocked = user.createMessage(target, params[1]);
+        if (currentConversation == null)
+            currentConversation = target.getUsername();
         if (!blocked)
             throw new InvalidActionException("The target user blocked you!");
         if (userToMessageFunc.get(target) != null) {
@@ -69,10 +71,10 @@ public class MessageFunctionality {
      */
     private ByteBuffer[] updateMessage(String username) {
         ByteBuffer[] response;
-        if (this.currentConversation.equalsIgnoreCase(username)) {
+        if (this.currentConversation == null || this.currentConversation.equals(username)) {
             response = new ByteBuffer[2];
             response[0] = displayConversationTitles();
-            response[1] = displayConversation(new String[]{this.currentConversation});
+            response[1] = displayConversation(new String[]{username});
         } else {
             response = new ByteBuffer[1];
             response[0] = displayConversationTitles();
@@ -103,6 +105,9 @@ public class MessageFunctionality {
      * @throws IllegalUserNameException is thrown when the such title cannot be found
      */
     protected ByteBuffer displayConversation(String[] params) throws IllegalUserNameException {
+        if (params == null)
+            return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION,
+                    user.printConversation(this.currentConversation));
         this.currentConversation = params[0].replace("\n", "");
         userCurrentSelection.put(this.user, currentConversation);
         return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION, user.printConversation(params[0]));

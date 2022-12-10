@@ -72,7 +72,7 @@ public class GUI extends JFrame {
         this.buyer = buyer;
         profileFrame = new Profile();
         setTitle("Basically Facebook");
-        setSize(750, 500);
+        setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(splitPane);
@@ -699,7 +699,7 @@ public class GUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "invalid store to message",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 else
-                    searchCreateNewMessage((String) searchUser.getSelectedItem(), true);
+                    searchCreateNewMessage(listUser.getSelectedValue(), true);
             }
         });
 
@@ -711,7 +711,7 @@ public class GUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "invalid buyer to message",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 else
-                    searchCreateNewMessage((String) searchUser.getSelectedItem(), false);
+                    searchCreateNewMessage(listUser.getSelectedValue(), false);
             }
         });
 
@@ -863,7 +863,8 @@ public class GUI extends JFrame {
         newMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                NewMessage();
+                if (currentSelectedConversation != null)
+                    NewMessage();
             }
         });
         editMessage.addActionListener(new ActionListener() {
@@ -1166,8 +1167,8 @@ public class GUI extends JFrame {
         name.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_USER, currentSelectedConversation,
-                        textArea.getText()));
+                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_USER,
+                        currentSelectedConversation, textArea.getText()));
                 menuBar.setVisible(true);
                 buttonPanel.setVisible(true);
                 remove(textPanel);
@@ -1305,14 +1306,14 @@ public class GUI extends JFrame {
                         assert buyer ^ responsePacket.args.length != 2;
                         if (responsePacket.args.length == 2) {
                             listOfStores = (responsePacket.args[0].replace("[", "")
-                                    .replace("]", "").split(", "));
+                                    .replace("]", "").split(","));
                             listOfSellers = (responsePacket.args[1].replace("[", "")
-                                    .replace("]", "").split(", "));
+                                    .replace("]", "").split(","));
                             System.out.println(Arrays.toString(listOfStores));
                             System.out.println(Arrays.toString(listOfSellers));
                         } else
                             listOfBuyers = (responsePacket.args[0].replace("[", "")
-                                    .replace("]", "").split(", "));
+                                    .replace("]", "").split(","));
                         break;
                     case CONVERSATION:
                         Messages(responsePacket.args);

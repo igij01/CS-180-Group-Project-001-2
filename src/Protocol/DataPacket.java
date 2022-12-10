@@ -31,10 +31,8 @@ public class DataPacket implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(protocolRequestType);
         out.writeInt(args.length);
-        if (args.length > 0) {
-            for (String s : args) {
-                out.writeUTF(s);
-            }
+        for (String s : args) {
+            out.writeUTF(s);
         }
     }
 

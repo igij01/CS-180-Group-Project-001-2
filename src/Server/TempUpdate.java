@@ -1,11 +1,9 @@
 package Server;
 
-import UserCore.FullBuyer;
-import UserCore.FullSeller;
-import UserCore.FullUser;
-import UserCore.Store;
+import UserCore.*;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -15,6 +13,20 @@ public class TempUpdate {
     // put in a random number or just increment the number
     @Serial
     private static final long serialVersionUID = 2L;
+    private static final File filePath = new File("src/Server/ServerTempStorage");
+
+    private static byte[] bytesRemaining;
+
+    static {
+        try {
+            bytesRemaining = Files.readAllBytes(filePath.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static ArrayList<TempUpdate> history = new ArrayList<>();
+
     private LocalDateTime time;
 
     private ArrayList<Store> listOfNewStores;
@@ -24,7 +36,7 @@ public class TempUpdate {
 
     public TempUpdate() {
         listOfNewStores = new ArrayList<>();
-        listOfNewUsersNames = new ArrayList<>();
+        listOfNewUsersNames = new ArrayList<>(PublicInformation.listOfUsersNames);
         listOfNewSellers = new ArrayList<>();
         listOfNewBuyers = new ArrayList<>();
         time = LocalDateTime.now(ZoneId.of("US/Eastern"));
@@ -37,14 +49,22 @@ public class TempUpdate {
             listOfNewSellers.add((FullSeller) user);
         } else
             return;
-        listOfNewUsersNames.add(user.getUsername());
+    }
+
+    public void addNewUsername(String name) {
+        listOfNewUsersNames.add(name);
+    }
+
+    public void replaceUsername(String oldUsername, String newUsername) {
+        listOfNewUsersNames.remove(oldUsername);
+        listOfNewUsersNames.add(newUsername);
     }
 
     public void updateStoreList(Store store) {
         listOfNewStores.add(store);
     }
 
-    public void saveToFile(String filePath) {
+    public void saveToFile() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath, true))) {
             time = LocalDateTime.now(ZoneId.of("US/Eastern"));
             oos.writeObject(listOfNewStores);
@@ -61,16 +81,19 @@ public class TempUpdate {
         }
     }
 
-    public static ArrayList<TempUpdate> readFile(String filePath) {
-        ArrayList<TempUpdate> history = new ArrayList<>();
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
-            Object obj;
-            while ((obj = ois.readObject()) != null) {
-                history.add((TempUpdate) obj);
-            }
-        } catch (IOException | ClassNotFoundException e) {
+    public static void readFile() {
+        try (ByteArrayInputStream bin = new ByteArrayInputStream(bytesRemaining);
+                ObjectInputStream ois = new ObjectInputStream(bin)) {
+            Object obj = ois.readObject();
+            history.add((TempUpdate) obj);
+            bytesRemaining = bin.readAllBytes();
+            if (bytesRemaining.length == 0)
+                return;
+            readFile();
+        } catch (EOFException ignored) {
+        }
+        catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return history;
     }
 }

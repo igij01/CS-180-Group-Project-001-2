@@ -167,6 +167,8 @@ public class UserProfile {
             throw new InvalidActionException("Not a word!");
         }
         user.addFilterWord(filterWord);
+        MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user),
+                MessageFunctionality.userToMessageFunc.get(this.user).displayConversation(null));
         return displayUserProfile();
     }
 
@@ -182,6 +184,8 @@ public class UserProfile {
         String unFilterWord = params[0];
         if (!user.removeFilteredWord(unFilterWord))
             throw new InvalidActionException("the word " + unFilterWord + " is not in your filtered word list!");
+        MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user),
+                MessageFunctionality.userToMessageFunc.get(this.user).displayConversation(null));
         return displayUserProfile();
     }
 
@@ -201,6 +205,8 @@ public class UserProfile {
             throw new InvalidActionException(str + " is not a valid character!");
         if (censoredChar != (char) -1)
             user.changeReplacedChar(censoredChar);
+        MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user),
+                MessageFunctionality.userToMessageFunc.get(this.user).displayConversation(null));
         return displayUserProfile();
     }
 
@@ -212,6 +218,8 @@ public class UserProfile {
      */
     protected ByteBuffer toggleFilterMode(boolean off) {
         this.user.changeFilteringMode(off);
+        MessageSystem.runNotificationThread(MessageSystem.userToKey.get(this.user),
+                MessageFunctionality.userToMessageFunc.get(this.user).displayConversation(null));
         return displayUserProfile();
     }
 
@@ -226,9 +234,9 @@ public class UserProfile {
     protected ByteBuffer createStore(String[] params) throws IllegalStoreNameException, InvalidActionException {
         if (this.user instanceof FullSeller) {
             ((FullSeller) this.user).createStore(params[0]);
+            MessageSystem.runNotificationThreadPublicInfo(true);
             return displayUserProfile();
         }
-        MessageSystem.runNotificationThreadPublicInfo(true);
         throw new InvalidActionException("The user is not a seller!");
     }
 
@@ -280,6 +288,8 @@ public class UserProfile {
     protected ByteBuffer confirmLogOut() {
         PublicInformation.logout(this.user);
         MessageSystem.userToKey.remove(this.user);
+        MessageFunctionality.userCurrentSelection.remove(this.user);
+        MessageFunctionality.userToMessageFunc.remove(this.user);
         return MessageSystem.toByteBufferPacket(
                 ProtocolResponseType.LOGOUT_SUCCESS, "logout success!");
     }
