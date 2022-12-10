@@ -4,7 +4,9 @@ import Protocol.ProtocolResponseType;
 import UserCore.*;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -44,7 +46,11 @@ public class UserProfile {
      * @throws IllegalUserNameException when the new username is already taken
      */
     protected ByteBuffer changeUsername(String[] params) throws InvalidPasswordException, IllegalUserNameException {
+        String oldUsername = this.user.getUsername();
         this.user.changeUsername(params[0], params[1]);
+        MessageSystem.runNotificationThreadUpdateMessage(oldUsername, this.user.getUsername());
+        MessageSystem.runNotificationThread(PublicInfo.sendAllUsernames());
+        MessageSystem.runNotificationThreadPublicInfo(!(this.user instanceof FullBuyer));
         return displayUserProfile();
     }
 
@@ -123,6 +129,9 @@ public class UserProfile {
         FullUser invisUser = findUserBasedOnRole(params[0]);
         assert invisUser != null;
         this.user.makeInvisible(invisUser);
+        SelectionKey key = MessageSystem.userToKey.get(invisUser);
+        if (key != null)
+            MessageSystem.runNotificationThread(key, PublicInfo.sendPublicInfo(invisUser));
         return displayUserProfile();
     }
 
@@ -139,6 +148,9 @@ public class UserProfile {
         assert unInvidUser != null;
         if (!user.unInvisible(unInvidUser))
             throw new InvalidActionException("the username " + params[0] + " is not made invisible by you!");
+        SelectionKey key = MessageSystem.userToKey.get(unInvidUser);
+        if (key != null)
+            MessageSystem.runNotificationThread(key, PublicInfo.sendPublicInfo(unInvidUser));
         return displayUserProfile();
     }
 
@@ -216,6 +228,7 @@ public class UserProfile {
             ((FullSeller) this.user).createStore(params[0]);
             return displayUserProfile();
         }
+        MessageSystem.runNotificationThreadPublicInfo(true);
         throw new InvalidActionException("The user is not a seller!");
     }
 

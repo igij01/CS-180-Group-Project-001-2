@@ -17,7 +17,6 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class GUI extends JFrame {
@@ -27,7 +26,7 @@ public class GUI extends JFrame {
     private boolean themeUpdate;
     private boolean isNewMessage = false;
     private String[] messages = {"loading"};
-    private String currentSelectedMessage = null;
+    private String currentSelectedConversation = null;
     private Profile profileFrame;
     private JPanel themesPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
@@ -47,7 +46,7 @@ public class GUI extends JFrame {
     private JButton createAcc;
     private JTextField userText;
     private JPasswordField passText;
-    private JLabel name = new JLabel(this.currentSelectedMessage);
+    private JLabel name = new JLabel(this.currentSelectedConversation);
     private JLabel currentTheme = new JLabel(theme + "    ");
 
     private File exportPath = null;
@@ -458,7 +457,7 @@ public class GUI extends JFrame {
                         if (password.isBlank())
                             return;
                         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DELETE_ACCOUNT,
-                                emailToChange.getText()));
+                                password));
                     } else {
                         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.RECOVER_ACCOUNT));
                     }
@@ -800,10 +799,10 @@ public class GUI extends JFrame {
     }
 
     public void displayList() {
-        if (!noConversation && currentSelectedMessage == null) {
+        if (!noConversation && currentSelectedConversation == null) {
             client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
                     conversationTitles[0]));
-            currentSelectedMessage = conversationTitles[0].replace("\n", "");
+            currentSelectedConversation = conversationTitles[0].replace("\n", "");
         }
         String[] colorManipulate = Arrays.copyOf(conversationTitles, conversationTitles.length);
         for (int i = 0; i < colorManipulate.length; i++) {
@@ -820,8 +819,9 @@ public class GUI extends JFrame {
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 String selectedItem = conversationTitles[list.getSelectedIndex()];
-                if (!currentSelectedMessage.equals(selectedItem) || messages[0].equals("loading")) {
-                    currentSelectedMessage = selectedItem.replace("\n", "");
+                if (currentSelectedConversation != null &&
+                        (!currentSelectedConversation.equals(selectedItem) || messages[0].equals("loading"))) {
+                    currentSelectedConversation = selectedItem.replace("\n", "");
                     client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION,
                             selectedItem));
                 }
@@ -873,7 +873,7 @@ public class GUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "Please select the message you want " +
                             "to edit.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else if (messages[selectedIndex * 2].substring(0, messages[selectedIndex * 2].indexOf(": ")).
-                        replace("*", "").equals(currentSelectedMessage)) {
+                        replace("*", "").equals(currentSelectedConversation)) {
                     JOptionPane.showMessageDialog(null, "You can only edit your own message!",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
@@ -886,7 +886,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (selectedMessage != null) {
                     client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DELETE_MESSAGE,
-                            currentSelectedMessage, String.valueOf(selectedIndex)));
+                            currentSelectedConversation, String.valueOf(selectedIndex)));
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select the message you want " +
                             "to delete.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -898,8 +898,8 @@ public class GUI extends JFrame {
         exportConversation.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (currentSelectedMessage != null) {
-                    String[] option = new String[]{"export all", "export conversation with " + currentSelectedMessage};
+                if (currentSelectedConversation != null) {
+                    String[] option = new String[]{"export all", "export conversation with " + currentSelectedConversation};
                     int selection = JOptionPane.showOptionDialog(null, "what do you want to export?",
                             "export", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                             option, option[1]);
@@ -917,7 +917,7 @@ public class GUI extends JFrame {
                                     ProtocolRequestType.EXPORT_ALL_CONVERSATION));
                         else if (selection == 1)
                             client.addByteBufferToWrite(PacketAssembler.assemblePacket(
-                                    ProtocolRequestType.EXPORT_CONVERSATION, currentSelectedMessage));
+                                    ProtocolRequestType.EXPORT_CONVERSATION, currentSelectedConversation));
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Please select the message you want " +
@@ -930,13 +930,13 @@ public class GUI extends JFrame {
 
     public void Messages(String[] messageFromServer) {
         menuBar.setVisible(true);
-        name.setText(this.currentSelectedMessage);
+        name.setText(this.currentSelectedConversation);
         currentTheme.setText(theme + "    ");
         currentTheme.setBackground(Color.decode(hashColor));
         buttonPanel.setVisible(true);
         add(buttonPanel, BorderLayout.NORTH);
         if (messageFromServer != null) {
-            if (!messageFromServer[0].equals(this.currentSelectedMessage)) {
+            if (!messageFromServer[0].equals(this.currentSelectedConversation)) {
                 return;
             }
             this.messages = messageFromServer;
@@ -1008,7 +1008,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.EDIT_MESSAGE,
-                        currentSelectedMessage, Integer.toString(selectedIndex), textArea.getText()));
+                        currentSelectedConversation, Integer.toString(selectedIndex), textArea.getText()));
                 remove(textPanel);
                 Messages(null);
             }
@@ -1137,7 +1137,7 @@ public class GUI extends JFrame {
         JTextArea textArea = new JTextArea();
         JScrollPane textPane = new JScrollPane(textArea);
         textPane.setPreferredSize(new Dimension(600, 40));
-        JButton name = new JButton("Send to " + this.currentSelectedMessage + "  ");
+        JButton name = new JButton("Send to " + this.currentSelectedConversation + "  ");
         ImageIcon back = new ImageIcon("back.png");
         Image backImg = back.getImage();
         Image backScale = backImg.getScaledInstance(30, 20, java.awt.Image.SCALE_SMOOTH);
@@ -1166,7 +1166,7 @@ public class GUI extends JFrame {
         name.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_USER, currentSelectedMessage,
+                client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.SEND_MESSAGE_USER, currentSelectedConversation,
                         textArea.getText()));
                 menuBar.setVisible(true);
                 buttonPanel.setVisible(true);
@@ -1348,6 +1348,10 @@ public class GUI extends JFrame {
                         if (profileFrame.isVisible()) {
                             profileFrame.showProfile();
                         }
+                        break;
+                    case CONVERSATION_USERNAME_CHANGE:
+                        currentSelectedConversation = responsePacket.args[0];
+                        Messages(Arrays.copyOfRange(responsePacket.args, 1, responsePacket.args.length));
                         break;
                 }
             } else if (packet instanceof ErrorPacket) {

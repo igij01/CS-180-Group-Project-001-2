@@ -6,10 +6,7 @@ import UserCore.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * MessageSystem
@@ -86,9 +83,60 @@ public class MessageSystem {
         return ByteBuffer.wrap(Objects.requireNonNull(DataPacket.serialize(packet)));
     }
 
+    /**
+     * run the notification thread on specific key
+     *
+     * @param key     the key
+     * @param packets packet to be sent
+     * @see #userToKey
+     */
     protected static void runNotificationThread(SelectionKey key, ByteBuffer... packets) {
         for (ByteBuffer buffer : packets) {
             NotificationFactory.runNotificationThread(selector, key, buffer);
+        }
+    }
+
+    /**
+     * run the notification thread all users
+     *
+     * @param packets packet to be sent
+     * @see #userToKey
+     */
+    protected static void runNotificationThread(ByteBuffer... packets) {
+        for (ByteBuffer buffer : packets) {
+            NotificationFactory.runNotificationThread(selector, buffer);
+        }
+    }
+
+    protected static void runNotificationThreadUpdateMessage(String olderUsername, String newUserName) {
+        for (Map.Entry<FullUser, SelectionKey> entry : userToKey.entrySet()) {
+            NotificationFactory.runNotificationThread(selector, entry.getValue(),
+                    MessageFunctionality.userToMessageFunc.get(entry.getKey()).displayConversationTitles());
+        }
+        for (Map.Entry<FullUser, String> entry : MessageFunctionality.userCurrentSelection.entrySet()) {
+            if (entry.getValue().equals(olderUsername)) {
+                ArrayList<String> list = new ArrayList<>(List.of(entry.getKey().printConversation(newUserName)));
+                list.add(0, newUserName);
+                NotificationFactory.runNotificationThread(selector, userToKey.get(entry.getKey()),
+                        toByteBufferPacket(ProtocolResponseType.CONVERSATION_USERNAME_CHANGE,
+                                list.toArray(new String[0])));
+                MessageFunctionality.userToMessageFunc.get(entry.getKey()).updateCurrentConversationField(newUserName);
+            }
+        }
+    }
+
+    /**
+     * run the notification thread only buyer/seller
+     *
+     * @param buyer whether you want to send it to buyer(true) or seller(false)
+     * @see #userToKey
+     */
+    protected static void runNotificationThreadPublicInfo(boolean buyer) {
+        for (Map.Entry<FullUser, SelectionKey> entry : userToKey.entrySet()) {
+            if (!buyer ^ entry.getKey() instanceof FullBuyer) {
+                NotificationFactory.runNotificationThread(selector, entry.getValue(),
+                        PublicInfo.sendPublicInfo(entry.getKey()));
+            }
         }
     }
 
@@ -114,13 +162,8 @@ public class MessageSystem {
             } else if (initPacket.protocolRequestType == ProtocolRequestType.REGISTER) {
                 this.user = register(initPacket.args[0], initPacket.args[1], initPacket.args[2], initPacket.args[3]);
                 userToKey.put(this.user, key);
-                NotificationFactory.runNotificationThread(selector, PublicInfo.sendAllUsernames());
-                for (Map.Entry<FullUser, SelectionKey> entry : userToKey.entrySet()) {
-                    if (this.user instanceof FullBuyer ^ entry.getKey() instanceof FullBuyer) {
-                        NotificationFactory.runNotificationThread(selector, entry.getValue(),
-                                PublicInfo.sendPublicInfo(entry.getKey()));
-                    }
-                }
+                runNotificationThread(PublicInfo.sendAllUsernames());
+                runNotificationThreadPublicInfo(!(this.user instanceof FullBuyer));
             } else
                 throw new IllegalRequestFormat((initPacket.protocolRequestType.toString()) +
                         " - is not a login or register request!");
@@ -190,7 +233,7 @@ public class MessageSystem {
         else
             repeat = false;
 
-        while(repeat) {
+        while (repeat) {
             dataPacket = DataPacket.packetDeserializeServer(null);
             if (dataPacket != null)
                 packets.add(dataPacket);

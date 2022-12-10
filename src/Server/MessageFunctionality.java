@@ -10,7 +10,8 @@ import java.util.Hashtable;
 import java.util.Objects;
 
 public class MessageFunctionality {
-    private static Hashtable<FullUser, MessageFunctionality> userToMessageFunc = new Hashtable<>();
+    protected static Hashtable<FullUser, MessageFunctionality> userToMessageFunc = new Hashtable<>();
+    protected static Hashtable<FullUser, String> userCurrentSelection = new Hashtable<>();
     private FullUser user;
     private String currentConversation = null;
 
@@ -31,6 +32,11 @@ public class MessageFunctionality {
                         () -> new String[]{"You have no conversation!"}));
     }
 
+    protected void updateCurrentConversationField(String newUsername) {
+        this.currentConversation = newUsername;
+        userCurrentSelection.replace(this.user, newUsername);
+    }
+
     /**
      * send the message to the user
      * @param params the raw parameter list <b>(target_username)</b>
@@ -41,7 +47,7 @@ public class MessageFunctionality {
     protected ByteBuffer sendMessageUser(String[] params) throws IllegalTargetException, InvalidActionException {
         FullUser target = PublicInformation.findUser(params[0], this.user);
         if (target == null)
-            throw new IllegalTargetException("You are messaging someone that has the same role as you!");
+            throw new IllegalTargetException("user cannot be found!");
         boolean blocked = user.createMessage(target, params[1]);
         if (!blocked)
             throw new InvalidActionException("The target user blocked you!");
@@ -98,6 +104,7 @@ public class MessageFunctionality {
      */
     protected ByteBuffer displayConversation(String[] params) throws IllegalUserNameException {
         this.currentConversation = params[0].replace("\n", "");
+        userCurrentSelection.put(this.user, currentConversation);
         return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION, user.printConversation(params[0]));
     }
 

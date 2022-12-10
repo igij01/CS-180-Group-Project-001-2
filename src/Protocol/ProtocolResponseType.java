@@ -47,6 +47,7 @@ public enum ProtocolResponseType {
     ...
      **/
     CONVERSATION,
+    CONVERSATION_USERNAME_CHANGE,
     CSV_EXPORT,
     LOGOUT_SUCCESS,
     ACCOUNT_DELETION,
