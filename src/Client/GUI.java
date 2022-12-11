@@ -1341,7 +1341,7 @@ public class GUI extends JFrame {
                     case ACCOUNT_DELETION:
                         int selection = JOptionPane.showConfirmDialog(null, responsePacket.args[0], "Warning", JOptionPane.YES_NO_OPTION);
                         if (selection == JOptionPane.YES_OPTION) {
-                            PacketAssembler.assemblePacket(ProtocolRequestType.FORCE_LOGOUT);
+                            client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.FORCE_LOGOUT));
                         }
                         break;
                     case DASHBOARD:
