@@ -130,6 +130,8 @@ public class Conversation implements Serializable {
      * @throws IndexOutOfBoundsException  when the index that the user selected is out of bound
      */
     public void editMessage(User actionUser, int index, String newMessage) {
+        while (!conversation.get(index).visibleToUser(actionUser))
+            index++;
         conversation.get(index).editMessage(actionUser, newMessage);
         updateReadStatus(actionUser);
     }
