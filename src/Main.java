@@ -20,11 +20,8 @@ import static UserCore.PublicInformation.*;
  */
 public class Main {
     public static void main(String[] args) {
-//        if (!(args != null && args.length > 0 && args[0].equalsIgnoreCase("debug")))
-//            PublicInformation.init();
-        PublicInformation.serialize();
-        PublicInformation.serialize();
-        PublicInformation.serialize();
+        if (!(args != null && args.length > 0 && args[0].equalsIgnoreCase("debug")))
+            PublicInformation.init();
         Scanner scan = new Scanner(System.in);
         System.out.println("Welcome to the market messaging system");
         FullUser user = mainLogin(scan);
