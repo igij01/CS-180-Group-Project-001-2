@@ -112,9 +112,15 @@ public class Conversation implements Serializable {
      * @throws IndexOutOfBoundsException  when the index that the user selected is out of bound
      */
     public boolean deleteMessage(User actionUser, int index) throws IllegalUserAccessException, IndexOutOfBoundsException {
+        int actualIndex;
+        for (actualIndex = 0; actualIndex < conversation.size() && index > 0 ||
+                !conversation.get(actualIndex).visibleToUser(actionUser); actualIndex++) {
+            if (conversation.get(actualIndex).visibleToUser(actionUser))
+                index--;
+        }
         try {
-            if (conversation.get(index).deleteMessage(actionUser))
-                conversation.remove(index);
+            if (conversation.get(actualIndex).deleteMessage(actionUser))
+                conversation.remove(actualIndex);
         } catch (IndexOutOfBoundsException e) {
             throw new IndexOutOfBoundsException();
         }
@@ -130,9 +136,13 @@ public class Conversation implements Serializable {
      * @throws IndexOutOfBoundsException  when the index that the user selected is out of bound
      */
     public void editMessage(User actionUser, int index, String newMessage) {
-        while (!conversation.get(index).visibleToUser(actionUser))
-            index++;
-        conversation.get(index).editMessage(actionUser, newMessage);
+        int actualIndex;
+        for (actualIndex = 0; actualIndex < conversation.size() && index > 0 ||
+                !conversation.get(actualIndex).visibleToUser(actionUser); actualIndex++) {
+            if (conversation.get(actualIndex).visibleToUser(actionUser))
+                index--;
+        }
+        conversation.get(actualIndex).editMessage(actionUser, newMessage);
         updateReadStatus(actionUser);
     }
 
