@@ -165,6 +165,12 @@ public class ClientCore extends Thread {
         return readQueue.remove(o);
     }
 
+    public void closeSelector() {
+        try {
+            selector.close();
+        } catch (IOException ignore){}
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException {
         ClientCore client = new ClientCore(new InetSocketAddress("localhost", 5050));
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REGISTER, "buyer", "buyer",

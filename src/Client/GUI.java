@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class GUI extends JFrame {
+    private boolean close = false;
     private String hashColor = "#f2f6ff";
     private String selectedMessage;
     private int selectedIndex;
@@ -64,6 +65,7 @@ public class GUI extends JFrame {
     private boolean noBuyer = true;
     private boolean noSeller = true;
     private boolean noStore = true;
+    private boolean accountToBeDeletedFlag = false;
 
     public GUI(ClientCore client, String[] listOfUsernames, String[] userProfile, boolean buyer) {
         this.listOfUsernames = listOfUsernames;
@@ -74,7 +76,7 @@ public class GUI extends JFrame {
         setTitle("Basically Facebook");
         setSize(900, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         add(splitPane);
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(scrollMessage);
@@ -83,7 +85,28 @@ public class GUI extends JFrame {
         Menu();
         displayList();
         Search();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (accountToBeDeletedFlag) {
+                    int selection = JOptionPane.showConfirmDialog(null, "Your account is about to be " +
+                            "deleted!", "Warning", JOptionPane.YES_NO_OPTION);
+                    if (selection == JOptionPane.YES_OPTION) {
+                        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.FORCE_LOGOUT));
+                        dispose();
+                        close = true;
+                    }
+                } else {
+                    client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.FORCE_LOGOUT));
+                    JOptionPane.showMessageDialog(null, "Log out success", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                    close = true;
+                }
+            }
+        });
         setVisible(true);
+        JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_CONVERSATION_TITLES));
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_PUBLIC_INFO));
         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REQUEST_DASHBOARD, "true"));
@@ -409,7 +432,7 @@ public class GUI extends JFrame {
                     }
                 }
             });
-            
+
             changeUsername.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -458,8 +481,10 @@ public class GUI extends JFrame {
                             return;
                         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DELETE_ACCOUNT,
                                 password));
+                        accountToBeDeletedFlag = true;
                     } else {
                         client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.RECOVER_ACCOUNT));
+                        accountToBeDeletedFlag = false;
                     }
                 }
             });
@@ -1335,13 +1360,14 @@ public class GUI extends JFrame {
                     case LOGOUT_SUCCESS:
                         JOptionPane.showMessageDialog(null, responsePacket.args[0], "Success", JOptionPane.INFORMATION_MESSAGE);
                         dispose();
-                        //TODO someone fix this please
-                        System.exit(0);
+                        close = true;
                         break;
                     case ACCOUNT_DELETION:
                         int selection = JOptionPane.showConfirmDialog(null, responsePacket.args[0], "Warning", JOptionPane.YES_NO_OPTION);
                         if (selection == JOptionPane.YES_OPTION) {
                             client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.FORCE_LOGOUT));
+                            dispose();
+                            close = true;
                         }
                         break;
                     case DASHBOARD:
@@ -1359,6 +1385,10 @@ public class GUI extends JFrame {
                 ErrorPacket errorPacket = (ErrorPacket) packet;
                 JOptionPane.showMessageDialog(null, String.format("%s: %s", errorPacket.requestType,
                         errorPacket.errorMessage), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (close) {
+                client.closeSelector();
+                return;
             }
             AsyncListener asyncListener = new AsyncListener();
             asyncListener.execute();
