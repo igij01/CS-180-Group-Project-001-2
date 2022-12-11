@@ -173,8 +173,9 @@ public class GUI extends Thread {
         panel.add(emailToChange);
         JButton changeEmail = new JButton("Change Email");
         panel.add(changeEmail);
-        JButton delete = new JButton("Delete Account");
+        delete = new JButton("Delete Account");
         panel.add(delete);
+        delete.addActionListener(actionListener);
         delete.setBounds(750, 400,50,50);
 
         frame.setJMenuBar(menuBar);
