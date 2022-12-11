@@ -110,7 +110,8 @@ public class MessageFunctionality {
                     user.printConversation(this.currentConversation));
         this.currentConversation = params[0].replace("\n", "");
         userCurrentSelection.put(this.user, currentConversation);
-        return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION, this.currentConversation);
+        return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION,
+                user.printConversation(this.currentConversation));
     }
 
     /**
