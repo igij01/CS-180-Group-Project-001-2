@@ -810,7 +810,16 @@ public class GUI extends Thread {
     }
 
         public static void welcomeMessage() {
-        JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Welcome to our buying and selling platform!", "Welcome!", JOptionPane.PLAIN_MESSAGE);
+    }
+    
+    public static boolean deleteAccountMessage() {
+        Icon warningIcon = UIManager.getIcon("OptionPane.warningIcon");
+        if(JOptionPane.showConfirmDialog(null, "Warning: You are about to delete your account! Are you sure?", "Warning!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, warningIcon) == JOptionPane.YES_OPTION) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void run() {
@@ -828,6 +837,9 @@ public class GUI extends Thread {
             }
             if (e.getSource() == createAcc) {
 
+            }
+            if (e.getSource() == delete) {
+                deleteAccountMessage();
             }
         }
 
