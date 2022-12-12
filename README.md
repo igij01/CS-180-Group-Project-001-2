@@ -415,5 +415,6 @@ include all the sellers, buyers, stores, and used usernames
 * testDataPersistence
 
 # list of students submit part of assignment
-* Yulin Lin - submit codes
-* Teresa Wan - submit report
+* Arthur Ruano - submitting report
+* Arthur Ruano - submiting code
+* Teresa Wan - Submitting video

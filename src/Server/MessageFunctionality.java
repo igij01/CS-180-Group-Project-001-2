@@ -1,7 +1,6 @@
 package Server;
 
 import MessageCore.IllegalTargetException;
-import MessageCore.IllegalUserAccessException;
 import Protocol.ProtocolResponseType;
 import UserCore.*;
 
@@ -113,9 +112,13 @@ public class MessageFunctionality {
      * @throws IllegalUserNameException is thrown when the such title cannot be found
      */
     protected ByteBuffer displayConversation(String[] params) throws IllegalUserNameException {
-        if (params == null)
+        if (params == null) {
+            if (this.currentConversation == null)
+                throw new InvalidActionException("You have no conversations!");
             return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION,
                     user.printConversation(this.currentConversation));
+        }
+
         this.currentConversation = params[0].replace("\n", "");
         userCurrentSelection.put(this.user, currentConversation);
         return MessageSystem.toByteBufferPacket(ProtocolResponseType.CONVERSATION,
