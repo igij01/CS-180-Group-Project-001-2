@@ -12,6 +12,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 
+/**
+ * Login
+ * <br>
+ * A login screen that prompt the user for a username and password
+ *
+ * @author Yulin Lin, Samson Tesfagiorgis
+ * @version 12/11/2022
+ */
 public class Login extends JFrame {
 
     private JPanel contentPane;

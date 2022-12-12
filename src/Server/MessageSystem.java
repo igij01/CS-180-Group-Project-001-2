@@ -11,7 +11,8 @@ import java.util.*;
 /**
  * MessageSystem
  * <p>
- * class responsible for interpreting the packet send by the client
+ * class responsible for interpreting the packet send by the client and interact with the message and user core
+ * accordingly
  *
  * @author Yulin Lin, 001
  * @version 11/21/2022

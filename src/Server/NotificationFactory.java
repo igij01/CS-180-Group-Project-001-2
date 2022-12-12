@@ -6,6 +6,14 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 
+/**
+ * NotificationFactory
+ * <br>
+ * Factory that spawns a thread based on the selection key and the update packet to be sent to the key
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public class NotificationFactory {
     private NotificationFactory() {
     }

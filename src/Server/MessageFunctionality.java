@@ -9,6 +9,14 @@ import java.nio.ByteBuffer;
 import java.util.Hashtable;
 import java.util.Objects;
 
+/**
+ * MessageFunctionality
+ * <br>
+ * provides an abstraction/interface to the server of the Message functionalities
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public class MessageFunctionality {
     protected static Hashtable<FullUser, MessageFunctionality> userToMessageFunc = new Hashtable<>();
     protected static Hashtable<FullUser, String> userCurrentSelection = new Hashtable<>();

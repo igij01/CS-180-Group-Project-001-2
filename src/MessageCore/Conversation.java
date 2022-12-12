@@ -16,7 +16,7 @@ import java.util.List;
  * A class that contains a conversation between a buyer and a seller for a particular store
  *
  * @author Yulin Lin, 001
- * @version 11/5/2022
+ * @version 12/11/2022
  */
 public class Conversation implements Serializable {
     // update this field everytime you update the field of the class

@@ -11,7 +11,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
-
+/**
+ * Register
+ * <br>
+ * A register screen that prompt the user to register for a new account
+ *
+ * @author Yulin Lin, Samson Tesfagiorgis
+ * @version 12/11/2022
+ */
 public class Register extends JFrame {
 
     private JPanel contentPane;

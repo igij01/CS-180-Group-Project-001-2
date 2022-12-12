@@ -6,6 +6,14 @@ import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+/**
+ * PacketDeserializer
+ * <br>
+ * A class for deserializing the packet
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public class PacketDeserializer {
     private byte[] bytesLeft = new byte[0];
 

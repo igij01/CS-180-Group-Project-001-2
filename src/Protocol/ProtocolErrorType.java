@@ -9,15 +9,26 @@ import UserCore.*;
 
 import java.io.IOException;
 
+/**
+ * ProtocolErrorType
+ * <br>
+ * A enum for all the exceptions that occurs on the server side
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public enum ProtocolErrorType {
+
     //message exception(should never happen)
     ILLEGAL_MESSAGE(IllegalMessageException.class),
     ILLEGAL_TARGET(IllegalTargetException.class),
     ILLEGAL_USER_ACCESS(IllegalUserAccessException.class),
 
+
     //server side errors on request packet(should never happen)
     ILLEGAL_PARAMETER(IllegalParameter.class),
     ILLEGAL_REQUEST_FORMAT(IllegalRequestFormat.class),
+
 
     //UserCore exception
     EMAIL_FORMAT(EmailFormatException.class),
@@ -25,6 +36,7 @@ public enum ProtocolErrorType {
     ILLEGAL_USER_LOGIN_STATUS(IllegalUserLoginStatus.class), //should never happen
     ILLEGAL_USER_NAME(IllegalUserNameException.class),
     WRONG_PASSWORD(InvalidPasswordException.class),
+
 
     //general ones
     IO_ERROR(IOException.class),

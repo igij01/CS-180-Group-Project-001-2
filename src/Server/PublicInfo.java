@@ -8,6 +8,14 @@ import UserCore.PublicInformation;
 
 import java.nio.ByteBuffer;
 
+/**
+ * PublicInfo
+ * <br>
+ * A class that provides an interface/abstraction of the Public Information class
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public class PublicInfo {
     private PublicInfo() {
     }

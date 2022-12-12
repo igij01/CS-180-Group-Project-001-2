@@ -23,7 +23,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @author Yulin Lin, 001
  * @version 11/21/2022
  * @implNote This is inspired from <a href="https://stackoverflow.com/questions/43928247/java-socketchannel-selector-
- * combine-write-channel-with-blocking-queue">...</a>
+ * combine-write-channel-with-blocking-queue">this post</a>
  */
 public class ServerCore {
     public static void main(String... args) throws IOException {
@@ -31,7 +31,7 @@ public class ServerCore {
         final HashMap<SocketChannel, MessageSystem> table = new HashMap<>();
         PublicInformation.init();
 
-        new Thread(() -> {
+        new Thread(() -> { //for listening for shutdown command from console
             while (selector.isOpen()) {
                 Scanner scanner = new Scanner(System.in);
                 String command = scanner.nextLine();
@@ -50,7 +50,7 @@ public class ServerCore {
             }
         }).start();
 
-        new Thread(() -> {
+        new Thread(() -> { //for serializing the Message System once a while
             while (selector.isOpen()) {
                 try {
                     Thread.sleep(1000);

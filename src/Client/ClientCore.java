@@ -15,6 +15,14 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 
+/**
+ * ClientCore
+ * <br>
+ * A class that contains the backend client code responsible for communicating with the server
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public class ClientCore extends Thread {
     private PacketDeserializer deserializer;
 
@@ -116,7 +124,7 @@ public class ClientCore extends Thread {
                         }
 
                         if (key.isValid() && key.isWritable()) {
-                            System.out.println("Writable: " + key.channel());
+//                            System.out.println("Writable: " + key.channel());
                             SocketChannel socket = (SocketChannel) key.channel();
 
                             //only remove from queue once we have completely written
@@ -169,19 +177,5 @@ public class ClientCore extends Thread {
         try {
             selector.close();
         } catch (IOException ignore){}
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-        ClientCore client = new ClientCore(new InetSocketAddress("localhost", 5050));
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.REGISTER, "buyer", "buyer",
-                "mail@mail.com", "12345"));
-        client.start();
-        Thread.sleep(1000);
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_PROFILE));
-        Thread.sleep(500);
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.LOGOUT));
-        Thread.sleep(500);
-        client.addByteBufferToWrite(PacketAssembler.assemblePacket(ProtocolRequestType.DISPLAY_PROFILE));
-        client.join();
     }
 }

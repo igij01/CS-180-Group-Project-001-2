@@ -19,6 +19,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * GUI
+ * <br>
+ * Actual GUI class responsible for displaying the GUI to the client
+ *
+ * @author Samson Tesfagiorgis, Yulin Lin, Teresa Wan, Arthur Ruano, Alexander Roth, 001
+ * @version 12/11/2022
+ */
 public class GUI extends JFrame {
     private boolean close = false;
     private String hashColor = "#f2f6ff";
@@ -339,7 +347,6 @@ public class GUI extends JFrame {
             addCensorship.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println(addCensoredWord.getText());
                     if (addCensoredWord.getText().matches("[^[\\w']]+")) {
                         JOptionPane.showMessageDialog(null, "Not a word!", "Error",
                                 JOptionPane.ERROR_MESSAGE);
@@ -931,7 +938,6 @@ public class GUI extends JFrame {
                             option, option[1]);
                     if (selection == JOptionPane.CLOSED_OPTION)
                         return;
-                    System.out.println(selection);
                     JFileChooser fileChooser = new JFileChooser();
                     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     fileChooser.setToolTipText("Please choose the directory you want to the export csv file in");
@@ -1334,8 +1340,6 @@ public class GUI extends JFrame {
                                     .replace("]", "").split(","));
                             listOfSellers = (responsePacket.args[1].replace("[", "")
                                     .replace("]", "").split(","));
-                            System.out.println(Arrays.toString(listOfStores));
-                            System.out.println(Arrays.toString(listOfSellers));
                         } else
                             listOfBuyers = (responsePacket.args[0].replace("[", "")
                                     .replace("]", "").split(","));

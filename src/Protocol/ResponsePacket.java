@@ -3,7 +3,14 @@ package Protocol;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
+/**
+ * ErrorPacket
+ * <p>
+ * The mean for the server to pass the response to the client
+ *
+ * @author Yulin Lin, 001
+ * @version 12/3/2022
+ */
 public class ResponsePacket implements Externalizable {
     public ProtocolResponseType protocolResponseType;
     public String[] args;

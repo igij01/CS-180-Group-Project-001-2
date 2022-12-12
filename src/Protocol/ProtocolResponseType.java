@@ -1,5 +1,12 @@
 package Protocol;
-
+/**
+ * ProtocolResponseType
+ * <br>
+ * A enum for all the response that occurs on the server side
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public enum ProtocolResponseType {
     /**
     list of usernames: {user1, user2, user3, etc...} <br>

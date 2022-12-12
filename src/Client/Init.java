@@ -18,6 +18,14 @@ import java.nio.channels.UnresolvedAddressException;
 import java.nio.channels.UnsupportedAddressTypeException;
 import java.util.Objects;
 
+/**
+ * Init
+ * <br>
+ * Start of client execution; show a screen for prompting the user to put in the server addr and the port
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public class Init extends JFrame {
     private JPanel contentPane;
     private JTextField serverField;

@@ -15,20 +15,160 @@ to message directly
 for each stores
 * Users can also block another user or become invisible to them
 * Conversations with new messages will be marked and automatically put to the top
+<br><br>
+New features update from Project 5:
+* A server-client model implementation
+* A server that's event-driven and capable of handling multiple clients
+* A client that sends the requests to the server according to client needs(also event-driven)
+* GUI class that renders the screen(Also event-driven)
+* ___REAL TIME UPDATE (Woo Hoo!!!)___
 
 ## Run the app!
 
-If you are using an IDE like Intellij, you can simply download the project and put it in your ide and run the 
-Main class
-<p>
-If you don't have one, you can run the app in the terminal 
-in the project directory
+If you are using an IDE like Intellij, you can simply download the project, configure the Java JDK(recommend the newest
+Java JDK), add a run configuration for server (ServerCore.java) and client (Init.java) (PS: make sure to make the client
+configuration allows for multiple instances if you want to test real-time update in one machine), and, finally
+put it in your ide and run the Main class for console integration and run both the server and client config for 
+server-client model and a GUI(It's BEAUTIFUL!)
 
-```bash
-cd src
-javac Main.java
-java Main
-```
+## Additional Class Description from Project 5
+### Server
+#### ServerCore
+
+server core is the main server code that handles IO between the server and the client. It uses Java.nio.channels package
+that provides a ServerSocketChannel and SocketChannel(for ServerSocket and Socket from java.net) and a multiplexer 
+called Selector that allow for event-driven code for the channels. The channels have been configured into non-blocking 
+mode(the server does not wait until a IO operation is complete, it moves on) that minimizes response time from the 
+server
+
+##### Dependencies
+* MessageSystem as field
+* DataPacket: uses its method
+* import Java.nio package
+* ArrayBlockingQueue for thread-safe queue and de-queue (write operation)
+
+#### Message System(and UserProfile, PublicInfo, MessageFunctionalites)
+
+Basically an abstraction of the Message system (the core packages) so it's easier for server to process
+
+##### Dependencies
+* A LOT! Like the whole UserCore and MessageCore packets, but they are separated into several classes:
+  * UserProfile
+  * PublicInfo
+  * MessageFunctionalities
+* NotificationFactory(uses its static method to tell the server to also send this packet to another client)
+
+#### NotificationFactory
+
+Spawns a thread which allows one client to send messages to another client or broadcast to all.
+<br>
+The way it does this is by looping through all the keys in the selector and find the desired one, or just send it to 
+everyone
+##### Dependencies
+* ServerCore (Complement ServerCore)
+* import Thread
+
+### Protocol
+#### Enums
+* ProtocolRequestTypes that contains all the types of request to the server
+* ProtocolResponseTypes that contains all the types of normal response from the server
+* ProtocolErrorType that contains all the exceptions caused by the client, each constant corresponding to a class of 
+exception
+#### DataPacket
+
+The packet that client uses to send request to the server. It supplies a static method of serializing itself and another
+static method for deserializing itself
+
+##### Attributes
+* ProtocolRequestTypes type
+* String[] of parameters
+
+##### Dependencies
+* implements Externalizable to allow for custom serialization instead of using Reflection by default; way faster 
+serialization
+
+#### ResponsePacket
+
+The packet by the server to send normal responses to the client. It supplies a static method of serializing itself
+
+##### Attributes
+* ProtocolResponseTypes type
+* String[] of responses
+
+##### Dependencies
+* implements Externalizable to allow for custom serialization instead of using Reflection by default; way faster
+  serialization
+
+#### ErrorPacket
+
+The packet by the server to send abnormal responses(exceptions) to the client. 
+It supplies a static method of serializing itself
+
+##### Attributes
+* ProtocolErrorTypes error_type that corresponds to an exception
+* ProtocolResponseTypes request_type that caused the error
+* String of error message
+
+##### Dependencies
+* implements Externalizable to allow for custom serialization instead of using Reflection by default; way faster
+  serialization
+
+#### PacketDeserializer
+
+Used by client to deserialize the response packet or error packet. Uses ByteArrayInputStream and ObjectInputStream to 
+deserialize the bytes and store the remaking bytes into a byte[] for the next deserialization
+
+### Client
+#### ClientCore
+
+server core is the main client code that handles IO between the server and the client. Also uses all the Java.nio fun 
+stuff.
+<br>
+It also supplies method that allows listeners to read from read queue and allows client to add to the write queue 
+anytime
+
+##### Dependencies
+* PacketDeserializer as field
+* import Java.nio package
+* ArrayBlockingQueue for thread-safe queue and de-queue (both read and write)
+
+#### PacketAssembler
+
+Supply a static method to assemble the Request Packet and serialize it, so it's ready for the client to send to the 
+server. (There's also a method that convert a array string to an array...I put it there because I am too lazy to create
+another class for it :> )
+
+#### Listener
+
+A basic Listener that listens for a specific response or an error caused by a specific request
+
+##### Dependencies
+* Protocol Package
+* import Thread
+* ClientCore as field
+
+#### Atrtibutes
+* ProtocolResponseType response
+* ProtocolRequestType errorRequest
+* ClientCore client
+
+#### GUI (Init, Login, Register, GUI.Profile)
+
+Basically renders the GUI for the client, send packet using PacketAssembler, and supplies methods for AsyncListener to 
+call to rerender the screen once a response or an error is received
+
+##### Dependencies
+* Client and Protocol packet
+* Javax.swing library
+
+#### GUI.AsyncListener
+
+An Async Listener that runs in the background that listens for all packets received from client core and invoke the 
+corresponding methods in the EDT to rerender the screen with new information
+
+##### Dependencies
+* extends Javax.swing.SwingWorker<T,V>
+* Protocol Packet to access the infos 
 
 ## Class Description
 ### UserCore

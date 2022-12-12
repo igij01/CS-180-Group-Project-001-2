@@ -4,6 +4,11 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+/**
+ * DataPacket
+ * <br>
+ * The enclosing class for request packet the client used to send to the server
+ */
 public class DataPacket implements Externalizable {
     public ProtocolRequestType protocolRequestType;
     public String[] args;

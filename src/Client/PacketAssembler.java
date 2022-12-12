@@ -6,6 +6,15 @@ import Protocol.ProtocolRequestType;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+/**
+ * PacketAssembler
+ * <br>
+ * provides an abstraction to form a request in the form of DataPacket and serialize so it's ready to be send to the
+ * server
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public class PacketAssembler {
     private PacketAssembler() {
     }

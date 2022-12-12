@@ -1,5 +1,12 @@
 package Protocol;
-
+/**
+ * ProtocolRequestType
+ * <br>
+ * A enum for all the request that client sends to the server along with expected parameters for each
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public enum ProtocolRequestType {
     LOGIN(2),
     REGISTER(4),

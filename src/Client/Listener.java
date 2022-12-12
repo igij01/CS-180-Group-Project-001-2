@@ -7,6 +7,14 @@ import Protocol.ResponsePacket;
 
 import java.util.Iterator;
 
+/**
+ * Listener
+ * <br>
+ * A basic listener that watches for a specific types of response and specific request type from the error
+ *
+ * @author Yulin Lin, 001
+ * @version 12/11/2022
+ */
 public class Listener extends Thread {
     private ProtocolResponseType response;
     private ProtocolRequestType errorRequest;

@@ -1,5 +1,10 @@
 # Update Log
-__This update log is used to record the updates that happened to the project since project 4__
+__This update log is used to record the major updates and design choices that happened to the project since project 4 (
+or just some pretty cool and creative way that I solved an problem or fixed a bug
+)__
+<br><br>
+(apparently I(Lincoln Lin) was the only one that used it...I included it just so if you are interested in how some ideas
+or functionalities were designed and implemented)
 
 ## 11/16/2022
 ### Removed linker - Yulin Lin
@@ -69,14 +74,14 @@ for (Store store : listOfStores) {
             assert other != null;
             int index = 0;
             for (Conversation cc : other.conversations) {
-        if(cc.getOtherUser(other.user).equals(this.user)&&!cc.equals(c)){
-        conversations.set(index,cc);
-        break;
+                if(cc.getOtherUser(other.user).equals(this.user)&&!cc.equals(c)){
+                    conversations.set(index,cc);
+                    break;
+                }
+            index++;
+            }
         }
-        index++;
-        }
-        }
-        }
+    }
 ```
 
 ## 11/18 - 11/20/2022
