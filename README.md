@@ -1,6 +1,10 @@
 # marketplace messaging system
 ## Notice
 This is the group project for CS 180(Project 4 and 5). Lab 001 - Team 2
+## Useful Files
+* [Final Presentation](Marketplace%20Messaging%20System.pdf)
+* [Core Functionality layout](ProjectLayout.md)
+* [Update Log](update_log.md)
 ## Welcome!
 This GitHub repository contains code for a marketplace messaging app. It has features include: 
 * Allow communication between buyers and sellers with an account
